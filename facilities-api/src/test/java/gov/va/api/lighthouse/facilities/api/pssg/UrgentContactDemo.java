@@ -6,15 +6,15 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import gov.va.api.lighthouse.facilities.api.emergencycontact.UrgentContact;
-import gov.va.api.lighthouse.facilities.api.emergencycontact.UrgentContact.Clinic;
-import gov.va.api.lighthouse.facilities.api.emergencycontact.UrgentContact.Contact;
-import gov.va.api.lighthouse.facilities.api.emergencycontact.UrgentContact.PhoneNumber;
+import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact;
+import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.Clinic;
+import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.Contact;
+import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.PhoneNumber;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.Value;
 
-public class EmergencyContactDemo {
+public class UrgentContactDemo {
   @SneakyThrows
   public static void main(String[] args) {
     System.out.println(

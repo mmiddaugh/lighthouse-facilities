@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.api.emergencycontact;
+package gov.va.api.lighthouse.facilities.api.urgentcontact;
 
 import java.time.Instant;
 import java.util.List;
