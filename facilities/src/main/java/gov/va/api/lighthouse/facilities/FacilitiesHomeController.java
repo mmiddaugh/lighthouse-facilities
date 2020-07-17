@@ -16,21 +16,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @SuppressWarnings("WeakerAccess")
 @Controller
 public class FacilitiesHomeController {
-  private final Resource openapi;
-
   @Autowired
-  public FacilitiesHomeController(@Value("classpath:/openapi.json") Resource openapi) {
-    this.openapi = openapi;
-  }
+  public FacilitiesHomeController() {}
 
   /** Load openapi.json content as a string value. */
   @SneakyThrows
   @SuppressWarnings("WeakerAccess")
   @Bean
   public String openapiContent() {
-    try (InputStream is = openapi.getInputStream()) {
-      return StreamUtils.copyToString(is, Charset.defaultCharset());
-    }
+    return "";
   }
 
   /** OpenAPI Json. */

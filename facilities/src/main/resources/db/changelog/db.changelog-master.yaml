@@ -305,7 +305,7 @@ databaseChangeLog:
       author: shanktopus
       changes:
         - createTable:
-            tableName: urgent_contact
+            tableName: facility_urgent_contact
             schemaName: app
             columns:
               - column:
@@ -317,6 +317,16 @@ databaseChangeLog:
               - column:
                   name: version
                   type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: station_number
+                  type: varchar(16)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: facility_type
+                  type: varchar(3)
                   constraints:
                     nullable: false
               - column:

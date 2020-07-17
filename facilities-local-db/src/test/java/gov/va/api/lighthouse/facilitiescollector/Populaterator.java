@@ -184,6 +184,7 @@ public final class Populaterator {
       List<String> headers = parser.getHeaderNames();
       Streams.stream(parser)
           .parallel()
+          .limit(100)
           .forEach(
               row -> {
                 try (PreparedStatement statement =
