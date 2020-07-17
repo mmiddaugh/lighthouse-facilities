@@ -58,7 +58,7 @@ public class UrgentContactDemo {
             .writerWithDefaultPrettyPrinter()
             .writeValueAsString(
                 UrgentContact.builder()
-                    .id("vha_675GA_1")
+                    .id("vha_675GA_cardiology")
                     .facilityId("vha_675GA")
                     .clinic(
                         UrgentContact.Clinic.builder()
