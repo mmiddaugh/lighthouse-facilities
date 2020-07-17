@@ -5,7 +5,7 @@ import gov.va.api.lighthouse.facilities.FacilityEntity.Pk;
 import gov.va.api.lighthouse.facilities.api.cms.CmsOverlay;
 import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact;
 import gov.va.api.lighthouse.facilities.api.v0.FacilityReadResponse;
-
+import java.time.Instant;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 // @Slf4j
@@ -35,11 +34,6 @@ public class UrgentContactController {
 
   private final UrgentContactRepository repository;
 
-  //  @InitBinder
-  //  void initDirectFieldAccess(DataBinder dataBinder) {
-  //    dataBinder.initDirectFieldAccess();
-  //  }
-
   /** Save urgent contact. */
   @SneakyThrows
   @PostMapping(
@@ -50,7 +44,8 @@ public class UrgentContactController {
     String id = contact.id();
     UrgentContactEntity entity =
         repository.findById(id).orElse(UrgentContactEntity.builder().id(id).build());
-    entity.payload(FacilitiesJacksonConfig.createMapper().writeValueAsString(contact));
+    UrgentContact newContact = contact.toBuilder().lastUpdated(Instant.now()).build();
+    entity.payload(FacilitiesJacksonConfig.createMapper().writeValueAsString(newContact));
     repository.save(entity);
   }
 

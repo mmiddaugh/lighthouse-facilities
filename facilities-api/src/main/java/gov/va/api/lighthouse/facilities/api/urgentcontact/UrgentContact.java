@@ -2,10 +2,14 @@ package gov.va.api.lighthouse.facilities.api.urgentcontact;
 
 import java.time.Instant;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.api.v0.PageLinks;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.FacilityAttributes;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.Type;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,23 +18,26 @@ import lombok.Data;
 import lombok.Value;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 // @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 // @Schema(description = "Facility's or clinic's emergency contact")
 public final class UrgentContact {
-  String id;
+  @NotBlank String id;
 
   // @Schema(example = "vha_688")
-  // @NotNull
+  @NotBlank
   @JsonProperty("facility_id")
   String facilityId;
 
   Clinic clinic;
 
-  Contact contact;
+  @NotNull Contact contact;
 
+  @NotBlank
+  @Size(max = 1000)
   String note;
 
+  @Size(min = 3, max = 3)
   @JsonProperty("phone_numbers")
   List<PhoneNumber> phoneNumbers;
 
@@ -40,19 +47,19 @@ public final class UrgentContact {
   @Value
   @Builder
   public static final class Clinic {
-    String name;
+    @NotBlank String name;
 
-    String specialty;
+    @NotBlank String specialty;
   }
 
   @Value
   @Builder
   public static final class Contact {
-    String name;
+    @NotBlank String name;
 
-    String email;
+    @NotBlank String email;
 
-    PhoneNumber phone;
+    @NotNull PhoneNumber phone;
   }
 
   @Value
@@ -60,7 +67,7 @@ public final class UrgentContact {
   public static final class PhoneNumber {
     String label;
 
-    String number;
+    @NotBlank String number;
 
     String extension;
   }
