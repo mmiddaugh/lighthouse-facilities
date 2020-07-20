@@ -1,15 +1,10 @@
 package gov.va.api.lighthouse.facilities;
 
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
