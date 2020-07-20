@@ -1,22 +1,13 @@
 package gov.va.api.lighthouse.facilities.api.urgentcontact;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import gov.va.api.lighthouse.facilities.api.v0.PageLinks;
-import gov.va.api.lighthouse.facilities.api.v0.Facility.FacilityAttributes;
-import gov.va.api.lighthouse.facilities.api.v0.Facility.Type;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Value;
 
 @Value

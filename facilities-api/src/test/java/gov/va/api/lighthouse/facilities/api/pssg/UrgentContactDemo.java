@@ -1,18 +1,10 @@
 package gov.va.api.lighthouse.facilities.api.pssg;
 
-import java.time.Instant;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact;
-import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.Clinic;
-import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.Administrator;
-import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.PhoneNumber;
-import lombok.Builder;
+import java.time.Instant;
+import java.util.List;
 import lombok.SneakyThrows;
-import lombok.Value;
 
 public class UrgentContactDemo {
   @SneakyThrows
