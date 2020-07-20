@@ -106,4 +106,10 @@ import javax.ws.rs.Path;
     in = SecuritySchemeIn.HEADER)
 @Path("/")
 public interface FacilitiesService
-    extends FacilitiesSearchApi, FacilitiesReadApi, FacilitiesAllApi, FacilitiesNearbyApi {}
+    extends FacilitiesSearchApi,
+        FacilitiesReadApi,
+        FacilitiesAllApi,
+        FacilitiesNearbyApi,
+        UrgentContactReadApi,
+        UrgentContactSaveApi,
+        UrgentContactSearchApi {}
