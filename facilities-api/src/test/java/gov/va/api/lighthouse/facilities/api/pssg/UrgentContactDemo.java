@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact;
 import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.Clinic;
-import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.Contact;
+import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.Administrator;
 import gov.va.api.lighthouse.facilities.api.urgentcontact.UrgentContact.PhoneNumber;
 import lombok.Builder;
 import lombok.SneakyThrows;
@@ -25,8 +25,8 @@ public class UrgentContactDemo {
                     .id("vha_675GA")
                     .facilityId("vha_675GA")
                     .clinic(null)
-                    .contact(
-                        UrgentContact.Contact.builder()
+                    .administrator(
+                        UrgentContact.Administrator.builder()
                             .name("Bob Nelson")
                             .email("bob.nelson@foo.bar")
                             .phone(
@@ -65,8 +65,8 @@ public class UrgentContactDemo {
                             .name("cardiology")
                             .specialty("cardiology")
                             .build())
-                    .contact(
-                        UrgentContact.Contact.builder()
+                    .administrator(
+                        UrgentContact.Administrator.builder()
                             .name("Bob Nelson")
                             .email("bob.nelson@foo.bar")
                             .phone(

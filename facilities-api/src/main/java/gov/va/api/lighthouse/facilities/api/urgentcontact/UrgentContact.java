@@ -2,6 +2,8 @@ package gov.va.api.lighthouse.facilities.api.urgentcontact;
 
 import java.time.Instant;
 import java.util.List;
+
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -29,14 +31,15 @@ public final class UrgentContact {
   @JsonProperty("facility_id")
   String facilityId;
 
-  Clinic clinic;
+  @Valid Clinic clinic;
 
-  @NotNull Contact contact;
+  @NotNull @Valid Administrator administrator;
 
   @NotBlank
   @Size(max = 1000)
   String note;
 
+  @Valid
   @Size(min = 3, max = 3)
   @JsonProperty("phone_numbers")
   List<PhoneNumber> phoneNumbers;
@@ -46,20 +49,20 @@ public final class UrgentContact {
 
   @Value
   @Builder
-  public static final class Clinic {
-    @NotBlank String name;
-
-    @NotBlank String specialty;
-  }
-
-  @Value
-  @Builder
-  public static final class Contact {
+  public static final class Administrator {
     @NotBlank String name;
 
     @NotBlank String email;
 
-    @NotNull PhoneNumber phone;
+    @Valid @NotNull PhoneNumber phone;
+  }
+
+  @Value
+  @Builder
+  public static final class Clinic {
+    @NotBlank String name;
+
+    @NotBlank String specialty;
   }
 
   @Value
