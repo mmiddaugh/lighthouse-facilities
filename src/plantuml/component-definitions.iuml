@@ -29,7 +29,6 @@ rectangle "facilities-collector" as C <<facilities>>
 rectangle "facilities-timer" as TIMER <<kubernetes cron>>
 database "facilities-operational-db" as DB <<facilities>>
 database "Corporate Data Warehouse" as CDW <<dependency>>
-database "COVID-19 S3" as COVID19S3 <<utility>>
 
 rectangle "Access to Care" as ATC <<dependency>>
 rectangle "Content Management System" as CMS <<partner>>
@@ -38,6 +37,5 @@ rectangle "Cemetery XML" as CXML <<document>>
 rectangle "Website CSV" as WCSV <<document>>
 rectangle "PSSG Drive Band" as BANDS <<document>>
 rectangle "ETL from A01 to SQL52" as ETL <<sql package>>
-rectangle "Access to Care COVID-19 Scraper" as SCRAPER <<utility>>
 
 @enduml

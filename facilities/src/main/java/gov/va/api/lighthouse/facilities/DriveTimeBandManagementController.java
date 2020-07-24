@@ -37,11 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DriveTimeBandManagementController {
   private final DriveTimeBandRepository repository;
 
-  /**
-   * Get a band based on it's internal name: {stationNumber}-{fromMinutes}-{toMinutes}.
-   *
-   * @return
-   */
+  /** Get band based on internal name: {stationNumber}-{fromMinutes}-{toMinutes}. */
   @GetMapping("/{name}")
   public BandResult band(@PathVariable("name") String name) {
     return repository
@@ -71,7 +67,7 @@ public class DriveTimeBandManagementController {
     return rect.get();
   }
 
-  /** Get all band internal names: {stationNumber}-{fromMinutes}-{toMinutes.} */
+  /** Get all band internal names: {stationNumber}-{fromMinutes}-{toMinutes}. */
   @GetMapping
   public List<String> driveTimeBandIds() {
     return repository.findAllIds().stream().map(DriveTimeBandEntity.Pk::name).collect(toList());

@@ -1,16 +1,10 @@
 package gov.va.api.lighthouse.facilitiescollector;
 
-import static gov.va.api.lighthouse.facilitiescollector.Transformers.allBlank;
-import static gov.va.api.lighthouse.facilitiescollector.Transformers.isBlank;
 import static gov.va.api.lighthouse.facilitiescollector.Transformers.withTrailingSlash;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -54,8 +48,6 @@ public class CollectorHealthController {
 
   private final String atcBaseUrl;
 
-  private final String atcCovidBaseUrl;
-
   private final String atpBaseUrl;
 
   private final String stateCemeteriesBaseUrl;
@@ -68,7 +60,6 @@ public class CollectorHealthController {
       @Autowired VastRepository vastRepository,
       @Value("${arc-gis.url}") String arcGisBaseUrl,
       @Value("${access-to-care.url}") String atcBaseUrl,
-      @Value("${access-to-care.covid.url}") String atcCovidBaseUrl,
       @Value("${access-to-pwt.url}") String atpBaseUrl,
       @Value("${state-cemeteries.url}") String stateCemeteriesBaseUrl) {
     this.insecureRestTemplateProvider = insecureRestTemplateProvider;
@@ -76,7 +67,6 @@ public class CollectorHealthController {
     this.vastRepository = vastRepository;
     this.arcGisBaseUrl = withTrailingSlash(arcGisBaseUrl);
     this.atcBaseUrl = withTrailingSlash(atcBaseUrl);
-    this.atcCovidBaseUrl = withTrailingSlash(atcCovidBaseUrl);
     this.atpBaseUrl = withTrailingSlash(atpBaseUrl);
     this.stateCemeteriesBaseUrl = withTrailingSlash(stateCemeteriesBaseUrl);
   }
@@ -161,7 +151,6 @@ public class CollectorHealthController {
                                     stateCemeteriesBaseUrl + "cems/cems.xml")
                                 .toUriString())
                         .build()),
-                () -> testAtcCovid19Health(insecureTemplate),
                 () -> testLastUpdated())
             .parallelStream()
             .map(Supplier::get)
@@ -187,49 +176,6 @@ public class CollectorHealthController {
 
   private ResponseEntity<String> requestHealth(RestTemplate rt, String url) {
     return rt.exchange(url, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), String.class);
-  }
-
-  /**
-   * For the covid-19 response, the code tests not only its ability to reach out and get a 200
-   * response from the endpoint, but also that it is able to deserialize the response to a
-   * AccessToCareCovid19Entry. This will allow us to respond faster if the response changes.
-   */
-  private Health testAtcCovid19Health(RestTemplate insecureRestTemplate) {
-    String url =
-        UriComponentsBuilder.fromHttpUrl(atcCovidBaseUrl + "vacovid19summary.json").toUriString();
-    HttpStatus statusCode;
-    try {
-      ResponseEntity<String> response = requestHealth(insecureRestTemplate, url);
-      statusCode = response.getStatusCode();
-      if (statusCode.value() == 200) {
-        // Do some custom validation here
-        List<AccessToCareCovid19Entry> covid =
-            JacksonConfig.createMapper()
-                .readValue(
-                    response.getBody(), new TypeReference<List<AccessToCareCovid19Entry>>() {})
-                .stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        for (AccessToCareCovid19Entry entry : covid) {
-          if (isBlank(entry.stationId()) || allBlank(entry.confirmedCases(), entry.deaths())) {
-            /*
-             * Not _technically_ the correct use,
-             * but it only gets printed as a string past this point
-             */
-            statusCode = HttpStatus.EXPECTATION_FAILED;
-          }
-        }
-      }
-    } catch (ResourceAccessException | JsonProcessingException e) {
-      log.info("Exception occurred. GET {} message: {}", url, e.getMessage());
-      statusCode = HttpStatus.SERVICE_UNAVAILABLE;
-    }
-    return Health.status(new Status("UP", "Access to Care: COVID-19"))
-        .withDetail("name", "Access to Care: COVID-19")
-        .withDetail("statusCode", statusCode.value())
-        .withDetail("status", statusCode)
-        .withDetail("time", Instant.now())
-        .build();
   }
 
   private Health testDownstreamHealth(HealthCheck healthCheck) {

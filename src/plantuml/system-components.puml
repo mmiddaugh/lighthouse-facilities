@@ -13,11 +13,8 @@ C .. CXML
 C .. WCSV
 C -(0- ATC
 C -(0- ARCGIS
-C -(0- COVID19S3
 ETL -up-> CDW
 ETL <-down- CDW
-SCRAPER -up(0- ATC
-SCRAPER .up. COVID19S3
 
 CMS -(0- F : /facilities/{id}/cms-overlay\n/facilities/all
 CMS -[hidden]up- F

@@ -16,9 +16,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PssgDriveTimeBand {
-  /** The two item lis of coordinates, this is the longitude (or x) value. */
+  /** The two item list of coordinates, this is the longitude (or x) value. */
   public static int INDEX_LONGITUDE = 0;
-  /** The two item lis of coordinates, this is the lattitude (or x) value. */
+
+  /** The two item list of coordinates, this is the lattitude (or x) value. */
   public static int INDEX_LATITUDE = 1;
 
   Attributes attributes;
@@ -70,15 +71,15 @@ public class PssgDriveTimeBand {
     /**
      * Oh lawdy.
      *
-     * <pre>
-     *   List 1 = List of rings. There should at least one ring.
-     *   List 2 = A ring, which is a list of coordinates.
-     *            There will be many coordinates to describe the polygon.
-     *   List 3 = A two item list of longitude, then latitude.
-     * </pre>
+     * <p>List 1 = List of rings. There should at least one ring.
      *
-     * yo dawg. i herd you like lists so we put a list in yo list so you list lists while you list
-     * lists.
+     * <p>List 2 = A ring, which is a list of coordinates. There will be many coordinates to
+     * describe the polygon.
+     *
+     * <p>List 3 = A two item list of longitude, then latitude.
+     *
+     * <p>yo dawg. i herd you like lists so we put a list in yo list so you list lists while you
+     * list lists.
      */
     @Builder.Default List<List<List<Double>>> rings = new ArrayList<>();
   }

@@ -48,8 +48,6 @@ public class CollectorHealthControllerTest {
                 .collect(Collectors.toMap(h -> h.getStatus().getDescription(), Health::getStatus));
     System.out.println(serviceStatus);
     assertThat(serviceStatus.get("Access to Care").getCode()).isEqualTo(expected.accessToCare());
-    assertThat(serviceStatus.get("Access to Care: COVID-19").getCode())
-        .isEqualTo(expected.accessToCareCovid19());
     assertThat(serviceStatus.get("Access to PWT").getCode()).isEqualTo(expected.accessToPWT());
     assertThat(serviceStatus.get("Public ArcGIS").getCode()).isEqualTo(expected.publicArcGIS());
     assertThat(serviceStatus.get("State Cemeteries").getCode())
@@ -72,12 +70,6 @@ public class CollectorHealthControllerTest {
     when(restTemplate.exchange(
             startsWith("http://atc"), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
         .thenReturn(ok());
-    when(restTemplate.exchange(
-            startsWith("http://covid"),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            eq(String.class)))
-        .thenReturn(notOk());
     when(restTemplate.exchange(
             startsWith("http://atp"), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
         .thenReturn(ok());
@@ -102,7 +94,6 @@ public class CollectorHealthControllerTest {
         requireNonNull(response.getBody()),
         ExpectedStatus.builder()
             .accessToCare("UP")
-            .accessToCareCovid19("UP")
             .accessToPWT("UP")
             .publicArcGIS("UP")
             .stateCemeteries("UP")
@@ -123,7 +114,6 @@ public class CollectorHealthControllerTest {
         vastRepository,
         "http://arcgis",
         "http://atc",
-        "http://covid",
         "http://atp",
         "http://statecems");
   }
@@ -135,12 +125,6 @@ public class CollectorHealthControllerTest {
     when(insecureRestTemplateProvider.restTemplate()).thenReturn(restTemplate);
     when(restTemplate.exchange(
             startsWith("http://atc"), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
-        .thenReturn(notOk());
-    when(restTemplate.exchange(
-            startsWith("http://covid"),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            eq(String.class)))
         .thenReturn(notOk());
     when(restTemplate.exchange(
             startsWith("http://atp"), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
@@ -166,7 +150,6 @@ public class CollectorHealthControllerTest {
         requireNonNull(response.getBody()),
         ExpectedStatus.builder()
             .accessToCare("DOWN")
-            .accessToCareCovid19("UP")
             .accessToPWT("DOWN")
             .publicArcGIS("UP")
             .stateCemeteries("UP")
@@ -185,13 +168,7 @@ public class CollectorHealthControllerTest {
     when(restTemplate.exchange(
             startsWith("http://atp"), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
         .thenThrow(new ResourceAccessException("I/O error on GET request"));
-    // This'll test a 200 response from Covid Access to Care with a bad payload
-    when(restTemplate.exchange(
-            startsWith("http://covid"),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            eq(String.class)))
-        .thenReturn(ResponseEntity.ok("[{ \"Facility Name\": null }]"));
+
     when(restTemplate.exchange(
             startsWith("http://arcgis"),
             eq(HttpMethod.GET),
@@ -213,7 +190,6 @@ public class CollectorHealthControllerTest {
         requireNonNull(response.getBody()),
         ExpectedStatus.builder()
             .accessToCare("DOWN")
-            .accessToCareCovid19("UP")
             .accessToPWT("DOWN")
             .publicArcGIS("UP")
             .stateCemeteries("UP")
@@ -225,7 +201,6 @@ public class CollectorHealthControllerTest {
   @Builder
   private static class ExpectedStatus {
     String accessToCare;
-    String accessToCareCovid19;
     String accessToPWT;
     String publicArcGIS;
     String stateCemeteries;

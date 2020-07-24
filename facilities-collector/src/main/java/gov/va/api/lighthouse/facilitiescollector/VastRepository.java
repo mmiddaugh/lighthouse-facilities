@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Loggable
 @Transactional(isolation = Isolation.READ_UNCOMMITTED)
 public interface VastRepository extends CrudRepository<VastEntity, Long> {
-
   @Query("select max(e.lastUpdated) from #{#entityName} e")
   Instant findLastUpdated();
 }

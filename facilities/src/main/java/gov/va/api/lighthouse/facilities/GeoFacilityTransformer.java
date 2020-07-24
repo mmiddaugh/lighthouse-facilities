@@ -48,7 +48,6 @@ final class GeoFacilityTransformer {
         .activeStatus(attr.activeStatus())
         .operatingStatus(attr.operatingStatus())
         .visn(attr.visn())
-        .covid19(attr.covid19())
         .build();
   }
 

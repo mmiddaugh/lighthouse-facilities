@@ -1,14 +1,12 @@
 package gov.va.api.lighthouse.facilities.api.v0;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Builder;
@@ -136,27 +134,6 @@ public final class Facility {
   @Data
   @Builder
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static final class Covid19 {
-    @Schema(
-        description =
-            "Number of COVID-19 cases. May include data from Veteran patients, "
-                + "non-Veteran patients, and/or employees who self-report.",
-        example = "46")
-    @Min(0)
-    Integer confirmedCases;
-
-    @Schema(
-        description =
-            "Number of inpatient deaths involving COVID-19. "
-                + "May include data from Veteran and non-Veteran patients.",
-        example = "4")
-    @Min(0)
-    Integer deaths;
-  }
-
-  @Data
-  @Builder
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   public static final class FacilityAttributes {
     @Schema(example = "Washington VA Medical Center")
     @NotNull
@@ -213,11 +190,6 @@ public final class Facility {
     @NotNull
     @JsonProperty(value = "operating_status", required = true)
     OperatingStatus operatingStatus;
-
-    @JsonIgnore
-    @Schema(description = "Status of COVID-19 cases and deaths.")
-    @Valid
-    Covid19 covid19;
   }
 
   @Data

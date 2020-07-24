@@ -37,7 +37,6 @@ class HealthsCollectorTest {
         () ->
             HealthsCollector.builder()
                 .atcBaseUrl("http://atc/")
-                .atcCovidBaseUrl("http://covid/")
                 .atpBaseUrl("http://atp/")
                 .vastEntities(emptyList())
                 .jdbcTemplate(mock(JdbcTemplate.class))

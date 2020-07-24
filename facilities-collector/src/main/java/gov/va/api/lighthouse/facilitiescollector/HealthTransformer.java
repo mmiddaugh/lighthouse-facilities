@@ -39,8 +39,6 @@ final class HealthTransformer {
 
   @NonNull private final ListMultimap<String, AccessToCareEntry> accessToCare;
 
-  @NonNull private final Map<String, AccessToCareCovid19Entry> accessToCareCovid19;
-
   @NonNull private final ListMultimap<String, AccessToPwtEntry> accessToPwt;
 
   @NonNull private final Map<String, String> mentalHealthPhoneNumbers;
@@ -150,8 +148,7 @@ final class HealthTransformer {
         waitTimes(),
         vast.mobile(),
         activeStatus(),
-        vast.visn(),
-        covid19())) {
+        vast.visn())) {
       return null;
     }
     return Facility.FacilityAttributes.builder()
@@ -170,7 +167,6 @@ final class HealthTransformer {
         .mobile(vast.mobile())
         .activeStatus(activeStatus())
         .visn(vast.visn())
-        .covid19(covid19())
         .build();
   }
 
@@ -196,20 +192,6 @@ final class HealthTransformer {
         }
         return vast.abbreviation();
     }
-  }
-
-  Facility.Covid19 covid19() {
-    if (accessToCareCovid19.isEmpty()) {
-      return null;
-    }
-    AccessToCareCovid19Entry entry = accessToCareCovid19.get(upperCase(id(), Locale.US));
-    if (entry == null || allBlank(entry.confirmedCases(), entry.deaths())) {
-      return null;
-    }
-    return Facility.Covid19.builder()
-        .confirmedCases(entry.confirmedCases())
-        .deaths(entry.deaths())
-        .build();
   }
 
   private Facility.Hours hours() {

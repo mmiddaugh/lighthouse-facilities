@@ -36,7 +36,6 @@ checkForUnsetValues() {
 
 makeConfig facilities-collector $PROFILE
 configValue facilities-collector $PROFILE access-to-care.url 'http://localhost:8666'
-configValue facilities-collector $PROFILE access-to-care.covid.url 'http://localhost:8666'
 configValue facilities-collector $PROFILE access-to-pwt.url 'http://localhost:8666'
 configValue facilities-collector $PROFILE arc-gis.url 'http://localhost:8666'
 configValue facilities-collector $PROFILE spring.datasource.password '<YourStrong!Passw0rd>'

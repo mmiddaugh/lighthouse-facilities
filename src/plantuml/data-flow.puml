@@ -14,12 +14,9 @@ C <-- CXML : State managed\ncemeteries
 C -- WCSV : Faciliity website URLs
 C <-- ATC : Wait times and\nsatisfaction scores
 C <-- ARCGIS : Cemeteries and\nbenefit centers
-C <-- COVID19S3  : COVID 19 data
 
 ETL -up-> CDW
 ETL <-- CDW : Health facilities\nVeteran centers\nMental health\nphone numbers\nand Stop codes
-SCRAPER <-up- ATC  : COVID 19 data
-SCRAPER -up-> COVID19S3 : COVID 19 data
 
 
 CMS -up-> F : Operating status

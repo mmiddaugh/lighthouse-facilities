@@ -5,7 +5,7 @@ import gov.va.api.health.sentinel.BasicTestClient;
 import gov.va.api.health.sentinel.TestClient;
 import lombok.experimental.UtilityClass;
 
-/* Test clients for interacting with different services in a {@link SystemDefinition}. */
+/* Test clients for interacting with services in a SystemDefinition. */
 @UtilityClass
 public class TestClients {
   static TestClient collector() {

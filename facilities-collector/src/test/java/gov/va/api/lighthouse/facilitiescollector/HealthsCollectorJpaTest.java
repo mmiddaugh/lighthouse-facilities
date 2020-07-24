@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableMap;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import java.math.BigDecimal;
@@ -110,28 +109,6 @@ class HealthsCollectorJpaTest {
                                     .sliceEndDate("2020-03-02T00:00:00")
                                     .build())))));
     when(insecureRestTemplate.exchange(
-            startsWith("http://covid"),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            eq(String.class)))
-        .thenReturn(
-            ResponseEntity.of(
-                Optional.of(
-                    JacksonConfig.createMapper()
-                        .writeValueAsString(
-                            List.of(
-                                ImmutableMap.of(
-                                    "Facility Latitude",
-                                    "42.95122016",
-                                    "Facility Longitude",
-                                    "-78.81368285",
-                                    "VA Confirmed",
-                                    "56",
-                                    "VA Deaths",
-                                    "4",
-                                    "Facility Name",
-                                    "(666) UPSTATE NEW YORK HCS"))))));
-    when(insecureRestTemplate.exchange(
             startsWith("http://atp"), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
         .thenReturn(
             ResponseEntity.of(
@@ -179,7 +156,6 @@ class HealthsCollectorJpaTest {
     assertThat(
             HealthsCollector.builder()
                 .atcBaseUrl("http://atc/")
-                .atcCovidBaseUrl("http://covid/")
                 .atpBaseUrl("http://atp/")
                 .jdbcTemplate(jdbcTemplate)
                 .insecureRestTemplate(insecureRestTemplate)
@@ -266,8 +242,6 @@ class HealthsCollectorJpaTest {
                             .mobile(false)
                             .activeStatus(Facility.ActiveStatus.A)
                             .visn("21")
-                            .covid19(
-                                Facility.Covid19.builder().confirmedCases(56).deaths(4).build())
                             .build())
                     .build()));
   }

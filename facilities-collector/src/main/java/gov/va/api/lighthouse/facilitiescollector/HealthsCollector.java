@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ListMultimap;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
@@ -20,7 +19,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,8 +42,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Builder
 final class HealthsCollector {
   @NonNull final String atcBaseUrl;
-
-  @NonNull final String atcCovidBaseUrl;
 
   @NonNull final String atpBaseUrl;
 
@@ -121,7 +117,6 @@ final class HealthsCollector {
   Collection<Facility> collect() {
     try {
       ListMultimap<String, AccessToCareEntry> accessToCareEntries = loadAccessToCare();
-      Map<String, AccessToCareCovid19Entry> accessToCareCovid19Entries = loadCovid19AccessToCare();
       ListMultimap<String, AccessToPwtEntry> accessToPwtEntries = loadAccessToPwt();
       Map<String, String> mentalHealthPhoneNumbers = loadMentalHealthPhoneNumbers();
       ListMultimap<String, StopCode> stopCodesMap = loadStopCodes();
@@ -133,7 +128,6 @@ final class HealthsCollector {
                   HealthTransformer.builder()
                       .vast(v)
                       .accessToCare(accessToCareEntries)
-                      .accessToCareCovid19(accessToCareCovid19Entries)
                       .accessToPwt(accessToPwtEntries)
                       .mentalHealthPhoneNumbers(mentalHealthPhoneNumbers)
                       .stopCodesMap(stopCodesMap)
@@ -205,45 +199,6 @@ final class HealthsCollector {
         watch.stop().elapsed(TimeUnit.MILLISECONDS),
         entries.size());
     return ImmutableListMultimap.copyOf(map);
-  }
-
-  private Map<String, AccessToCareCovid19Entry> loadCovid19AccessToCare() {
-    final Stopwatch watch = Stopwatch.createStarted();
-    String url =
-        UriComponentsBuilder.fromHttpUrl(atcCovidBaseUrl + "vacovid19summary.json")
-            .build()
-            .toUriString();
-    List<AccessToCareCovid19Entry> entries;
-    Map<String, AccessToCareCovid19Entry> map = new HashMap<>();
-    try {
-      String response =
-          insecureRestTemplate
-              .exchange(url, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), String.class)
-              .getBody();
-      entries =
-          JacksonConfig.createMapper()
-              .readValue(response, new TypeReference<List<AccessToCareCovid19Entry>>() {});
-
-      for (AccessToCareCovid19Entry e : entries) {
-        if (e == null || e.stationId() == null) {
-          continue;
-        }
-        String facility = upperCase("vha_" + e.stationId(), Locale.US);
-        if (map.containsKey(facility)) {
-          log.info("Found multiple COVID-19 entries for station {}.", e.stationId());
-        }
-        map.put(facility, e);
-      }
-    } catch (Exception e) {
-      log.info("Failed to read AccessToCare: COVID-19 data. {}", e.getMessage());
-      return ImmutableMap.of();
-    }
-
-    log.info(
-        "Loading AccessToCare (COVID-19) took {} millis for {} entries",
-        watch.stop().elapsed(TimeUnit.MILLISECONDS),
-        entries.size());
-    return ImmutableMap.copyOf(map);
   }
 
   private Map<String, String> loadMentalHealthPhoneNumbers() {

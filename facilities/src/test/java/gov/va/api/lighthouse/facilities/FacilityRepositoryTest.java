@@ -13,7 +13,6 @@ import org.springframework.test.annotation.DirtiesContext;
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class FacilityRepositoryTest {
-
   @Autowired FacilityRepository repository;
 
   private FacilityEntity facilityEntity(String stnNumber, Instant lastUpdated) {

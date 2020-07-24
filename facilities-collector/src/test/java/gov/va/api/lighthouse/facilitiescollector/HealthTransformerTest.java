@@ -4,9 +4,7 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableMap;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 public class HealthTransformerTest {
@@ -19,7 +17,6 @@ public class HealthTransformerTest {
                         .abbreviation(featureCode)
                         .build())
                 .accessToCare(ArrayListMultimap.create())
-                .accessToCareCovid19(emptyMap())
                 .accessToPwt(ArrayListMultimap.create())
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
@@ -35,7 +32,6 @@ public class HealthTransformerTest {
             HealthTransformer.builder()
                 .vast(new VastEntity())
                 .accessToCare(ArrayListMultimap.create())
-                .accessToCareCovid19(emptyMap())
                 .accessToPwt(ArrayListMultimap.create())
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
@@ -56,31 +52,11 @@ public class HealthTransformerTest {
   }
 
   @Test
-  public void covid19() {
-    assertThat(
-            getCovid(
-                AccessToCareCovid19Entry.builder()
-                    .stationId("666")
-                    .confirmedCases(120)
-                    .deaths(40)
-                    .build()))
-        .isEqualTo(Facility.Covid19.builder().confirmedCases(120).deaths(40).build());
-    assertThat(
-            getCovid(
-                AccessToCareCovid19Entry.builder().stationId("666").confirmedCases(120).build()))
-        .isEqualTo(Facility.Covid19.builder().confirmedCases(120).build());
-    assertThat(getCovid(AccessToCareCovid19Entry.builder().stationId("666").deaths(40).build()))
-        .isEqualTo(Facility.Covid19.builder().deaths(40).build());
-    assertThat(getCovid(AccessToCareCovid19Entry.builder().stationId("666").build())).isNull();
-  }
-
-  @Test
   public void empty() {
     assertThat(
             HealthTransformer.builder()
                 .vast(new VastEntity())
                 .accessToCare(ArrayListMultimap.create())
-                .accessToCareCovid19(emptyMap())
                 .accessToPwt(ArrayListMultimap.create())
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
@@ -98,7 +74,6 @@ public class HealthTransformerTest {
             HealthTransformer.builder()
                 .vast(VastEntity.builder().stationNumber("x").build())
                 .accessToCare(atc)
-                .accessToCareCovid19(emptyMap())
                 .accessToPwt(atp)
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(sc)
@@ -106,19 +81,5 @@ public class HealthTransformerTest {
                 .build()
                 .toFacility())
         .isEqualTo(Facility.builder().id("vha_x").type(Facility.Type.va_facilities).build());
-  }
-
-  private Facility.Covid19 getCovid(AccessToCareCovid19Entry entry) {
-    Map<String, AccessToCareCovid19Entry> covidAtc = ImmutableMap.of("VHA_666", entry);
-    return HealthTransformer.builder()
-        .vast(VastEntity.builder().stationNumber("666").build())
-        .accessToCare(ArrayListMultimap.create())
-        .accessToCareCovid19(covidAtc)
-        .accessToPwt(ArrayListMultimap.create())
-        .mentalHealthPhoneNumbers(emptyMap())
-        .stopCodesMap(ArrayListMultimap.create())
-        .websites(emptyMap())
-        .build()
-        .covid19();
   }
 }

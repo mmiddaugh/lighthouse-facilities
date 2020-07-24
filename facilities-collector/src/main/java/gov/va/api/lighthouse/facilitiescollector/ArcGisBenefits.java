@@ -15,23 +15,23 @@ class ArcGisBenefits {
   @Builder.Default List<Feature> features = new ArrayList<>();
 
   /* Unused Fields:
-   *   String objectIdFieldName;
-   *   Id uniqueIdField;
-   *     String name;
-   *     Boolean isSystemMaintained;
-   *   String globalIdFieldName;
-   *   String geometryType;
-   *   SpatialReference spatialReference;
-   *     String wkid;
-   *     String latestWkid;
-   *   @Builder.Default List<Field> fields = new ArrayList<>();
-   *     String name;
-   *     String type;
-   *     String alias;
-   *     String sqlType;
-   *     Integer length;
-   *     String domain;
-   *     String defaultValue;
+   * objectIdFieldName
+   * uniqueIdField
+   *   name
+   *   isSystemMaintained
+   * globalIdFieldName
+   * geometryType
+   * spatialReference
+   *   wkid
+   *   latestWkid
+   * fields
+   *   name
+   *   type
+   *   alias
+   *   sqlType
+   *   length
+   *   domain
+   *   defaultValue
    */
   @JsonIgnoreProperties(ignoreUnknown = true)
   static final class ArcGisBenefitsBuilder {}
@@ -158,16 +158,11 @@ class ArcGisBenefits {
     String websiteUrl;
 
     /* Unused Fields:
-     *   @JsonProperty("OBJECTID")
-     *   String objectId;
-     *   @JsonProperty("Comments")
-     *   String comments;
-     *   @JsonProperty("Lat")
-     *   BigDecimal lat;
-     *   @JsonProperty("Long")
-     *   BigDecimal lng;
-     *   @JsonProperty("Organization")
-     *   String organization;
+     * OBJECTID
+     * Comments
+     * Lat
+     * Long
+     * Organization
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     static final class AttributesBuilder {}

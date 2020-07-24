@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Builder;
@@ -90,7 +89,7 @@ final class PageLinker {
     StringBuilder sb = new StringBuilder(url).append('?');
     String joinedParams =
         mutableParams.entrySet().stream()
-            .sorted(Comparator.comparing(Entry::getKey))
+            .sorted(Comparator.comparing(Map.Entry::getKey))
             .flatMap(PageLinker::toKeyValueString)
             .collect(Collectors.joining("&"));
     if (!joinedParams.isEmpty()) {
