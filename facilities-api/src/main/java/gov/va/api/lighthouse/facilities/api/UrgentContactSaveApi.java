@@ -14,7 +14,7 @@ import javax.ws.rs.Path;
 
 public interface UrgentContactSaveApi {
   @Operation(
-      summary = "Save urgent contact phone numbers for a facility or clinic",
+      summary = "Save urgent contact phone numbers for a clinic",
       operationId = "saveUrgentContact",
       security = @SecurityRequirement(name = "apikey"))
   @POST
@@ -41,19 +41,5 @@ public interface UrgentContactSaveApi {
           @Content(
               mediaType = "application/json",
               schema = @Schema(implementation = GenericError.class)))
-  @ApiResponse(
-      responseCode = "404",
-      description = "Urgent contact not found",
-      content =
-          @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = ApiError.class)))
-  @ApiResponse(
-      responseCode = "406",
-      description = "Requested format unacceptable",
-      content =
-          @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = ApiError.class)))
   void saveUrgentContact(@RequestBody UrgentContact contact);
 }

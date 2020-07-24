@@ -10,7 +10,7 @@ import lombok.Value;
 @Value
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "Urgent contact phone numbers for a facility or clinic")
+@Schema(description = "Urgent contact phone numbers for a clinic")
 public final class UrgentContactsResponse {
   @Builder.Default List<UrgentContact> urgentContacts = new ArrayList<>();
 }

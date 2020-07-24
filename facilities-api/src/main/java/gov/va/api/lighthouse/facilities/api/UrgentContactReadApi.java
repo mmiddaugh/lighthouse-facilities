@@ -15,7 +15,7 @@ import javax.ws.rs.Path;
 
 public interface UrgentContactReadApi {
   @Operation(
-      summary = "Read urgent contact phone numbers for a facility or clinic",
+      summary = "Read urgent contact phone numbers for a clinic",
       operationId = "getUrgentContactById",
       security = @SecurityRequirement(name = "apikey"))
   @GET
@@ -28,13 +28,6 @@ public interface UrgentContactReadApi {
             mediaType = "application/json",
             schema = @Schema(implementation = UrgentContact.class))
       })
-  @ApiResponse(
-      responseCode = "400",
-      description = "Bad request - invalid or missing query parameters",
-      content =
-          @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = ApiError.class)))
   @ApiResponse(
       responseCode = "401",
       description = "Missing API token",
@@ -56,18 +49,11 @@ public interface UrgentContactReadApi {
           @Content(
               mediaType = "application/json",
               schema = @Schema(implementation = ApiError.class)))
-  @ApiResponse(
-      responseCode = "406",
-      description = "Requested format unacceptable",
-      content =
-          @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = ApiError.class)))
   UrgentContact getUrgentContactById(
       @Parameter(
               in = ParameterIn.PATH,
               name = "id",
-              description = "Globally unique urgent-contact ID",
+              description = "Urgent-contact ID",
               required = true)
           String id);
 }

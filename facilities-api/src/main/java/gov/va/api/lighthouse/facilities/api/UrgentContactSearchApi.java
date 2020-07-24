@@ -15,7 +15,7 @@ import javax.ws.rs.Path;
 
 public interface UrgentContactSearchApi {
   @Operation(
-      summary = "Query urgent contact phone numbers for a facility or clinic",
+      summary = "Query urgent contact phone numbers for a clinic",
       operationId = "searchUrgentContact",
       security = @SecurityRequirement(name = "apikey"))
   @GET
@@ -49,23 +49,9 @@ public interface UrgentContactSearchApi {
           @Content(
               mediaType = "application/json",
               schema = @Schema(implementation = GenericError.class)))
-  @ApiResponse(
-      responseCode = "404",
-      description = "Urgent contact not found",
-      content =
-          @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = ApiError.class)))
-  @ApiResponse(
-      responseCode = "406",
-      description = "Requested format unacceptable",
-      content =
-          @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = ApiError.class)))
   UrgentContactsResponse searchUrgentContact(
       @Parameter(
-              in = ParameterIn.PATH,
+              in = ParameterIn.QUERY,
               name = "facility_id",
               description = "Facility ID",
               required = true)

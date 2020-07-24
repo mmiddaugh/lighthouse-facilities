@@ -15,18 +15,26 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "Urgent contact phone numbers for a facility or clinic")
+@Schema(description = "Urgent contact phone numbers for a clinic")
 public final class UrgentContact {
   @NotBlank
-  @Schema(example = "vha_688_cardiology")
+  @Schema(example = "12975")
   String id;
 
-  @Schema(example = "vha_688")
+  @Schema(example = "vha_534GF")
   @NotBlank
   @JsonProperty("facility_id")
   String facilityId;
 
-  @Valid Clinic clinic;
+  @Schema(example = "DR ANDERSON WH VIDEO CLINIC")
+  @JsonProperty("clinic_name")
+  @NotBlank
+  String clinicName;
+
+  @Schema(example = "PRIMARY CARE/MEDICINE")
+  @JsonProperty("clinic_specialty")
+  @NotBlank
+  String clinicSpecialty;
 
   @NotNull @Valid Administrator administrator;
 
@@ -62,21 +70,8 @@ public final class UrgentContact {
   @Value
   @Builder
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static final class Clinic {
-    @Schema(example = "sleep clinic")
-    @NotBlank
-    String name;
-
-    @Schema(example = "sleep medicine")
-    @NotBlank
-    String specialty;
-  }
-
-  @Value
-  @Builder
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   public static final class PhoneNumber {
-    @Schema(example = "Primary Care")
+    @Schema(example = "Main")
     String label;
 
     @Schema(example = "123-456-7890")
