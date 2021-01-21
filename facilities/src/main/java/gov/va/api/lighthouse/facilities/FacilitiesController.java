@@ -125,6 +125,7 @@ public class FacilitiesController {
     sb.append("{\"type\":\"FeatureCollection\",\"features\":[");
     List<HasFacilityPayload> all = facilityRepository.findAllProjectedBy();
     if (!all.isEmpty()) {
+      System.out.println("TAYLOR: " + all);
       all.parallelStream()
           .map(
               e ->

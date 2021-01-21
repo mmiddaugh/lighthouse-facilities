@@ -30,26 +30,4 @@ final class FacilitiesRequest {
         .logAction(logAllWithTruncatedBody(2000))
         .expect(expectedStatus);
   }
-
-  static ExpectedResponse facilitiesRequestBulk(
-          String acceptHeader, String request, Integer expectedStatus) {
-    SystemDefinitions.Service svc = systemDefinition().facilities();
-    log.info(
-            "Expect {} with accept header ({}) is status code ({})",
-            svc.apiPath() + request,
-            acceptHeader,
-            expectedStatus);
-    RequestSpecification spec =
-            RestAssured.given().baseUri(svc.url()).port(svc.port()).relaxedHTTPSValidation();
-    if (acceptHeader != null) {
-      spec = spec.accept(acceptHeader);
-    }
-
-    System.out.println(ExpectedResponse.of(spec.request(Method.GET,
-            svc.urlWithApiPath() + request)).response().asString());
-
-    return ExpectedResponse.of(spec.request(Method.GET, svc.urlWithApiPath() + request))
-        .logAction(logAllWithTruncatedBody(2000))
-            .expect(expectedStatus);
-  }
 }
