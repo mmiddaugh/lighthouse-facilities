@@ -27,7 +27,7 @@ final class FacilitiesRequest {
       spec = spec.accept(acceptHeader);
     }
     return ExpectedResponse.of(spec.request(Method.GET, svc.urlWithApiPath() + request))
-        .logAction(logAllWithTruncatedBody(2000))
+//        .logAction(logAllWithTruncatedBody(2000))
         .expect(expectedStatus);
   }
 }

@@ -14,14 +14,14 @@ public class BulkIT {
     ExpectedResponse response =
     facilitiesRequest("text/csv", ALL_PATH, 200);
 
-    System.out.println("ALL CSV: \n" + response.response());
+    System.out.println("ALL CSV: \n" + response.response().asString());
   }
 
   @Test
   void all_geoJson() {
     ExpectedResponse response =  facilitiesRequest("application/geo+json", ALL_PATH, 200);
 
-    System.out.println("ALL GEOJSON: \n" + response.response());
+    System.out.println("ALL GEOJSON: \n" + response.response().asString());
 
     response.expectValid(GeoFacilitiesResponse.class);
   }
@@ -32,7 +32,7 @@ public class BulkIT {
     ExpectedResponse response =
     facilitiesRequest("application/json", ALL_PATH, 200);
 
-    System.out.println("ALL JSON: \n" + response.response());
+    System.out.println("ALL JSON: \n" + response.response().asString());
 
             response.expectValid(GeoFacilitiesResponse.class);
 
@@ -43,7 +43,7 @@ public class BulkIT {
     ExpectedResponse response =
     facilitiesRequest(null, ALL_PATH, 200);
 
-    System.out.println("ALL NOACCEPT: \n" + response.response());
+    System.out.println("ALL NOACCEPT: \n" + response.response().asString());
 
             response.expectValid(GeoFacilitiesResponse.class);
   }
@@ -53,7 +53,7 @@ public class BulkIT {
     ExpectedResponse response =
     facilitiesRequest("application/vnd.geo+json", ALL_PATH, 200);
 
-    System.out.println("ALL VNDGEOJSON: \n" + response.response());
+    System.out.println("ALL VNDGEOJSON: \n" + response.response().asString());
 
         response.expectValid(GeoFacilitiesResponse.class);
   }
