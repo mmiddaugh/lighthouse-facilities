@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 public class BulkIT {
   private static final String ALL_PATH = "v0/facilities/all";
 
-  @Test
-  void all_csv() {
-    ExpectedResponse response =
-    facilitiesRequest("text/csv", ALL_PATH, 200);
-  }
+//  @Test
+//  void all_csv() {
+//    ExpectedResponse response =
+//    facilitiesRequest("text/csv", ALL_PATH, 200);
+//  }
 
   @Test
   void all_geoJson() {
