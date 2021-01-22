@@ -131,7 +131,15 @@ public class FacilitiesController {
               e ->
                   FacilitiesJacksonConfig.quietlyWriteValueAsString(
                       MAPPER, geoFacility(facility(e))))
-          .forEachOrdered(g -> sb.append(g).append(","));
+          .forEachOrdered(g ->
+                  {
+                    if (g == null) {
+                      System.out.println("TAYLOR G IS NULL!");
+                    } else {
+                      sb.append(g).append(",");
+                    }
+                  });
+
       sb.deleteCharAt(sb.length() - 1);
     }
     sb.append("]}");
