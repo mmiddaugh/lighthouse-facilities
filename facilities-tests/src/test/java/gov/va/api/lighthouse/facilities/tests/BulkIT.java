@@ -18,28 +18,32 @@ public class BulkIT {
 
   @Test
   void all_geoJson() throws InterruptedException {
-    ExpectedResponse response =  facilitiesRequest("application/geo+json", ALL_PATH, 200);
-    response.expectValid(GeoFacilitiesResponse.class);
+    for(int i = 0; i < 100; i++)
+    facilitiesRequest("application/geo+json", ALL_PATH, 200)
+            .expectValid(GeoFacilitiesResponse.class);
   }
 
   @Test
   void all_json() throws InterruptedException {
-    ExpectedResponse response =
-    facilitiesRequest("application/json", ALL_PATH, 200);
-            response.expectValid(GeoFacilitiesResponse.class);
+    for(int i = 0; i < 100; i++)
+    facilitiesRequest("application/json", ALL_PATH, 200)
+            .expectValid(GeoFacilitiesResponse.class)
 
   }
 
   @Test
   void all_noAccept() throws InterruptedException {
+
+    for(int i = 0; i < 100; i++)
     facilitiesRequest(null, ALL_PATH, 200).expectValid(GeoFacilitiesResponse.class);
   }
 
   @Test
   void all_vndGeoJson() throws InterruptedException {
-    ExpectedResponse response =
-    facilitiesRequest("application/vnd.geo+json", ALL_PATH, 200);
 
-        response.expectValid(GeoFacilitiesResponse.class);
+    for (int i = 0; i < 100; i++) {
+              facilitiesRequest("application/vnd.geo+json", ALL_PATH, 200)
+                      .expectValid(GeoFacilitiesResponse.class);
+    }
   }
 }
