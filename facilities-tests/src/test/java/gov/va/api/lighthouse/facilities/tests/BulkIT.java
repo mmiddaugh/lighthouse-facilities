@@ -27,7 +27,7 @@ public class BulkIT {
   void all_json() throws InterruptedException {
     for(int i = 0; i < 100; i++)
     facilitiesRequest("application/json", ALL_PATH, 200)
-            .expectValid(GeoFacilitiesResponse.class)
+            .expectValid(GeoFacilitiesResponse.class);
 
   }
 
