@@ -125,18 +125,19 @@ public class FacilitiesController {
     sb.append("{\"type\":\"FeatureCollection\",\"features\":[");
     List<HasFacilityPayload> all = facilityRepository.findAllProjectedBy();
     if (!all.isEmpty()) {
-//      System.out.println("TAYLOR: " + all);
-      List<String> payload = all.parallelStream()
-          .map(
-              e ->
-                  FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                      MAPPER, geoFacility(facility(e))))
+      //      System.out.println("TAYLOR: " + all);
+      List<String> payload =
+          all.parallelStream()
+              .map(
+                  e ->
+                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
+                          MAPPER, geoFacility(facility(e))))
               .collect(toList());
 
-      for(String s : payload) {
+      for (String s : payload) {
         sb.append(s).append(",");
       }
-//          .forEachOrdered(g ->sb.append(g).append(","));
+      //          .forEachOrdered(g ->sb.append(g).append(","));
 
       sb.deleteCharAt(sb.length() - 1);
     }

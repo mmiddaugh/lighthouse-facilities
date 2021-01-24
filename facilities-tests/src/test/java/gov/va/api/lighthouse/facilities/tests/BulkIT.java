@@ -4,7 +4,6 @@ import static gov.va.api.lighthouse.facilities.tests.FacilitiesRequest.facilitie
 
 import gov.va.api.health.sentinel.ExpectedResponse;
 import gov.va.api.lighthouse.facilities.api.v0.GeoFacilitiesResponse;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
 import org.junit.jupiter.api.Test;
 
 public class BulkIT {
@@ -12,38 +11,35 @@ public class BulkIT {
 
   @Test
   void all_csv() throws InterruptedException {
-    ExpectedResponse response =
-    facilitiesRequest("text/csv", ALL_PATH, 200);
+    ExpectedResponse response = facilitiesRequest("text/csv", ALL_PATH, 200);
   }
 
   @Test
   void all_geoJson() throws InterruptedException {
-    for(int i = 0; i < 100; i++)
+    //    for(int i = 0; i < 100; i++)
     facilitiesRequest("application/geo+json", ALL_PATH, 200)
-            .expectValid(GeoFacilitiesResponse.class);
+        .expectValid(GeoFacilitiesResponse.class);
   }
 
   @Test
   void all_json() throws InterruptedException {
-    for(int i = 0; i < 100; i++)
-    facilitiesRequest("application/json", ALL_PATH, 200)
-            .expectValid(GeoFacilitiesResponse.class);
-
+    //    for(int i = 0; i < 100; i++)
+    facilitiesRequest("application/json", ALL_PATH, 200).expectValid(GeoFacilitiesResponse.class);
   }
 
   @Test
   void all_noAccept() throws InterruptedException {
 
-    for(int i = 0; i < 100; i++)
+    //    for(int i = 0; i < 100; i++)
     facilitiesRequest(null, ALL_PATH, 200).expectValid(GeoFacilitiesResponse.class);
   }
 
   @Test
   void all_vndGeoJson() throws InterruptedException {
 
-    for (int i = 0; i < 100; i++) {
-              facilitiesRequest("application/vnd.geo+json", ALL_PATH, 200)
-                      .expectValid(GeoFacilitiesResponse.class);
-    }
+    //    for (int i = 0; i < 100; i++) {
+    facilitiesRequest("application/vnd.geo+json", ALL_PATH, 200)
+        .expectValid(GeoFacilitiesResponse.class);
+    //    }
   }
 }
