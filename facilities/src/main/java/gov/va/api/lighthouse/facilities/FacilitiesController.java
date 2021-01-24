@@ -126,13 +126,17 @@ public class FacilitiesController {
     List<HasFacilityPayload> all = facilityRepository.findAllProjectedBy();
     if (!all.isEmpty()) {
 //      System.out.println("TAYLOR: " + all);
-      all.parallelStream()
+      List<String> payload = all.parallelStream()
           .map(
               e ->
                   FacilitiesJacksonConfig.quietlyWriteValueAsString(
                       MAPPER, geoFacility(facility(e))))
-          .filter(Objects::nonNull)
-          .forEachOrdered(g ->sb.append(g).append(","));
+              .collect(toList());
+
+      for(String s : payload) {
+        sb.append(s).append(",");
+      }
+//          .forEachOrdered(g ->sb.append(g).append(","));
 
       sb.deleteCharAt(sb.length() - 1);
     }
