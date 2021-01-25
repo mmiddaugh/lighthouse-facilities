@@ -28,7 +28,13 @@ class FacilitiesJacksonConfig {
   /** Mask away checked exception so this Jackson can be used in streams. */
   @SneakyThrows
   static String quietlyWriteValueAsString(ObjectMapper mapper, Object obj) {
-    return mapper.writeValueAsString(obj);
+
+    String test = mapper.writeValueAsString(obj);
+    if (test == null) {
+      System.out.println("NULL STRING VALUE QUEITLY WRITTEN!!!");
+    }
+
+    return test;
   }
 
   @Bean
