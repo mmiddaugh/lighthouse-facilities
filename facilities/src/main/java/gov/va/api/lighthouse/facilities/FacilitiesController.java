@@ -128,7 +128,11 @@ public class FacilitiesController {
     if (!all.isEmpty()) {
       //      System.out.println("TAYLOR: " + all);
       //      List<String> payload =
-      all.parallelStream()
+      all.parallelStream().peek(x -> {
+        if (x == null) {
+          System.out.println("Found null stream entry");
+        }
+      })
 //          .flatMap(
 //              s ->
 //                  Stream.ofNullable(
@@ -139,7 +143,11 @@ public class FacilitiesController {
                     .map(
                         e ->
                             FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                                MAPPER, geoFacility(facility(e)))).filter(Objects::nonNull)
+                                MAPPER, geoFacility(facility(e)))).peek( y -> {
+                                  if (y == null) {
+                                    System.out.println("Found null map entry");
+                                  }
+      })
                                .forEachOrdered(g -> sb.append(g).append(","));
 
       //      for (String s : payload) {
