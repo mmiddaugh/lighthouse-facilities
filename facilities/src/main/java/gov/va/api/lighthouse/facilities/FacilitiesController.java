@@ -128,7 +128,7 @@ public class FacilitiesController {
     if (!all.isEmpty()) {
       //      System.out.println("TAYLOR: " + all);
       //      List<String> payload =
-      all.parallelStream().filter(Objects::nonNull)
+      all.parallelStream()
 //          .flatMap(
 //              s ->
 //                  Stream.ofNullable(
@@ -139,7 +139,7 @@ public class FacilitiesController {
                     .map(
                         e ->
                             FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                                MAPPER, geoFacility(facility(e))))
+                                MAPPER, geoFacility(facility(e)))).filter(Objects::nonNull)
                                .forEachOrdered(g -> sb.append(g).append(","));
 
       //      for (String s : payload) {
@@ -159,8 +159,8 @@ public class FacilitiesController {
   String allCsv() {
     List<List<String>> rows =
         facilityRepository.findAllProjectedBy().stream()
-            .parallel().filter(Objects::nonNull)
-            .map(e -> CsvTransformer.builder().facility(facility(e)).build().toRow())
+            .parallel()
+            .map(e -> CsvTransformer.builder().facility(facility(e)).build().toRow()).filter(Objects::nonNull)
             .collect(toList());
     StringBuilder sb = new StringBuilder();
     try (CSVPrinter printer =
