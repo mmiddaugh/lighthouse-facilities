@@ -24,11 +24,13 @@ final class GeoFacilityTransformer {
   }
 
   private String id() {
+    System.out.println("TAYLOR id: " + facility.id());
     return facility.id();
   }
 
   private GeoFacility.Properties properties() {
     if (isBlank(id())) {
+      System.out.println("TAYLOR ID IS NULL PROPERTY CHECK");
       return null;
     }
     Facility.FacilityAttributes attr = facility.attributes();
@@ -54,6 +56,7 @@ final class GeoFacilityTransformer {
 
   GeoFacility toGeoFacility() {
     if (isBlank(id())) {
+      System.out.println("TAYLOR ID IS NULL TOGEOFACILITY CHECK");
       return null;
     }
     return GeoFacility.builder()
