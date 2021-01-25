@@ -98,6 +98,11 @@ public class FacilitiesController {
   }
 
   private static GeoFacility geoFacility(Facility facility) {
+
+    if (facility == null) {
+      System.out.println("Null facility detected in geoFacility method");
+    }
+
     return GeoFacilityTransformer.builder().facility(facility).build().toGeoFacility();
   }
 
