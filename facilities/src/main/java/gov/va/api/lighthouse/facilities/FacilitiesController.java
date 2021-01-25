@@ -138,31 +138,27 @@ public class FacilitiesController {
     if (!all.isEmpty()) {
       //      System.out.println("TAYLOR: " + all);
       //      List<String> payload =
-      all.parallelStream()
-          .peek(
-              x -> {
-                if (x == null) {
-                  System.out.println("Found null stream entry");
-                }
-              })
-          //          .flatMap(
-          //              s ->
-          //                  Stream.ofNullable(
-          //                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
-          //                          MAPPER, geoFacility(facility(s)))))
-          //          .forEachOrdered(g -> sb.append(g).append(","));
-          // maybe check null values here too?
-          .map(
-              e ->
-                  FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                      MAPPER, geoFacility(facility(e))))
-          .peek(
-              y -> {
-                if (y == null) {
-                  System.out.println("Found null map entry");
-                }
-              })
-          .forEachOrdered(g -> sb.append(g).append(","));
+
+      try {
+        all.parallelStream()
+                //          .flatMap(
+                //              s ->
+                //                  Stream.ofNullable(
+                //                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
+                //                          MAPPER, geoFacility(facility(s)))))
+                //          .forEachOrdered(g -> sb.append(g).append(","));
+                // maybe check null values here too?
+                .map(
+                        e ->
+                                FacilitiesJacksonConfig.quietlyWriteValueAsString(
+                                        MAPPER, geoFacility(facility(e))))
+                .forEachOrdered(g -> sb.append(g).append(","));
+      } catch (NullPointerException e) {
+        System.out.println("NPE Encountered!");
+        System.out.println("Payload:\n" + all);
+        System.out.println("Exception: " + e);
+        throw new NullPointerException();
+      }
 
       //      for (String s : payload) {
       //        sb.append(s).append(",");
@@ -181,7 +177,6 @@ public class FacilitiesController {
   String allCsv() {
     List<List<String>> rows =
         facilityRepository.findAllProjectedBy().stream()
-            .parallel()
             .map(e -> CsvTransformer.builder().facility(facility(e)).build().toRow())
             .collect(toList());
     StringBuilder sb = new StringBuilder();
