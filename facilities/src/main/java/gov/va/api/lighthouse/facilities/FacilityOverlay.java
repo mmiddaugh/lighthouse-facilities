@@ -71,20 +71,25 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
   @Override
   @SneakyThrows
   public Facility apply(HasFacilityPayload entity) {
-    Facility facility = mapper.readValue(entity.facility(), Facility.class);
-    if (entity.cmsOperatingStatus() != null) {
-      applyCmsOverlayOperatingStatus(
-          facility, mapper.readValue(entity.cmsOperatingStatus(), Facility.OperatingStatus.class));
+
+    if (entity != null) {
+      Facility facility = mapper.readValue(entity.facility(), Facility.class);
+      if (entity.cmsOperatingStatus() != null) {
+        applyCmsOverlayOperatingStatus(
+                facility, mapper.readValue(entity.cmsOperatingStatus(), Facility.OperatingStatus.class));
+      }
+      if (facility.attributes().operatingStatus() == null) {
+        facility
+                .attributes()
+                .operatingStatus(
+                        determineOperatingStatusFromActiveStatus(facility.attributes().activeStatus()));
+      }
+      if (entity.overlayServices() != null) {
+        applyCmsOverlayServices(facility, entity.overlayServices());
+      }
+      return facility;
+    } else {
+      return null;
     }
-    if (facility.attributes().operatingStatus() == null) {
-      facility
-          .attributes()
-          .operatingStatus(
-              determineOperatingStatusFromActiveStatus(facility.attributes().activeStatus()));
-    }
-    if (entity.overlayServices() != null) {
-      applyCmsOverlayServices(facility, entity.overlayServices());
-    }
-    return facility;
   }
 }
