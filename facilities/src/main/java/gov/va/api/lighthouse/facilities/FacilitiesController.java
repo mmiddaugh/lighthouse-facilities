@@ -100,6 +100,7 @@ public class FacilitiesController {
 
     if (facility == null) {
       System.out.println("Null facility detected in geoFacility method");
+      return null;
     }
 
     return GeoFacilityTransformer.builder().facility(facility).build().toGeoFacility();
