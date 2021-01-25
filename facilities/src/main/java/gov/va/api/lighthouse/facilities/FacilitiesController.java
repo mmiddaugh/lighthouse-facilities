@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Stream;
 import javax.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Data;
@@ -133,27 +132,31 @@ public class FacilitiesController {
     if (!all.isEmpty()) {
       //      System.out.println("TAYLOR: " + all);
       //      List<String> payload =
-      all.parallelStream().peek(x -> {
-        if (x == null) {
-          System.out.println("Found null stream entry");
-        }
-      })
-//          .flatMap(
-//              s ->
-//                  Stream.ofNullable(
-//                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
-//                          MAPPER, geoFacility(facility(s)))))
-//          .forEachOrdered(g -> sb.append(g).append(","));
-// maybe check null values here too?
-                    .map(
-                        e ->
-                            FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                                MAPPER, geoFacility(facility(e)))).peek( y -> {
-                                  if (y == null) {
-                                    System.out.println("Found null map entry");
-                                  }
-      })
-                               .forEachOrdered(g -> sb.append(g).append(","));
+      all.parallelStream()
+          .peek(
+              x -> {
+                if (x == null) {
+                  System.out.println("Found null stream entry");
+                }
+              })
+          //          .flatMap(
+          //              s ->
+          //                  Stream.ofNullable(
+          //                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
+          //                          MAPPER, geoFacility(facility(s)))))
+          //          .forEachOrdered(g -> sb.append(g).append(","));
+          // maybe check null values here too?
+          .map(
+              e ->
+                  FacilitiesJacksonConfig.quietlyWriteValueAsString(
+                      MAPPER, geoFacility(facility(e))))
+          .peek(
+              y -> {
+                if (y == null) {
+                  System.out.println("Found null map entry");
+                }
+              })
+          .forEachOrdered(g -> sb.append(g).append(","));
 
       //      for (String s : payload) {
       //        sb.append(s).append(",");
@@ -173,7 +176,8 @@ public class FacilitiesController {
     List<List<String>> rows =
         facilityRepository.findAllProjectedBy().stream()
             .parallel()
-            .map(e -> CsvTransformer.builder().facility(facility(e)).build().toRow()).filter(Objects::nonNull)
+            .map(e -> CsvTransformer.builder().facility(facility(e)).build().toRow())
+            .filter(Objects::nonNull)
             .collect(toList());
     StringBuilder sb = new StringBuilder();
     try (CSVPrinter printer =
