@@ -159,7 +159,7 @@ public class FacilitiesController {
   String allCsv() {
     List<List<String>> rows =
         facilityRepository.findAllProjectedBy().stream()
-            .parallel()
+            .parallel().filter(Objects::nonNull)
             .map(e -> CsvTransformer.builder().facility(facility(e)).build().toRow())
             .collect(toList());
     StringBuilder sb = new StringBuilder();
