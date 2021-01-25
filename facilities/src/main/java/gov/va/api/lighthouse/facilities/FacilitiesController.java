@@ -103,6 +103,11 @@ public class FacilitiesController {
       return null;
     }
 
+    if (facility.id() == null) {
+      System.out.println("Null facility ID detected in geoFacility method!!!!!!!!!!!!!!!!!!!");
+      return null;
+    }
+
     return GeoFacilityTransformer.builder().facility(facility).build().toGeoFacility();
   }
 
@@ -178,7 +183,6 @@ public class FacilitiesController {
         facilityRepository.findAllProjectedBy().stream()
             .parallel()
             .map(e -> CsvTransformer.builder().facility(facility(e)).build().toRow())
-            .filter(Objects::nonNull)
             .collect(toList());
     StringBuilder sb = new StringBuilder();
     try (CSVPrinter printer =
