@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Data;
@@ -126,17 +127,23 @@ public class FacilitiesController {
     List<HasFacilityPayload> all = facilityRepository.findAllProjectedBy();
     if (!all.isEmpty()) {
       //      System.out.println("TAYLOR: " + all);
-      List<String> payload =
+//      List<String> payload =
           all.parallelStream()
-              .map(
-                  e ->
-                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                          MAPPER, geoFacility(facility(e))))
-              .collect(toList());
+                  .flatMap(s ->
+                          Stream.ofNullable(
+                                  FacilitiesJacksonConfig.quietlyWriteValueAsString(
+                                          MAPPER, geoFacility(facility(s)))))
+                .forEachOrdered(g ->sb.append(g).append(","));
 
-      for (String s : payload) {
-        sb.append(s).append(",");
-      }
+//              .map(
+//                  e ->
+//                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
+//                          MAPPER, geoFacility(facility(e))))
+//              .collect(toList());
+
+//      for (String s : payload) {
+//        sb.append(s).append(",");
+//      }
       //          .forEachOrdered(g ->sb.append(g).append(","));
 
       sb.deleteCharAt(sb.length() - 1);
