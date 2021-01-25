@@ -72,7 +72,6 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
   @SneakyThrows
   public Facility apply(HasFacilityPayload entity) {
 
-    if (entity != null) {
       Facility facility = mapper.readValue(entity.facility(), Facility.class);
       if (entity.cmsOperatingStatus() != null) {
         applyCmsOverlayOperatingStatus(
@@ -88,7 +87,5 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
         applyCmsOverlayServices(facility, entity.overlayServices());
       }
       return facility;
-    }
-      return null;
   }
 }

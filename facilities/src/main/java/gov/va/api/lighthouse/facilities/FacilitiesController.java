@@ -128,20 +128,19 @@ public class FacilitiesController {
     if (!all.isEmpty()) {
       //      System.out.println("TAYLOR: " + all);
       //      List<String> payload =
-      all.parallelStream()
-          .flatMap(
-              s ->
-                  Stream.ofNullable(
-                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                          MAPPER, geoFacility(facility(s)))))
-          .forEachOrdered(g -> sb.append(g).append(","));
-
-      //              .map(
-      //                  e ->
-      //                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
-      //                          MAPPER, geoFacility(facility(e))))
-      //                          .collect(toList()))
-      //                         .forEachOrdered(g -> sb.append(g).append(","));
+      all.parallelStream().filter(Objects::nonNull)
+//          .flatMap(
+//              s ->
+//                  Stream.ofNullable(
+//                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
+//                          MAPPER, geoFacility(facility(s)))))
+//          .forEachOrdered(g -> sb.append(g).append(","));
+// maybe check null values here too?
+                    .map(
+                        e ->
+                            FacilitiesJacksonConfig.quietlyWriteValueAsString(
+                                MAPPER, geoFacility(facility(e))))
+                               .forEachOrdered(g -> sb.append(g).append(","));
 
       //      for (String s : payload) {
       //        sb.append(s).append(",");
