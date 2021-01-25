@@ -127,23 +127,24 @@ public class FacilitiesController {
     List<HasFacilityPayload> all = facilityRepository.findAllProjectedBy();
     if (!all.isEmpty()) {
       //      System.out.println("TAYLOR: " + all);
-//      List<String> payload =
-          all.parallelStream()
-                  .flatMap(s ->
-                          Stream.ofNullable(
-                                  FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                                          MAPPER, geoFacility(facility(s)))))
-                .forEachOrdered(g ->sb.append(g).append(","));
+      //      List<String> payload =
+      all.parallelStream()
+          .flatMap(
+              s ->
+                  Stream.ofNullable(
+                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
+                          MAPPER, geoFacility(facility(s)))))
+          .forEachOrdered(g -> sb.append(g).append(","));
 
-//              .map(
-//                  e ->
-//                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
-//                          MAPPER, geoFacility(facility(e))))
-//              .collect(toList());
+      //              .map(
+      //                  e ->
+      //                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
+      //                          MAPPER, geoFacility(facility(e))))
+      //              .collect(toList());
 
-//      for (String s : payload) {
-//        sb.append(s).append(",");
-//      }
+      //      for (String s : payload) {
+      //        sb.append(s).append(",");
+      //      }
       //          .forEachOrdered(g ->sb.append(g).append(","));
 
       sb.deleteCharAt(sb.length() - 1);
