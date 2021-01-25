@@ -82,9 +82,9 @@ final class CsvTransformer {
 
   List<String> toRow() {
     return List.of(
-        facility.id(),
+        facility.id() != null ? facility.id() : "",
         attributes().map(a -> a.name()).orElse(""),
-        FacilityEntity.Pk.fromIdString(facility.id()).stationNumber(),
+        FacilityEntity.Pk.fromIdString(facility.id() != null ? facility.id() : "").stationNumber(),
         attributes().map(a -> a.latitude()).map(d -> d.toString()).orElse(""),
         attributes().map(a -> a.longitude()).map(d -> d.toString()).orElse(""),
         attributes().map(a -> a.facilityType()).map(t -> t.toString()).orElse(""),
