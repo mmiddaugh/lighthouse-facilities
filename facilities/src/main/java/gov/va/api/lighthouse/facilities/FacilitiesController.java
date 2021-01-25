@@ -140,7 +140,7 @@ public class FacilitiesController {
       //                  e ->
       //                      FacilitiesJacksonConfig.quietlyWriteValueAsString(
       //                          MAPPER, geoFacility(facility(e))))
-      //              .collect(toList());
+      //                         .forEachOrdered(g -> sb.append(g).append(","));
 
       //      for (String s : payload) {
       //        sb.append(s).append(",");

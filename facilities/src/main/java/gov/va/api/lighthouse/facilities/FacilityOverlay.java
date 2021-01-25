@@ -88,8 +88,7 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
         applyCmsOverlayServices(facility, entity.overlayServices());
       }
       return facility;
-    } else {
-      return null;
     }
+      return null;
   }
 }
