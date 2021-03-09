@@ -41,10 +41,12 @@ final class Parameters {
   }
 
   Parameters addAll(String key, List<?> values) {
-    if (!isEmpty(values)) {
-      for (Object val : values) {
-        checkArgument(val != null);
-        params.add(key, val.toString());
+    if (values != null) {
+      if (!isEmpty(values)) {
+        for (Object val : values) {
+          checkArgument(val != null);
+            params.add(key, val.toString());
+        }
       }
     }
     return this;

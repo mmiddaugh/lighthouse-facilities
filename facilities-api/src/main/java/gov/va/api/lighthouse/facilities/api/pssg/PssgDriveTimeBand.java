@@ -18,10 +18,10 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public final class PssgDriveTimeBand {
   /** The two item list of coordinates, this is the longitude (or x) value. */
-  public static int INDEX_LONGITUDE = 0;
+  public static final int INDEX_LONGITUDE = 0;
 
   /** The two item list of coordinates, this is the latitude (or y) value. */
-  public static int INDEX_LATITUDE = 1;
+  public static final int INDEX_LATITUDE = 1;
 
   Attributes attributes;
 

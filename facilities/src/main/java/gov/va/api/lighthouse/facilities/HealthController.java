@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.collector.InsecureRestTemplateProvider;
+
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -106,7 +108,7 @@ public class HealthController {
       statusCode = response.getStatusCode();
       JsonNode root = JacksonConfig.createMapper().readTree(response.getBody());
       checkState(!((ArrayNode) root).isEmpty(), "No %s entries", name);
-    } catch (Exception e) {
+    } catch (IOException e) {
       log.info("Exception occurred. GET {} message: {}", url, e.getMessage());
       statusCode = HttpStatus.SERVICE_UNAVAILABLE;
     }
