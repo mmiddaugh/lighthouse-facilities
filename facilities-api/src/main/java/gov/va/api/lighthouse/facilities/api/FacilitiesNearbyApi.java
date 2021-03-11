@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -84,31 +85,36 @@ public interface FacilitiesNearbyApi {
               name = "street_address",
               in = ParameterIn.QUERY,
               description =
-                  "Street address of the location from which drive time will be calculated.")
+                  "Street address of the location from which drive time will be calculated.",
+              examples = @ExampleObject(name = "address", value = "1350 I St. NW"))
           String streetAddress,
       @Parameter(
               name = "city",
               in = ParameterIn.QUERY,
-              description = "City of the location from which drive time will be calculated.")
+              description = "City of the location from which drive time will be calculated.",
+              examples = @ExampleObject(name = "address", value = "Washington"))
           String city,
       @Parameter(
               name = "state",
               in = ParameterIn.QUERY,
               description =
                   "Two character state code of the location from which "
-                      + "drive time will be calculated.")
+                      + "drive time will be calculated.",
+              examples = @ExampleObject(name = "address", value = "DC"))
           String state,
       @Parameter(
               name = "zip",
               in = ParameterIn.QUERY,
               description = "Zip code of the location from which drive time will be calculated.",
-              schema = @Schema(description = "##### or #####-####"))
+              schema = @Schema(description = "##### or #####-####"),
+              examples = @ExampleObject(name = "address", value = "20005-3305"))
           String zip,
       @Parameter(
               name = "lat",
               in = ParameterIn.QUERY,
               description = "Latitude of the location from which drive time will be calculated.",
-              schema = @Schema(type = "number", format = "float"))
+              schema = @Schema(type = "number", format = "float"),
+              examples = @ExampleObject(name = "coordinates", value = "123.4"))
           BigDecimal lat,
       @Parameter(
               name = "lng",
@@ -116,7 +122,8 @@ public interface FacilitiesNearbyApi {
               description = "Longitude of the location from which drive time will be calculated.",
               style = ParameterStyle.FORM,
               explode = Explode.TRUE,
-              schema = @Schema(type = "number", format = "float"))
+              schema = @Schema(type = "number", format = "float"),
+              examples = @ExampleObject(name = "coordinates", value = "456.7"))
           BigDecimal lng,
       @Parameter(
               name = "drive_time",

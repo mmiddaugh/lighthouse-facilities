@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -116,7 +117,8 @@ public interface FacilitiesSearchApi {
                       + "sorted by distance from a location.",
               in = ParameterIn.QUERY,
               style = ParameterStyle.FORM,
-              explode = Explode.FALSE)
+              explode = Explode.FALSE,
+              examples = @ExampleObject(name = "ids", value = "vha_688,vha_644"))
           List<String> id,
       @Parameter(
               name = "zip",
@@ -125,7 +127,8 @@ public interface FacilitiesSearchApi {
                   "Zip code to search for facilities. "
                       + "More detailed zip codes can be passed in, but only the first five "
                       + "digits are used to determine facilities to return.",
-              schema = @Schema(format = "##### or #####-####"))
+              schema = @Schema(format = "##### or #####-####"),
+              examples = @ExampleObject(name = "zip", value = "80301-1000"))
           String zip,
       @Parameter(
               name = "state",
@@ -133,7 +136,8 @@ public interface FacilitiesSearchApi {
               description =
                   "State in which to search for facilities. "
                       + "Except in rare cases, this is two characters.",
-              schema = @Schema(format = "XX"))
+              schema = @Schema(format = "XX"),
+              examples = @ExampleObject(name = "state", value = "CO"))
           String state,
       @Parameter(
               name = "lat",
@@ -141,7 +145,8 @@ public interface FacilitiesSearchApi {
               description =
                   "Latitude of point to search for facilities, "
                       + "in WGS84 coordinate reference system.",
-              schema = @Schema(type = "number", format = "float"))
+              schema = @Schema(type = "number", format = "float"),
+              examples = @ExampleObject(name = "coordinates", value = "40.0"))
           BigDecimal lat,
       @Parameter(
               name = "long",
@@ -151,7 +156,8 @@ public interface FacilitiesSearchApi {
                       + "in WGS84 coordinate reference system.",
               style = ParameterStyle.FORM,
               explode = Explode.TRUE,
-              schema = @Schema(type = "number", format = "float"))
+              schema = @Schema(type = "number", format = "float"),
+              examples = @ExampleObject(name = "coordinates", value = "-105.0"))
           BigDecimal lng,
       @Parameter(
               name = "bbox[]",
@@ -166,7 +172,8 @@ public interface FacilitiesSearchApi {
                   @ArraySchema(
                       minItems = 4,
                       maxItems = 4,
-                      schema = @Schema(type = "number", format = "float")))
+                      schema = @Schema(type = "number", format = "float")),
+              examples = @ExampleObject(name = "bbox", value = "-105.4, 39.4, -104.5, 40.1"))
           List<BigDecimal> bbox,
       @Parameter(
               name = "visn",

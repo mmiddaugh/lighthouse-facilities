@@ -35,7 +35,8 @@ public interface FacilitiesAllApi {
                       "application/vnd.geo+json",
                       "text/csv"
                     }),
-            required = true)
+            required = true,
+            example = "application/geo+json")
       },
       security = @SecurityRequirement(name = "apikey"))
   @GET

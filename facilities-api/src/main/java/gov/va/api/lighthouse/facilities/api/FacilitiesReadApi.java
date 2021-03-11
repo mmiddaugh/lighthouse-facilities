@@ -80,6 +80,7 @@ public interface FacilitiesReadApi {
                       + "\"vha\", \"vba\", \"nca\", or \"vc\", "
                       + "for health facility, benefits, cemetery, "
                       + "or vet center, respectively.",
-              required = true)
+              required = true,
+              example = "vha_688")
           String id);
 }
