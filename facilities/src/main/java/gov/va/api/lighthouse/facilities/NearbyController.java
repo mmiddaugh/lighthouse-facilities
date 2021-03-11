@@ -137,7 +137,7 @@ public class NearbyController {
     Optional<List<BigDecimal>> coordinates =
         response.resourceSets().stream()
             .flatMap(rs -> rs.resources().stream())
-            .map(BingResponse.Resource::point)
+            .map(BingResponse.Resource::resourcePoint)
             .filter(Objects::nonNull)
             .map(BingResponse.Point::coordinates)
             .filter(c -> c.size() >= 2)

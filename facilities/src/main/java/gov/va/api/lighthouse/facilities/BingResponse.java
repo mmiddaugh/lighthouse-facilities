@@ -29,7 +29,7 @@ public final class BingResponse {
   @Builder
   @JsonIgnoreProperties(ignoreUnknown = true)
   static final class Resource {
-    Point point;
+    Point resourcePoint;
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     static final class ResourceBuilder {}

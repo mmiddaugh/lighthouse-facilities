@@ -20,12 +20,12 @@ final class CemeteriesTransformer {
 
   private Facility.FacilityAttributes attributes() {
     return Facility.FacilityAttributes.builder()
-        .name(facilityName(cdwFacility.fullName()))
+        .name(facilityNameFromCdwName(cdwFacility.fullName()))
         .facilityType(Facility.FacilityType.va_cemetery)
         .classification(cdwFacility.siteType())
         .latitude(cdwFacility.latitude())
         .longitude(cdwFacility.longitude())
-        .website(website(cdwFacility.websiteUrl()))
+        .website(websiteFromCdwUrl(cdwFacility.websiteUrl()))
         .address(
             Facility.Addresses.builder()
                 .physical(
@@ -59,7 +59,7 @@ final class CemeteriesTransformer {
         .build();
   }
 
-  String facilityName(String cdwName) {
+  String facilityNameFromCdwName(String cdwName) {
     return facilityName != null ? facilityName : cdwName;
   }
 
@@ -81,7 +81,7 @@ final class CemeteriesTransformer {
         .build();
   }
 
-  String website(String cdwUrl) {
+  String websiteFromCdwUrl(String cdwUrl) {
     return website != null ? website : cdwUrl;
   }
 }

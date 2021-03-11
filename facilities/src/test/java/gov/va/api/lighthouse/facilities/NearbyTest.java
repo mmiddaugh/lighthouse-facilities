@@ -172,17 +172,17 @@ public class NearbyTest {
                                                 List.of(
                                                     BingResponse.Resource.builder().build(),
                                                     BingResponse.Resource.builder()
-                                                        .point(BingResponse.Point.builder().build())
+                                                        .resourcePoint(BingResponse.Point.builder().build())
                                                         .build(),
                                                     BingResponse.Resource.builder()
-                                                        .point(
+                                                        .resourcePoint(
                                                             BingResponse.Point.builder()
                                                                 .coordinates(
                                                                     List.of(BigDecimal.ZERO))
                                                                 .build())
                                                         .build(),
                                                     BingResponse.Resource.builder()
-                                                        .point(
+                                                        .resourcePoint(
                                                             BingResponse.Point.builder()
                                                                 .coordinates(
                                                                     List.of(
@@ -253,10 +253,10 @@ public class NearbyTest {
                                                 List.of(
                                                     BingResponse.Resource.builder().build(),
                                                     BingResponse.Resource.builder()
-                                                        .point(BingResponse.Point.builder().build())
+                                                        .resourcePoint(BingResponse.Point.builder().build())
                                                         .build(),
                                                     BingResponse.Resource.builder()
-                                                        .point(
+                                                        .resourcePoint(
                                                             BingResponse.Point.builder()
                                                                 .coordinates(
                                                                     List.of(BigDecimal.ZERO))

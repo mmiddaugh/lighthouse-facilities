@@ -15,16 +15,16 @@ public class CemeteriesTransformerTest {
   void transformerPrioritizesNameFromXml() {
     String cdwFacilityName = "Fort Richardson";
     String xmlFacilityName = "Fort Richardson National Cemetery";
-    assertThat(tx().facilityName(null)).isNull();
-    assertThat(tx(null, xmlFacilityName).facilityName(cdwFacilityName)).isEqualTo(xmlFacilityName);
+    assertThat(tx().facilityNameFromCdwName(null)).isNull();
+    assertThat(tx(null, xmlFacilityName).facilityNameFromCdwName(cdwFacilityName)).isEqualTo(xmlFacilityName);
   }
 
   @Test
   void transformerPrioritizesWebsiteFromXml() {
     String cdwWebsite = "https://axolotl.com/nope";
     String xmlWebsite = "https://axolotl.com/vha/facility";
-    assertThat(tx().website(null)).isNull();
-    assertThat(tx(xmlWebsite, null).website(cdwWebsite)).isEqualTo(xmlWebsite);
+    assertThat(tx().websiteFromCdwUrl(null)).isNull();
+    assertThat(tx(xmlWebsite, null).websiteFromCdwUrl(cdwWebsite)).isEqualTo(xmlWebsite);
   }
 
   private CemeteriesTransformer tx() {
