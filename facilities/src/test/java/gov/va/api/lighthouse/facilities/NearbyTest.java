@@ -172,7 +172,8 @@ public class NearbyTest {
                                                 List.of(
                                                     BingResponse.Resource.builder().build(),
                                                     BingResponse.Resource.builder()
-                                                        .resourcePoint(BingResponse.Point.builder().build())
+                                                        .resourcePoint(
+                                                            BingResponse.Point.builder().build())
                                                         .build(),
                                                     BingResponse.Resource.builder()
                                                         .resourcePoint(
@@ -253,7 +254,8 @@ public class NearbyTest {
                                                 List.of(
                                                     BingResponse.Resource.builder().build(),
                                                     BingResponse.Resource.builder()
-                                                        .resourcePoint(BingResponse.Point.builder().build())
+                                                        .resourcePoint(
+                                                            BingResponse.Point.builder().build())
                                                         .build(),
                                                     BingResponse.Resource.builder()
                                                         .resourcePoint(

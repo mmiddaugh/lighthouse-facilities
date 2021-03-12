@@ -78,8 +78,8 @@ final class CemeteriesCollector {
               facility ->
                   CemeteriesTransformer.builder()
                       .cdwFacility(facility)
-                      .facilityName(xmlFacilityName(cemeteries, facility.siteId()))
-                      .website(xmlOrCsvWebsite(cemeteries, facility.siteId()))
+                      .externalFacilityName(xmlFacilityName(cemeteries, facility.siteId()))
+                      .externalWebsite(xmlOrCsvWebsite(cemeteries, facility.siteId()))
                       .build()
                       .toFacility())
           .collect(toList());

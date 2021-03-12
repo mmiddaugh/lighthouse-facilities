@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.web.context.request.RequestContextHolder.setRequestAttributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.lighthouse.facilities.collector.InsecureRestTemplateProvider;
 import java.sql.Timestamp;
 import java.time.Instant;

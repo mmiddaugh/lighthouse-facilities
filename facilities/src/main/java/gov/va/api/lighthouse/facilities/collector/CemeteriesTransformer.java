@@ -14,18 +14,18 @@ import lombok.NonNull;
 final class CemeteriesTransformer {
   @NonNull CdwCemetery cdwFacility;
 
-  String facilityName;
+  String externalFacilityName;
 
-  String website;
+  String externalWebsite;
 
   private Facility.FacilityAttributes attributes() {
     return Facility.FacilityAttributes.builder()
-        .name(facilityNameFromCdwName(cdwFacility.fullName()))
+        .name(facilityName(cdwFacility.fullName()))
         .facilityType(Facility.FacilityType.va_cemetery)
         .classification(cdwFacility.siteType())
         .latitude(cdwFacility.latitude())
         .longitude(cdwFacility.longitude())
-        .website(websiteFromCdwUrl(cdwFacility.websiteUrl()))
+        .website(website(cdwFacility.websiteUrl()))
         .address(
             Facility.Addresses.builder()
                 .physical(
@@ -59,8 +59,8 @@ final class CemeteriesTransformer {
         .build();
   }
 
-  String facilityNameFromCdwName(String cdwName) {
-    return facilityName != null ? facilityName : cdwName;
+  String facilityName(String cdwName) {
+    return externalFacilityName != null ? externalFacilityName : cdwName;
   }
 
   private Facility.Phone phone(String attPhone, String attFax) {
@@ -81,7 +81,7 @@ final class CemeteriesTransformer {
         .build();
   }
 
-  String websiteFromCdwUrl(String cdwUrl) {
-    return website != null ? website : cdwUrl;
+  String website(String cdwUrl) {
+    return externalWebsite != null ? externalWebsite : cdwUrl;
   }
 }
