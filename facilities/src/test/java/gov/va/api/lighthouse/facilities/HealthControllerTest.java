@@ -86,7 +86,6 @@ public class HealthControllerTest {
 
   @Test
   void collectionStatusHealth_clearCache() {
-    // //
     _controller().clearCollectionStatusScheduler();
   }
 
@@ -133,7 +132,6 @@ public class HealthControllerTest {
         .thenReturn(ok());
     when(jdbcTemplate.queryForObject(any(String.class), eq(Timestamp.class)))
         .thenReturn(Timestamp.from(Instant.now()));
-    // /////
     ResponseEntity<Health> response = _controller().collectorBackendHealth();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertStatus(
@@ -148,7 +146,6 @@ public class HealthControllerTest {
 
   @Test
   void collectorBackendHealth_clearCache() {
-    // //
     _controller().clearCollectorBackendHealthScheduler();
   }
 
@@ -172,7 +169,6 @@ public class HealthControllerTest {
         .thenReturn(ok());
     when(jdbcTemplate.queryForObject(any(String.class), eq(Timestamp.class)))
         .thenReturn(Timestamp.from(Instant.now().minus(48, ChronoUnit.HOURS)));
-    // ////
     ResponseEntity<Health> response = _controller().collectorBackendHealth();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
     assertStatus(
@@ -214,7 +210,6 @@ public class HealthControllerTest {
         .thenReturn(ok());
     when(jdbcTemplate.queryForObject(any(String.class), eq(Timestamp.class)))
         .thenReturn(Timestamp.from(Instant.now().minus(48, ChronoUnit.HOURS)));
-    // ////////
     ResponseEntity<Health> response = _controller().collectorBackendHealth();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
     assertStatus(
