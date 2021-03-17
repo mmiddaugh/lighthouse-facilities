@@ -64,16 +64,6 @@ public class HealthControllerTest {
     return new ResponseEntity<>("[{}]", HttpStatus.OK);
   }
 
-  private HealthController _badController() {
-    return new HealthController(
-        repository,
-        insecureRestTemplateProvider,
-        jdbcTemplate,
-        "http://atc",
-        "http://atp",
-        "http://statecems");
-  }
-
   private HealthController _controller() {
     return new HealthController(
         repository,
