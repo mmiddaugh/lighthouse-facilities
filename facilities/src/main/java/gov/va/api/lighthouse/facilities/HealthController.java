@@ -108,14 +108,9 @@ public class HealthController {
       statusCode = response.getStatusCode();
       JsonNode root = JacksonConfig.createMapper().readTree(response.getBody());
       checkState(!((ArrayNode) root).isEmpty(), "No %s entries", name);
-    } catch (RestClientException e) {
-      log.info("Rest client exception occurred. GET {} message: {}", url, e.getMessage());
-      statusCode = HttpStatus.SERVICE_UNAVAILABLE;
-    } catch (JsonProcessingException e) {
-      log.info("JSON processing exception occurred. GET {} message: {}", url, e.getMessage());
-      statusCode = HttpStatus.SERVICE_UNAVAILABLE;
-    } catch (IllegalArgumentException e) {
-      log.info("Illegal argument exception occurred. GET {} message: {}", url, e.getMessage());
+    } catch (RestClientException | JsonProcessingException | IllegalArgumentException e) {
+      log.info(
+          "{} occurred. GET {} message: {}", e.getClass().getSimpleName(), url, e.getMessage());
       statusCode = HttpStatus.SERVICE_UNAVAILABLE;
     }
     return Health.status(new Status(statusCode.is2xxSuccessful() ? "UP" : "DOWN", name))

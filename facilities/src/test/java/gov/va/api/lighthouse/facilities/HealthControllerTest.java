@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.web.context.request.RequestContextHolder.setRequestAttributes;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.lighthouse.facilities.collector.InsecureRestTemplateProvider;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -65,6 +64,16 @@ public class HealthControllerTest {
     return new ResponseEntity<>("[{}]", HttpStatus.OK);
   }
 
+  private HealthController _badController() {
+    return new HealthController(
+        repository,
+        insecureRestTemplateProvider,
+        jdbcTemplate,
+        "http://atc",
+        "http://atp",
+        "http://statecems");
+  }
+
   private HealthController _controller() {
     return new HealthController(
         repository,
@@ -77,6 +86,7 @@ public class HealthControllerTest {
 
   @Test
   void collectionStatusHealth_clearCache() {
+    // //
     _controller().clearCollectionStatusScheduler();
   }
 
@@ -123,6 +133,7 @@ public class HealthControllerTest {
         .thenReturn(ok());
     when(jdbcTemplate.queryForObject(any(String.class), eq(Timestamp.class)))
         .thenReturn(Timestamp.from(Instant.now()));
+    // /////
     ResponseEntity<Health> response = _controller().collectorBackendHealth();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertStatus(
@@ -137,6 +148,7 @@ public class HealthControllerTest {
 
   @Test
   void collectorBackendHealth_clearCache() {
+    // //
     _controller().clearCollectorBackendHealthScheduler();
   }
 
@@ -160,6 +172,7 @@ public class HealthControllerTest {
         .thenReturn(ok());
     when(jdbcTemplate.queryForObject(any(String.class), eq(Timestamp.class)))
         .thenReturn(Timestamp.from(Instant.now().minus(48, ChronoUnit.HOURS)));
+    // ////
     ResponseEntity<Health> response = _controller().collectorBackendHealth();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
     assertStatus(
@@ -170,9 +183,7 @@ public class HealthControllerTest {
             .stateCemeteries("UP")
             .lastUpdated("DOWN")
             .build());
-
     when(jdbcTemplate.queryForObject(any(String.class), eq(Timestamp.class))).thenReturn(null);
-
     response = _controller().collectorBackendHealth();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
     assertStatus(
@@ -203,6 +214,7 @@ public class HealthControllerTest {
         .thenReturn(ok());
     when(jdbcTemplate.queryForObject(any(String.class), eq(Timestamp.class)))
         .thenReturn(Timestamp.from(Instant.now().minus(48, ChronoUnit.HOURS)));
+    // ////////
     ResponseEntity<Health> response = _controller().collectorBackendHealth();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
     assertStatus(
