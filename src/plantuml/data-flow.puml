@@ -19,8 +19,9 @@ ETL2 <-- CDW : National Cemeteries\nBenefit Centers
 ETL3 -up-> CDW
 ETL3 <-- CDW : Health facilities\nVeteran centers
 ETL1Source -up-> ETL1
-ETL2Source -up-> ETL2
-ETL3Source -up-> ETL3
+ETL2Source -up-> ETL1
+ETL3Source -up-> ETL2
+ETL4Source -up-> ETL3
 
 CMS -up-> F : Operating status\nExtended Services
 CMS <-- F : Facility IDs

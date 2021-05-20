@@ -37,8 +37,9 @@ rectangle "PSSG Drive Band" as BANDS <<document>>
 rectangle "ETL from A01 to SQL52" as ETL1 <<sql package>>
 rectangle "ETL from SQL40 GIS Server to SQL52" as ETL2 <<sql package>>
 rectangle "ETL from A06 Raw Service to SQL52" as ETL3 <<sql package>>
-rectangle "VSSC & Office of Mental Health" as ETL1Source <<source>>
-rectangle "BISL" as ETL2Source <<source>>
-rectangle "VAST" as ETL3Source <<source>>
+rectangle "VSSC" as ETL1Source <<source>>
+rectangle "Office of Mental Health" as ETL2Source <<source>>
+rectangle "BISL" as ETL3Source <<source>>
+rectangle "VAST" as ETL4Source <<source>>
 
 @enduml
