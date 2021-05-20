@@ -16,6 +16,9 @@ ETL2 -up-> CDW
 ETL2 <-down- CDW
 ETL3 -up-> CDW
 ETL3 <-down- CDW
+ETL1Source -up-> ETL1
+ETL2Source -up-> ETL2
+ETL3Source -up-> ETL3
 
 CMS -(0- F : /v0/facilities/{id}/cms-overlay\n/facilities/all
 CMS -[hidden]up- F
