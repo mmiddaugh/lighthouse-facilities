@@ -9,8 +9,8 @@ F <--> DB : Facilities\nOperating status\nDrive-time bands
 F <- BANDS : Drive-time bands
 F <-- CDW : Health facilities\nVeteran centers\nMental health contact\nStop codes\nNational Cemeteries\nBenefit Centers
 F <-- CXML : Non-National\ncemeteries
-F -- WCSV : Facility website URLs
-F <-- ATC : Wait times,\nsatisfaction scores, and\nClinical Services
+F <-- WCSV : Facility website URLs
+F <-- ATC : Wait times\nSatisfaction scores\nClinical Services
 
 ETL1 -up-> CDW
 ETL1 <-- CDW : Mental health contact\nStop codes
