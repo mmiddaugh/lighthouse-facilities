@@ -43,10 +43,10 @@ OpenAPI documentation on the
   of facility website URLS, maintained in this repository.
   This data is aggregated during facilities collection to augment the _live_ sources.
 * `Corporate Data Warehouse` undergoes a nightly ETL process to transfer various data resources to the _SQL52_ server, where it is consumed during facilities collection. Namely:
-    - Mental Health, Clinical Services, and Stop Codes from the _A01_ server.
-    - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server.
-    - Health facilities and Veteran centers from the _A06_ server.
-* `PSSG Drive Band` documents are periodically uploaded to the `facilities`
+    - Mental Health, Clinical Services, and Stop Codes from the _A01_ server, sourced from the VHA Support Center (VSSC) and Office of Mental Health.
+    - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from Business Intelligence Service Line (BISL).
+    - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST).
+* `GSSC Drive Band` documents are periodically uploaded to the `facilities`
   application through management APIs.
 
 # Data Flow
