@@ -30,16 +30,16 @@ database "facilities-operational-db" as DB <<facilities>>
 database "Corporate Data Warehouse" as CDW <<dependency>>
 
 rectangle "Access to Care (VHA)" as ATC <<dependency>>
-rectangle "Content Management System" as CMS <<partner>>
+rectangle "Content Management System (CMS)" as CMS <<partner>>
 rectangle "Non-National\nCemeteries XML" as CXML <<document>>
 rectangle "Website CSV" as WCSV <<document>>
-rectangle "PSSG Drive Band" as BANDS <<document>>
+rectangle "Geospatial Service Support Center (GSSC)" as BANDS <<document>>
 rectangle "ETL from A01 to SQL52" as ETL1 <<sql package>>
 rectangle "ETL from SQL40 GIS Server to SQL52" as ETL2 <<sql package>>
 rectangle "ETL from A06 Raw Service to SQL52" as ETL3 <<sql package>>
-rectangle "VSSC" as ETL1Source <<source>>
+rectangle "VHA Support Service Center (VSSC)" as ETL1Source <<source>>
 rectangle "Office of Mental Health" as ETL2Source <<source>>
-rectangle "BISL" as ETL3Source <<source>>
-rectangle "VAST" as ETL4Source <<source>>
+rectangle "Business Intelligence Service Line (BISL)" as ETL3Source <<source>>
+rectangle "Veteran Affairs Site Tracking (VAST)" as ETL4Source <<source>>
 
 @enduml
