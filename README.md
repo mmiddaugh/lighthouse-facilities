@@ -46,7 +46,7 @@ OpenAPI documentation on the
     - Mental Health, Clinical Services, and Stop Codes from the _A01_ server, sourced from the VHA Support Center (VSSC) and Office of Mental Health.
     - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from Business Intelligence Service Line (BISL).
     - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST).
-* `Geospatial Service Support Center (GSSC) Drive Band` documents are periodically uploaded to the `facilities`
+* `Geographer Support Services Center (GSSC) Drive Band` documents are periodically uploaded to the `facilities`
   application through management APIs.
 
 # Data Flow
