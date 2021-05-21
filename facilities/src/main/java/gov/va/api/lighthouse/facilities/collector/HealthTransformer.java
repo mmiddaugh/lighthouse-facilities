@@ -46,6 +46,8 @@ final class HealthTransformer {
 
   @NonNull private final ListMultimap<String, StopCode> stopCodesMap;
 
+  @NonNull private final Map<String, String> timeZones;
+
   @NonNull private final Map<String, String> websites;
 
   private static Map<String, Facility.HealthService> initHealthServicesMap() {
@@ -139,6 +141,7 @@ final class HealthTransformer {
         vast.stationName(),
         classification(),
         website(),
+        timeZone(),
         vast.latitude(),
         vast.longitude(),
         address(),
@@ -158,6 +161,7 @@ final class HealthTransformer {
         .facilityType(Facility.FacilityType.va_health_facility)
         .classification(classification())
         .website(website())
+        .timeZone(timeZone())
         .latitude(vast.latitude())
         .longitude(vast.longitude())
         .address(address())
@@ -341,6 +345,10 @@ final class HealthTransformer {
 
   private List<StopCode> stopCodes() {
     return stopCodesMap.get(trimToEmpty(upperCase(id(), Locale.US)));
+  }
+
+  String timeZone() {
+    return allBlank(id()) ? null : timeZones.get(id());
   }
 
   Facility toFacility() {

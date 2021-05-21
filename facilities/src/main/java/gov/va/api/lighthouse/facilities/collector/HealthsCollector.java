@@ -115,12 +115,28 @@ final class HealthsCollector {
             .build());
   }
 
+  @SneakyThrows
+  static void putTimeZone(ResultSet resultSet, Map<String, String> map) {
+    String stationNumber = resultSet.getString("Sta3n");
+    if (stationNumber == null) {
+      log.warn("Time zone missing station number.");
+      return;
+    }
+    String timeZone = trimToNull(resultSet.getString("TimeZone"));
+    if (timeZone == null) {
+      log.warn("Time zone for station number {} missing", sanitize(stationNumber));
+      return;
+    }
+    map.put("vha_" + stationNumber, timeZone);
+  }
+
   Collection<Facility> collect() {
     try {
       ListMultimap<String, AccessToCareEntry> accessToCareEntries = loadAccessToCare();
       ListMultimap<String, AccessToPwtEntry> accessToPwtEntries = loadAccessToPwt();
       Map<String, String> mentalHealthPhoneNumbers = loadMentalHealthPhoneNumbers();
       ListMultimap<String, StopCode> stopCodesMap = loadStopCodes();
+      Map<String, String> timeZones = loadTimeZones();
       return vastEntities.stream()
           .filter(Objects::nonNull)
           .filter(v -> !v.isVetCenter())
@@ -132,6 +148,7 @@ final class HealthsCollector {
                       .accessToPwt(accessToPwtEntries)
                       .mentalHealthPhoneNumbers(mentalHealthPhoneNumbers)
                       .stopCodesMap(stopCodesMap)
+                      .timeZones(timeZones)
                       .websites(websites)
                       .build()
                       .toFacility())
@@ -231,5 +248,18 @@ final class HealthsCollector {
         map.values().size());
     checkState(!map.isEmpty(), "No App.VSSC_ClinicalServices entries");
     return ImmutableListMultimap.copyOf(map);
+  }
+
+  private Map<String, String> loadTimeZones() {
+    Stopwatch watch = Stopwatch.createStarted();
+    Map<String, String> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    jdbcTemplate.query(
+        "SELECT Sta3n, TimeZone FROM App.Sta3n", (RowCallbackHandler) (rs) -> putTimeZone(rs, map));
+    log.info(
+        "Loading time zones took {} millis for {} entries",
+        watch.stop().elapsed(TimeUnit.MILLISECONDS),
+        map.size());
+    checkState(!map.isEmpty(), "No App.Sta3n entries");
+    return Collections.unmodifiableMap(map);
   }
 }
