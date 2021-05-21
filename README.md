@@ -46,7 +46,7 @@ OpenAPI documentation on the
     - Mental Health, Clinical Services, and Stop Codes from the _A01_ server, sourced from the VHA Support Center (VSSC) and Office of Mental Health.
     - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from Business Intelligence Service Line (BISL).
     - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST).
-* `GSSC Drive Band` documents are periodically uploaded to the `facilities`
+* `Geospatial Service Support Center (GSSC) Drive Band` documents are periodically uploaded to the `facilities`
   application through management APIs.
 
 # Data Flow
@@ -56,7 +56,7 @@ OpenAPI documentation on the
 * The facilities collection process aggregates data from other services, databases, or manually managed
   files. Drive-time band and operating status are not part of collection.
   Collection is an expensive process that is performed periodically.
-* `CMS` is both a consumer and a producer of information. `CMS` will periodically pull all
+* `Content Management System (CMS)` is both a consumer and a producer of information. `CMS` will periodically pull all
   facilities to automatically populate content pages in Drupal.
   Additionally, regional administrators of CMS data may change the operating status or extended service(s) at any time.
   This information is provided back to the Facilities API through a specialized CMS-dedicated
