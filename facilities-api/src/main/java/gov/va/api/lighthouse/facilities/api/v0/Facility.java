@@ -208,7 +208,7 @@ public final class Facility {
         example = "Normal business hours are Monday through Friday, 8:00 a.m. to 4:30 p.m.",
         nullable = true)
     @JsonProperty("operational_hours_special_instructions")
-    String operationalHoursSpecialInstructions;
+    String[] operationalHoursSpecialInstructions;
 
     @Schema(nullable = true)
     @Valid
@@ -248,7 +248,7 @@ public final class Facility {
 
     public static final class FacilityAttributesBuilder {
       @JsonProperty("operationalHoursSpecialInstructions")
-      public FacilityAttributesBuilder instructions(String val) {
+      public FacilityAttributesBuilder instructions(String[] val) {
         return operationalHoursSpecialInstructions(val);
       }
     }

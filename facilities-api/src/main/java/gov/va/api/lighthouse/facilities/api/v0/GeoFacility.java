@@ -108,7 +108,7 @@ public final class GeoFacility {
         example = "Administrative hours are Monday-Friday 8:00 a.m. to 4:30 p.m.",
         nullable = true)
     @JsonProperty("operational_hours_special_instructions")
-    String operationalHoursSpecialInstructions;
+    String[] operationalHoursSpecialInstructions;
 
     @Schema(nullable = true)
     @Valid

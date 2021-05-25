@@ -8,6 +8,10 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import lombok.Builder;
@@ -70,7 +74,7 @@ final class VetCenterTransformer {
         address(),
         phone(),
         hours(),
-        vast.operationalHoursSpecialInstructions(),
+        operationalHoursSpecialInstructions(),
         vast.mobile(),
         activeStatus(),
         vast.visn())) {
@@ -85,11 +89,21 @@ final class VetCenterTransformer {
         .address(address())
         .phone(phone())
         .hours(hours())
-        .operationalHoursSpecialInstructions(vast.operationalHoursSpecialInstructions())
+        .operationalHoursSpecialInstructions(operationalHoursSpecialInstructions())
         .mobile(vast.mobile())
         .activeStatus(activeStatus())
         .visn(vast.visn())
         .build();
+  }
+
+  private String[] operationalHoursSpecialInstructions() {
+    String prelim = vast.operationalHoursSpecialInstructions();
+    if (prelim == null){
+      return null;
+    } else {
+      //return new String[] {prelim};
+      return prelim.split("(\\s\\|\\s)");
+    }
   }
 
   private Facility.Hours hours() {

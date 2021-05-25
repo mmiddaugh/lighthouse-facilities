@@ -20,6 +20,7 @@ import gov.va.api.lighthouse.facilities.api.v0.Facility.PatientWaitTime;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -144,7 +145,7 @@ final class HealthTransformer {
         address(),
         phone(),
         hours(),
-        vast.operationalHoursSpecialInstructions(),
+        operationalHoursSpecialInstructions(),
         services(),
         satisfaction(),
         waitTimes(),
@@ -163,7 +164,7 @@ final class HealthTransformer {
         .address(address())
         .phone(phone())
         .hours(hours())
-        .operationalHoursSpecialInstructions(vast.operationalHoursSpecialInstructions())
+        .operationalHoursSpecialInstructions(operationalHoursSpecialInstructions())
         .services(services())
         .satisfaction(satisfaction())
         .waitTimes(waitTimes())
@@ -171,6 +172,16 @@ final class HealthTransformer {
         .activeStatus(activeStatus())
         .visn(vast.visn())
         .build();
+  }
+
+  private String[] operationalHoursSpecialInstructions() {
+    String prelim = vast.operationalHoursSpecialInstructions();
+    if (prelim == null){
+      return null;
+    } else {
+      //return new String[] {prelim};
+      return prelim.split("(\\s\\|\\s)");
+    }
   }
 
   String classification() {

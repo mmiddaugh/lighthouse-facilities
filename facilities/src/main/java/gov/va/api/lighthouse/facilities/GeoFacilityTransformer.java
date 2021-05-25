@@ -4,6 +4,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;

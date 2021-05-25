@@ -236,25 +236,27 @@ public class InternalFacilitiesController {
     return facilityRepository.findById(pk);
   }
 
-  private String findAndReplaceOperationalHoursSpecialInstructions(String instructions) {
-    if (instructions == null) {
+  private String[] findAndReplaceOperationalHoursSpecialInstructions(String[] instruct) {
+    if (instruct == null) {
       return null;
     } else {
-      // Look through the instructions for specific substrings and replace them if necessary
-      if (instructions.contains(SPECIAL_INSTRUCTION_OLD_1)) {
-        instructions =
-            instructions.replace(SPECIAL_INSTRUCTION_OLD_1, SPECIAL_INSTRUCTION_UPDATED_1);
-      }
-      if (instructions.contains(SPECIAL_INSTRUCTION_OLD_2)) {
-        instructions =
-            instructions.replace(SPECIAL_INSTRUCTION_OLD_2, SPECIAL_INSTRUCTION_UPDATED_2);
-      }
-      if (instructions.contains(SPECIAL_INSTRUCTION_OLD_3)) {
-        instructions =
-            instructions.replace(SPECIAL_INSTRUCTION_OLD_3, SPECIAL_INSTRUCTION_UPDATED_3);
+      for (String instructions: instruct) {
+        // Look through the instructions for specific substrings and replace them if necessary
+        if (instructions.contains(SPECIAL_INSTRUCTION_OLD_1)) {
+          instructions =
+              instructions.replace(SPECIAL_INSTRUCTION_OLD_1, SPECIAL_INSTRUCTION_UPDATED_1);
+        }
+        if (instructions.contains(SPECIAL_INSTRUCTION_OLD_2)) {
+          instructions =
+              instructions.replace(SPECIAL_INSTRUCTION_OLD_2, SPECIAL_INSTRUCTION_UPDATED_2);
+        }
+        if (instructions.contains(SPECIAL_INSTRUCTION_OLD_3)) {
+          instructions =
+              instructions.replace(SPECIAL_INSTRUCTION_OLD_3, SPECIAL_INSTRUCTION_UPDATED_3);
+        }
       }
     }
-    return instructions;
+    return instruct;
   }
 
   @GetMapping("/graveyard")

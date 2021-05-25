@@ -85,7 +85,7 @@ public class VetCentersCollectorTest {
                                     .sunday("Closed")
                                     .build())
                             .operationalHoursSpecialInstructions(
-                                "Administrative hours are Monday-Friday 8:00 a.m. to 4:30 p.m. |")
+                                    new String[]{"Administrative hours are Monday-Friday 8:00 a.m. to 4:30 p.m. |"})
                             .mobile(false)
                             .activeStatus(Facility.ActiveStatus.A)
                             .visn("21")

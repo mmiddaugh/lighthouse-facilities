@@ -645,9 +645,9 @@ public class InternalFacilitiesControllerTest {
         _facility("vha_f1", "FL", "32934", 1.2, 3.4, List.of(HealthService.MentalHealthCare));
     Facility f2 = _facility("vha_f2", "FL", "32934", 5.6, 6.7, List.of(HealthService.UrgentCare));
     Facility f3 = _facility("vha_f3", "FL", "32934", 5.6, 6.7, List.of(HealthService.UrgentCare));
-    f1.attributes().operationalHoursSpecialInstructions(SPECIAL_INSTRUCTION_OLD_1);
-    f2.attributes().operationalHoursSpecialInstructions(SPECIAL_INSTRUCTION_OLD_2);
-    f3.attributes().operationalHoursSpecialInstructions(SPECIAL_INSTRUCTION_OLD_3);
+    f1.attributes().operationalHoursSpecialInstructions(new String[]{SPECIAL_INSTRUCTION_OLD_1});
+    f2.attributes().operationalHoursSpecialInstructions(new String[]{SPECIAL_INSTRUCTION_OLD_2});
+    f3.attributes().operationalHoursSpecialInstructions(new String[]{SPECIAL_INSTRUCTION_OLD_3});
 
     ReloadResponse response = ReloadResponse.start();
     _controller()
