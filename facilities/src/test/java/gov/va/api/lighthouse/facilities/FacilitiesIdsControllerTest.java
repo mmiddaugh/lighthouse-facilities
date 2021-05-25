@@ -34,7 +34,7 @@ public class FacilitiesIdsControllerTest {
 
   @Test
   void invalidType() {
-    assertThrows(ExceptionsV0.InvalidParameter.class, () -> controller().facilityIdsByType("xxx"));
+    assertThrows(ApiExceptions.InvalidParameter.class, () -> controller().facilityIdsByType("xxx"));
   }
 
   @Test

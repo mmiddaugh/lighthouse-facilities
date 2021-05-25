@@ -29,7 +29,7 @@ public class FacilitySamples {
             .collect(toMap(Facility::id, Function.identity()));
   }
 
-  static FacilitySamples defaultSamples() {
+  public static FacilitySamples defaultSamples() {
     return FacilitySamples.builder()
         .resources(List.of("/vha_691GB.json", "/vha_740GA.json", "/vha_757.json"))
         .build();
@@ -41,7 +41,7 @@ public class FacilitySamples {
     return f;
   }
 
-  FacilityEntity facilityEntity(String id) {
+  public FacilityEntity facilityEntity(String id) {
     return InternalFacilitiesController.populate(
         FacilityEntity.builder()
             .id(FacilityEntity.Pk.fromIdString(id))

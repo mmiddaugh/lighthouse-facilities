@@ -65,7 +65,7 @@ public class DriveTimeBandEntity {
   @NoArgsConstructor(access = AccessLevel.PUBLIC)
   @AllArgsConstructor(staticName = "of")
   @Embeddable
-  static final class Pk implements Serializable {
+  public static final class Pk implements Serializable {
     @Column(name = "station_number", nullable = false)
     private String stationNumber;
 

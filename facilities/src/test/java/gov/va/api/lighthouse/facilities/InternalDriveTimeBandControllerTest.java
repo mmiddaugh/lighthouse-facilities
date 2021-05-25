@@ -58,7 +58,7 @@ public class InternalDriveTimeBandControllerTest {
   @Test
   void getBandByNameThrowsExceptionForUnknownBand() {
     when(repo.findById(DriveTimeBandEntity.Pk.fromName("a-1-2"))).thenReturn(Optional.empty());
-    assertThatExceptionOfType(ExceptionsV0.NotFound.class)
+    assertThatExceptionOfType(ApiExceptions.NotFound.class)
         .isThrownBy(() -> controller().band("a-1-2"));
   }
 

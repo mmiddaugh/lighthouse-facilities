@@ -42,14 +42,14 @@ public class FacilitiesByStateTest {
   @Test
   void json_invalidService() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () -> controller().jsonFacilitiesByState("FL", null, List.of("unknown"), null, 1, 1));
   }
 
   @Test
   void json_invalidType() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () -> controller().jsonFacilitiesByState("FL", "xxx", null, null, 1, 1));
   }
 

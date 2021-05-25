@@ -42,14 +42,14 @@ public class FacilitiesByZipTest {
   @Test
   void jsonFacilitiesByZip_invalidService() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () -> controller().jsonFacilitiesByZip("33333", null, List.of("unknown"), null, 1, 1));
   }
 
   @Test
   void jsonFacilitiesByZip_invalidType() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () -> controller().jsonFacilitiesByZip("33333", "xxx", null, null, 1, 1));
   }
 

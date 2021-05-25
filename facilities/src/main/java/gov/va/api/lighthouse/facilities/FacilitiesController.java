@@ -161,7 +161,7 @@ public class FacilitiesController {
   private List<FacilityEntity> entitiesByBoundingBox(
       List<BigDecimal> bbox, String rawType, List<String> rawServices, Boolean rawMobile) {
     if (bbox.size() != 4) {
-      throw new ExceptionsV0.InvalidParameter("bbox", bbox);
+      throw new ApiExceptions.InvalidParameter("bbox", bbox);
     }
     FacilityEntity.Type facilityType = validateFacilityType(rawType);
     Set<Facility.ServiceType> services = validateServices(rawServices);
@@ -276,11 +276,11 @@ public class FacilitiesController {
     try {
       pk = FacilityEntity.Pk.fromIdString(id);
     } catch (IllegalArgumentException ex) {
-      throw new ExceptionsV0.NotFound(id, ex);
+      throw new ApiExceptions.NotFound(id, ex);
     }
     Optional<FacilityEntity> opt = facilityRepository.findById(pk);
     if (opt.isEmpty()) {
-      throw new ExceptionsV0.NotFound(id);
+      throw new ApiExceptions.NotFound(id);
     }
     return opt.get();
   }

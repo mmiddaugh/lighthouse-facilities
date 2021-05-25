@@ -1,6 +1,7 @@
 package gov.va.api.lighthouse.facilities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,6 @@ public class InternalCollectorControllerTest {
             + "MHPhone VARCHAR,"
             + "Extension VARCHAR"
             + ")");
-
     template.execute(
         "INSERT INTO App.VHA_Mental_Health_Contact_Info ("
             + "StationNumber,"
@@ -41,11 +41,17 @@ public class InternalCollectorControllerTest {
             + "'800-867-5309',"
             + "'1234'"
             + ")");
-
     assertThat(InternalCollectorController.builder().jdbc(template).build().mentalHealthContacts())
         .isEqualTo(
             List.of(
                 Map.of("STATIONNUMBER", "999", "MHPHONE", "800-867-5309", "EXTENSION", "1234")));
+  }
+
+  @Test
+  void mentalHealthContacts_cdwException() {
+    assertThrows(
+        InternalCollectorController.CdwException.class,
+        () -> InternalCollectorController.builder().jdbc(template).build().mentalHealthContacts());
   }
 
   @Test
@@ -58,7 +64,6 @@ public class InternalCollectorControllerTest {
             + "PrimaryStopCodeName VARCHAR,"
             + "AvgWaitTimeNew VARCHAR"
             + ")");
-
     template.execute(
         "INSERT INTO App.VSSC_ClinicalServices ("
             + "Sta6a,"
@@ -71,7 +76,6 @@ public class InternalCollectorControllerTest {
             + "'PRIMARY CARE/MEDICINE',"
             + "'14.15'"
             + ")");
-
     assertThat(InternalCollectorController.builder().jdbc(template).build().stopCodes())
         .isEqualTo(
             List.of(
@@ -87,11 +91,17 @@ public class InternalCollectorControllerTest {
   }
 
   @Test
+  void stopCodes_cdwException() {
+    assertThrows(
+        InternalCollectorController.CdwException.class,
+        () -> InternalCollectorController.builder().jdbc(template).build().stopCodes());
+  }
+
+  @Test
   @SneakyThrows
   void vast() {
     template.execute(
         "CREATE TABLE App.Vast (" + "StationNumber VARCHAR," + "StationName VARCHAR" + ")");
-
     template.execute(
         "INSERT INTO App.Vast ("
             + "StationNumber,"
@@ -100,8 +110,14 @@ public class InternalCollectorControllerTest {
             + "'123',"
             + "'Some VAMC'"
             + ")");
-
     assertThat(InternalCollectorController.builder().jdbc(template).build().vast())
         .isEqualTo(List.of(Map.of("STATIONNUMBER", "123", "STATIONNAME", "Some VAMC")));
+  }
+
+  @Test
+  void vast_cdwException() {
+    assertThrows(
+        InternalCollectorController.CdwException.class,
+        () -> InternalCollectorController.builder().jdbc(template).build().vast());
   }
 }

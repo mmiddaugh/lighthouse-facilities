@@ -102,7 +102,7 @@ public class FacilitiesByLatLongTest {
   @Test
   void json_invalidService() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () ->
             controller()
                 .jsonFacilitiesByLatLong(
@@ -119,7 +119,7 @@ public class FacilitiesByLatLongTest {
   @Test
   void json_invalidType() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () ->
             controller()
                 .jsonFacilitiesByLatLong(

@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.joining;
 import com.google.common.collect.Iterables;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.api.v0.ApiError;
+import gov.va.api.lighthouse.facilities.v0.ApiExceptionsV0;
 import java.util.List;
 import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
@@ -32,8 +33,8 @@ public final class WebExceptionHandlerV0 {
     return ResponseEntity.status(status).headers(headers).body(error);
   }
 
-  @ExceptionHandler(ExceptionsV0.BingException.class)
-  ResponseEntity<ApiError> handleBing(ExceptionsV0.BingException ex) {
+  @ExceptionHandler(ApiExceptionsV0.BingException.class)
+  ResponseEntity<ApiError> handleBing(ApiExceptionsV0.BingException ex) {
     ApiError response =
         ApiError.builder()
             .errors(
@@ -48,8 +49,8 @@ public final class WebExceptionHandlerV0 {
     return response(HttpStatus.SERVICE_UNAVAILABLE, ex, response);
   }
 
-  @ExceptionHandler(ExceptionsV0.InvalidParameter.class)
-  ResponseEntity<ApiError> handleInvalidParameter(ExceptionsV0.InvalidParameter ex) {
+  @ExceptionHandler(ApiExceptions.InvalidParameter.class)
+  ResponseEntity<ApiError> handleInvalidParameter(ApiExceptions.InvalidParameter ex) {
     ApiError response =
         ApiError.builder()
             .errors(
@@ -116,8 +117,8 @@ public final class WebExceptionHandlerV0 {
     return response(HttpStatus.NOT_ACCEPTABLE, ex, error);
   }
 
-  @ExceptionHandler(ExceptionsV0.NotFound.class)
-  ResponseEntity<ApiError> handleNotFound(ExceptionsV0.NotFound ex) {
+  @ExceptionHandler(ApiExceptions.NotFound.class)
+  ResponseEntity<ApiError> handleNotFound(ApiExceptions.NotFound ex) {
     ApiError error =
         ApiError.builder()
             .errors(

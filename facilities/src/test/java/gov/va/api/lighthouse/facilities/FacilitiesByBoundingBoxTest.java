@@ -55,7 +55,7 @@ public class FacilitiesByBoundingBoxTest {
   @Test
   void json_invalidBBox() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () ->
             controller()
                 .jsonFacilitiesByBoundingBox(
@@ -75,7 +75,7 @@ public class FacilitiesByBoundingBoxTest {
   @Test
   void json_invalidService() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () ->
             controller()
                 .jsonFacilitiesByBoundingBox(
@@ -94,7 +94,7 @@ public class FacilitiesByBoundingBoxTest {
   @Test
   void json_invalidType() {
     assertThrows(
-        ExceptionsV0.InvalidParameter.class,
+        ApiExceptions.InvalidParameter.class,
         () ->
             controller()
                 .jsonFacilitiesByBoundingBox(

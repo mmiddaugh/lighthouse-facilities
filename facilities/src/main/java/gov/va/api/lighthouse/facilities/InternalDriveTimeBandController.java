@@ -55,7 +55,7 @@ public class InternalDriveTimeBandController {
                     .band(result.band())
                     .version(result.version() == null ? 0 : result.version())
                     .build())
-        .orElseThrow(() -> new ExceptionsV0.NotFound(name));
+        .orElseThrow(() -> new ApiExceptions.NotFound(name));
   }
 
   private Rectangle2D boundsOf(PssgDriveTimeBand band) {

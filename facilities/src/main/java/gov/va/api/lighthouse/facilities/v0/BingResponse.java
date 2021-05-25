@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v0;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

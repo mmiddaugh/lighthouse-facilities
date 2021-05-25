@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v0;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -10,6 +10,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import gov.va.api.lighthouse.facilities.DriveTimeBandEntity;
+import gov.va.api.lighthouse.facilities.DriveTimeBandRepository;
+import gov.va.api.lighthouse.facilities.FacilityEntity;
+import gov.va.api.lighthouse.facilities.FacilityRepository;
+import gov.va.api.lighthouse.facilities.FacilitySamples;
+import gov.va.api.lighthouse.facilities.InternalFacilitiesController;
 import gov.va.api.lighthouse.facilities.api.pssg.PathEncoder;
 import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
@@ -41,10 +47,10 @@ public class NearbyTest {
 
   @Mock RestTemplate restTemplate = mock(RestTemplate.class);
 
-  private NearbyController _controller() {
+  private NearbyControllerV0 _controller() {
     InsecureRestTemplateProvider restTemplateProvider = mock(InsecureRestTemplateProvider.class);
     when(restTemplateProvider.restTemplate()).thenReturn(restTemplate);
-    return NearbyController.builder()
+    return NearbyControllerV0.builder()
         .facilityRepository(facilityRepository)
         .driveTimeBandRepository(driveTimeBandRepository)
         .restTemplateProvider(restTemplateProvider)
@@ -227,7 +233,7 @@ public class NearbyTest {
             eq(String.class)))
         .thenThrow(new IllegalStateException("Google instead?"));
     assertThrows(
-        ExceptionsV0.BingException.class,
+        ApiExceptionsV0.BingException.class,
         () ->
             _controller()
                 .nearbyAddress("505 N John Rodes Blvd", "Melbourne", "FL", "32934", null, null));
@@ -268,7 +274,7 @@ public class NearbyTest {
                                             .build()))
                                 .build()))));
     assertThrows(
-        ExceptionsV0.BingException.class,
+        ApiExceptionsV0.BingException.class,
         () ->
             _controller()
                 .nearbyAddress("505 N John Rodes Blvd", "Melbourne", "FL", "32934", null, null));

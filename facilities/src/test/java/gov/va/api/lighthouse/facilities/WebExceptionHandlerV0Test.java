@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 
 import com.google.common.collect.ImmutableMap;
 import gov.va.api.lighthouse.facilities.api.v0.ApiError;
+import gov.va.api.lighthouse.facilities.v0.ApiExceptionsV0;
 import java.util.List;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
@@ -35,7 +36,7 @@ public class WebExceptionHandlerV0Test {
 
   @Test
   void bing() {
-    assertThat(new WebExceptionHandlerV0().handleBing(new ExceptionsV0.BingException("foo")))
+    assertThat(new WebExceptionHandlerV0().handleBing(new ApiExceptionsV0.BingException("foo")))
         .isEqualTo(
             ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .headers(jsonHeaders())
@@ -56,7 +57,7 @@ public class WebExceptionHandlerV0Test {
   void invalidParameter() {
     assertThat(
             new WebExceptionHandlerV0()
-                .handleInvalidParameter(new ExceptionsV0.InvalidParameter("services", "x")))
+                .handleInvalidParameter(new ApiExceptions.InvalidParameter("services", "x")))
         .isEqualTo(
             ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .headers(jsonHeaders())
@@ -147,7 +148,7 @@ public class WebExceptionHandlerV0Test {
 
   @Test
   void notFound() {
-    assertThat(new WebExceptionHandlerV0().handleNotFound(new ExceptionsV0.NotFound("vha_555")))
+    assertThat(new WebExceptionHandlerV0().handleNotFound(new ApiExceptions.NotFound("vha_555")))
         .isEqualTo(
             ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .headers(jsonHeaders())

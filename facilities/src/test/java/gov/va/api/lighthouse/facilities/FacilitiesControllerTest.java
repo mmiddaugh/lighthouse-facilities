@@ -205,11 +205,11 @@ public class FacilitiesControllerTest {
 
   @Test
   void readJson_malformed() {
-    assertThrows(ExceptionsV0.NotFound.class, () -> controller().readJson("xxx"));
+    assertThrows(ApiExceptions.NotFound.class, () -> controller().readJson("xxx"));
   }
 
   @Test
   void readJson_notFound() {
-    assertThrows(ExceptionsV0.NotFound.class, () -> controller().readJson("vha_691GB"));
+    assertThrows(ApiExceptions.NotFound.class, () -> controller().readJson("vha_691GB"));
   }
 }

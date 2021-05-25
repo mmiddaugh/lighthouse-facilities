@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @UtilityClass
-final class FacilitiesRequest {
-  static ExpectedResponse facilitiesRequest(
+public final class FacilitiesRequest {
+  public static ExpectedResponse facilitiesRequest(
       String acceptHeader, String request, Integer expectedStatus) {
     SystemDefinitions.Service svc = systemDefinition().facilities();
     log.info(

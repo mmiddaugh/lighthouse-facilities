@@ -25,7 +25,7 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-final class Controllers {
+public final class Controllers {
   private static final Map<String, FacilityEntity.Type> ENTITY_TYPE_LOOKUP =
       caseInsensitiveMap(
           ImmutableMap.of(
@@ -53,7 +53,8 @@ final class Controllers {
     return Collections.unmodifiableMap(map);
   }
 
-  static <T> List<T> page(List<T> objects, int page, int perPage) {
+  /** List of objects per page. */
+  public static <T> List<T> page(List<T> objects, int page, int perPage) {
     checkArgument(page >= 1);
     checkArgument(perPage >= 0);
     if (perPage == 0) {
@@ -66,15 +67,17 @@ final class Controllers {
     return objects.subList(fromIndex, Math.min(fromIndex + perPage, objects.size()));
   }
 
-  static FacilityEntity.Type validateFacilityType(String type) {
+  /** Validates facility types. */
+  public static FacilityEntity.Type validateFacilityType(String type) {
     FacilityEntity.Type mapped = ENTITY_TYPE_LOOKUP.get(trimToEmpty(type));
     if (mapped == null && isNotBlank(type)) {
-      throw new ExceptionsV0.InvalidParameter("type", type);
+      throw new ApiExceptions.InvalidParameter("type", type);
     }
     return mapped;
   }
 
-  static Set<Facility.ServiceType> validateServices(Collection<String> services) {
+  /** Validates services. */
+  public static Set<Facility.ServiceType> validateServices(Collection<String> services) {
     if (isEmpty(services)) {
       return emptySet();
     }
@@ -82,7 +85,7 @@ final class Controllers {
     for (String service : services) {
       Facility.ServiceType mapped = SERVICE_LOOKUP.get(trimToEmpty(service));
       if (mapped == null) {
-        throw new ExceptionsV0.InvalidParameter("services", service);
+        throw new ApiExceptions.InvalidParameter("services", service);
       }
       results.add(mapped);
     }
