@@ -28,6 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import javax.validation.constraints.Min;
+
+import gov.va.api.lighthouse.facilities.api.v1.FacilityReadResponseV1;
+import gov.va.api.lighthouse.facilities.api.v1.FacilityV1;
+import gov.va.api.lighthouse.facilities.v1.FacilityOverlayV1;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -94,6 +98,11 @@ public class FacilitiesController {
   @SneakyThrows
   private static Facility facility(HasFacilityPayload entity) {
     return FACILITY_OVERLAY.apply(entity);
+  }
+
+  @SneakyThrows
+  private static FacilityV1 facilityV1(HasFacilityPayload entity) {
+    return FacilityOverlayV1.builder().mapper(MAPPER).build().apply(entity);
   }
 
   private static GeoFacility geoFacility(Facility facility) {
@@ -661,8 +670,8 @@ public class FacilitiesController {
 
   /** Read facility. */
   @GetMapping(value = "/facilities/{id}", produces = "application/json")
-  FacilityReadResponse readJson(@PathVariable("id") String id) {
-    return FacilityReadResponse.builder().facility(facility(entityById(id))).build();
+  FacilityReadResponseV1 readJson(@PathVariable("id") String id) {
+    return FacilityReadResponseV1.builder().facility(facilityV1(entityById(id))).build();
   }
 
   @Data
