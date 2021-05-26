@@ -33,21 +33,25 @@ OpenAPI documentation on the
   [wait times](https://www.accesstocare.va.gov/atcapis/v1.1/patientwaittimes) and
   [satisfaction scores](https://www.accesstopwt.va.gov/Shep/getRawData?location=*)
   for various services offered by VA health facilities.
-  This data is aggregated during facilities collection.
+  This data is aggregated during the nightly facilities collection.
 * `Cemetery XML` is an externally-maintained
   [XML document](https://www.cem.va.gov/cems/cems.xml)
   that provides information about non-national cemeteries that are not managed by the VA.
-  This data is aggregated during facilities collection.
+  This data is aggregated during the nightly facilities collection.
 * `Website CSV` is a
   [CSV document](facilities/src/main/resources/websites.csv)
   of facility website URLS, maintained in this repository.
   This data is aggregated during facilities collection to augment the _live_ sources.
 * `Corporate Data Warehouse` undergoes a nightly ETL process to transfer various data resources to the _SQL52_ server, where it is consumed during facilities collection. Namely:
     - Mental Health, Clinical Services, and Stop Codes from the _A01_ server, sourced from the VHA Support Center (VSSC) and Office of Mental Health.
+      -  Mental Health data is pulled nightly from the A01 server, OMHSP_PERC_Share database, DOEx schema, and FieldDataEntry_MHPhone table.
+      -  Clinical Services data is pulled nightly from the A01 server, VSSC_Out database, DOEx, schema, and DST_ClinicalServices table.
     - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from Business Intelligence Service Line (BISL).
-    - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST).
+      -  National Cemeteries are pulled nightly from the SQL40 server, BISL_GIS_SpatialData database, DOEx schema, and v_FacilityLocator_NCA table.
+      -  Benefit Centers are pulled nightly from the SQL40 server, BISL_GIS_SpatialData database, DOEx schema, and v_FacilityLocator_VBA table.
+    - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST) which is pulled from the VSSC SQL Server nightly.
 * `Geographer Support Services Center (GSSC) Drive Band` documents are periodically uploaded to the `facilities`
-  application through management APIs.
+  application through management APIs.  These are updated on a monthly basis.
 
 # Data Flow
 ![Data Flow](src/plantuml/data-flow.png)
