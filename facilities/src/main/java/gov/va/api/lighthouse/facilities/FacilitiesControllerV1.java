@@ -1,34 +1,8 @@
 package gov.va.api.lighthouse.facilities;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static gov.va.api.lighthouse.facilities.Controllers.page;
-import static gov.va.api.lighthouse.facilities.Controllers.validateFacilityType;
-import static gov.va.api.lighthouse.facilities.Controllers.validateServices;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
-import gov.va.api.lighthouse.facilities.api.v0.FacilitiesIdsResponse;
-import gov.va.api.lighthouse.facilities.api.v0.FacilitiesResponse;
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import gov.va.api.lighthouse.facilities.api.v0.FacilityReadResponse;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacilitiesResponse;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacilityReadResponse;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import javax.validation.constraints.Min;
-
+import gov.va.api.lighthouse.facilities.api.v0.*;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityReadResponseV1;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityV1;
 import gov.va.api.lighthouse.facilities.v1.FacilityOverlayV1;
@@ -43,16 +17,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.Min;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
+import java.util.function.Function;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static gov.va.api.lighthouse.facilities.Controllers.*;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 @Validated
 @RestController
-@RequestMapping(value = "/v0")
-public class FacilitiesController {
+@RequestMapping(value = "/v1")
+public class FacilitiesControllerV1 {
   private static final ObjectMapper MAPPER = FacilitiesJacksonConfig.createMapper();
 
   private static final FacilityOverlay FACILITY_OVERLAY =
@@ -63,7 +46,7 @@ public class FacilitiesController {
   private final String linkerUrl;
 
   @Builder
-  FacilitiesController(
+  FacilitiesControllerV1(
       @Autowired FacilityRepository facilityRepository,
       @Value("${facilities.url}") String baseUrl,
       @Value("${facilities.base-path}") String basePath) {
@@ -670,8 +653,8 @@ public class FacilitiesController {
 
   /** Read facility. */
   @GetMapping(value = "/facilities/{id}", produces = "application/json")
-  FacilityReadResponse readJson(@PathVariable("id") String id) {
-    return FacilityReadResponse.builder().facility(facility(entityById(id))).build();
+  FacilityReadResponseV1 readJson(@PathVariable("id") String id) {
+    return FacilityReadResponseV1.builder().facility(facilityV1(entityById(id))).build();
   }
 
   @Data
@@ -685,7 +668,7 @@ public class FacilitiesController {
 
     Facility facility() {
       if (facility == null) {
-        facility = FacilitiesController.facility(entity);
+        facility = FacilitiesControllerV1.facility(entity);
       }
       return facility;
     }
