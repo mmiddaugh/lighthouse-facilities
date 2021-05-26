@@ -49,7 +49,8 @@ OpenAPI documentation on the
     - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from Business Intelligence Service Line (BISL).
       -  National Cemeteries are pulled nightly from the SQL40 server, BISL_GIS_SpatialData database, DOEx schema, and v_FacilityLocator_NCA table.
       -  Benefit Centers are pulled nightly from the SQL40 server, BISL_GIS_SpatialData database, DOEx schema, and v_FacilityLocator_VBA table.
-    - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST) which is pulled from the VSSC SQL Server nightly.
+    - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST).
+      - These facilities are pulled daily from the A06 server, CDWWork database, Dim schema, and VAST table which is populated from the VSSC SQL Server daily.
 * `Geographer Support Services Center (GSSC) Drive Band` documents are periodically uploaded to the `facilities`
   application through management APIs.  These are updated on a monthly basis.
 
