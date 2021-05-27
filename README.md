@@ -29,7 +29,7 @@ OpenAPI documentation on the
   Drive time band data is refreshed on an as-needed basis.
 * `facilities-timer` is a AWS Lambda Cron pod that fires nightly to trigger the facilities
   collection/data reload process.
-* `Access to Care` provides
+* `Access to Care (ATC)` provides
   [wait times](https://www.accesstocare.va.gov/atcapis/v1.1/patientwaittimes) and
   [satisfaction scores](https://www.accesstopwt.va.gov/Shep/getRawData?location=*)
   for various services offered by VA health facilities.
@@ -42,15 +42,10 @@ OpenAPI documentation on the
   [CSV document](facilities/src/main/resources/websites.csv)
   of facility website URLS, maintained in this repository.
   This data is aggregated during facilities collection to augment the _live_ sources.
-* `Corporate Data Warehouse` undergoes a nightly ETL process to transfer various data resources to the _SQL52_ server, where it is consumed during facilities collection. Namely:
+* `Corporate Data Warehouse (CDW)` undergoes a nightly ETL process to transfer various data resources to the _SQL52_ server, where it is consumed during facilities collection. Namely:
     - Mental Health, Clinical Services, and Stop Codes from the _A01_ server, sourced from the VHA Support Center (VSSC) and Office of Mental Health.
-      -  Mental Health data is pulled nightly from the A01 server, OMHSP_PERC_Share database, DOEx schema, and FieldDataEntry_MHPhone table.
-      -  Clinical Services data is pulled nightly from the A01 server, VSSC_Out database, DOEx, schema, and DST_ClinicalServices table.
     - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from Business Intelligence Service Line (BISL).
-      -  National Cemeteries are pulled nightly from the SQL40 server, BISL_GIS_SpatialData database, DOEx schema, and v_FacilityLocator_NCA table.
-      -  Benefit Centers are pulled nightly from the SQL40 server, BISL_GIS_SpatialData database, DOEx schema, and v_FacilityLocator_VBA table.
     - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST).
-      - These facilities are pulled daily from the A06 server, CDWWork database, Dim schema, and VAST table which is populated from the VSSC SQL Server daily.
 * `Geographer Support Services Center (GSSC) Drive Band` documents are periodically uploaded to the `facilities`
   application through management APIs.  These are updated on a monthly basis.
 
@@ -66,6 +61,21 @@ OpenAPI documentation on the
   Additionally, regional administrators of CMS data may change the operating status or extended service(s) at any time.
   This information is provided back to the Facilities API through a specialized CMS-dedicated
   endpoint. Operating status is stored in the operational database along side facility data.
+
+### Update Frequency for Data Sources
+Facilities collection occurs every 24 hours. This updates the local cache in facilities-operational-db with the most up-to-date data.
+* CDW, ATC, Cemeteries.XML, and Website.CSV are updated daily
+* Drive Time Bands are updated monthly
+* CMS data is updated on-demand
+
+### CDW Data Source Details
+Within CDW, the following databases/tables are read during facility collection:
+* Mental Health data is from `A01.[OMHSP_PERC_Share].[DOEx].[FieldDataEntry_MHPhone]`.
+* Clinical Services data is from `A01.[VSSC_Out].[DOEx].[DST_ClinicalServices]`.
+* Facilities data is from `A06.[CDWWork].[Dim].[VAST]` which is populated from the VSSC SQL Server.
+* National Cemeteries data is from `SQL40.[BISL_GIS_SpatialData].[DOEx].[v_FacilityLocator_NCA]`.
+* Benefit Centers data is from `SQL40.[BISL_GIS_SpatialData].[DOEx].[v_FacilityLocator_VBA]`.
+
 
 # Local Development
 
