@@ -13,7 +13,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-
+import org.json.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -84,20 +84,7 @@ public class FacilityOverlayV1 implements Function<HasFacilityPayload, FacilityV
   @Override
   @SneakyThrows
   public FacilityV1 apply(HasFacilityPayload entity) {
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    JsonNode jsonNode = objectMapper.readTree(entity.facility());
-    JsonNode attNode = jsonNode.get("attributes");
-    String specialInstructions = attNode.get("operational_hours_special_instructions").asText();
-
-    System.out.println(objectMapper.writeValueAsString(specialInstructions.split("\\s*\\|\\s*")));
-    String s = entity
-            .facility()
-            .replace(
-                    "\"More hours are available for some services. To learn more, call our main phone number. | If you need to talk to someone or get advice right away, call the Vet Center anytime at 1-877-WAR-VETS (1-877-927-8387).\"",
-                    objectMapper.writeValueAsString(specialInstructions.split("\\s*\\|\\s*")));
-    System.out.println(s);
-    FacilityV1 facility = mapper.readValue(s, FacilityV1.class);
+    FacilityV1 facility = mapper.readValue(transformSpecialInstructionsToList(entity.facility()), FacilityV1.class);
     if (entity.cmsOperatingStatus() != null) {
       applyCmsOverlayOperatingStatus(
           facility, mapper.readValue(entity.cmsOperatingStatus(), OperatingStatus.class));
@@ -116,5 +103,13 @@ public class FacilityOverlayV1 implements Function<HasFacilityPayload, FacilityV
           facility, List.of(mapper.readValue(entity.cmsServices(), DetailedService[].class)));
     }
     return facility;
+  }
+
+  private String transformSpecialInstructionsToList(String facility) {
+    JSONObject jsonObject = new JSONObject(facility);
+    JSONObject jsonAttributes = jsonObject.getJSONObject("attributes");
+    String specialInstructions = jsonAttributes.get("operational_hours_special_instructions").toString();
+    jsonAttributes.put("operational_hours_special_instructions", specialInstructions.split("\\s*\\|\\s*"));
+    return jsonObject.toString();
   }
 }

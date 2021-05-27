@@ -100,11 +100,6 @@ public class FacilitiesController {
     return FACILITY_OVERLAY.apply(entity);
   }
 
-  @SneakyThrows
-  private static FacilityV1 facilityV1(HasFacilityPayload entity) {
-    return FacilityOverlayV1.builder().mapper(MAPPER).build().apply(entity);
-  }
-
   private static GeoFacility geoFacility(Facility facility) {
     return GeoFacilityTransformer.builder().facility(facility).build().toGeoFacility();
   }
