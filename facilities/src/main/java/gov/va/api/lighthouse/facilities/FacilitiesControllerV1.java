@@ -1,11 +1,29 @@
 package gov.va.api.lighthouse.facilities;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static gov.va.api.lighthouse.facilities.Controllers.*;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
 import gov.va.api.lighthouse.facilities.api.v0.*;
+
+import gov.va.api.lighthouse.facilities.api.v1.FacilitiesResponseV1;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityReadResponseV1;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityV1;
+import gov.va.api.lighthouse.facilities.api.v1.GeoFacilitiesResponseV1;
+import gov.va.api.lighthouse.facilities.api.v1.GeoFacilityReadResponseV1;
+import gov.va.api.lighthouse.facilities.api.v1.GeoFacilityV1;
 import gov.va.api.lighthouse.facilities.v1.FacilityOverlayV1;
+import gov.va.api.lighthouse.facilities.v1.GeoFacilityTransformerV1;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
+import java.util.function.Function;
+import javax.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -17,20 +35,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.constraints.Min;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
-import java.util.function.Function;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static gov.va.api.lighthouse.facilities.Controllers.*;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
@@ -88,8 +97,8 @@ public class FacilitiesControllerV1 {
     return FacilityOverlayV1.builder().mapper(MAPPER).build().apply(entity);
   }
 
-  private static GeoFacility geoFacility(Facility facility) {
-    return GeoFacilityTransformer.builder().facility(facility).build().toGeoFacility();
+  private static GeoFacilityV1 geoFacility(FacilityV1 facility) {
+    return GeoFacilityTransformerV1.builder().facility(facility).build().toGeoFacility();
   }
 
   /** Distance in miles using Haversine algorithm. */
@@ -121,7 +130,7 @@ public class FacilitiesControllerV1 {
           .map(
               e ->
                   FacilitiesJacksonConfig.quietlyWriteValueAsString(
-                      MAPPER, geoFacility(facility(e))))
+                      MAPPER, geoFacility(facilityV1(e))))
           .forEachOrdered(g -> sb.append(g).append(","));
       sb.deleteCharAt(sb.length() - 1);
     }
@@ -298,18 +307,18 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = {"application/geo+json", "application/vnd.geo+json"},
       params = {"bbox[]", "!lat", "!long", "!state", "!visn", "!zip"})
-  GeoFacilitiesResponse geoFacilitiesByBoundingBox(
+  GeoFacilitiesResponseV1 geoFacilitiesByBoundingBox(
       @RequestParam(value = "bbox[]") List<BigDecimal> bbox,
       @RequestParam(value = "type", required = false) String type,
       @RequestParam(value = "services[]", required = false) List<String> services,
       @RequestParam(value = "mobile", required = false) Boolean mobile,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    return GeoFacilitiesResponse.builder()
-        .type(GeoFacilitiesResponse.Type.FeatureCollection)
+    return GeoFacilitiesResponseV1.builder()
+        .type(GeoFacilitiesResponseV1.Type.FeatureCollection)
         .features(
             page(entitiesByBoundingBox(bbox, type, services, mobile), page, perPage).stream()
-                .map(e -> geoFacility(facility(e)))
+                .map(e -> geoFacility(facilityV1(e)))
                 .collect(toList()))
         .build();
   }
@@ -319,15 +328,15 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = {"application/geo+json", "application/vnd.geo+json"},
       params = {"!bbox[]", "ids", "!lat", "!long", "!state", "!visn", "!zip"})
-  GeoFacilitiesResponse geoFacilitiesByIds(
+  GeoFacilitiesResponseV1 geoFacilitiesByIds(
       @RequestParam(value = "ids") String ids,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    return GeoFacilitiesResponse.builder()
-        .type(GeoFacilitiesResponse.Type.FeatureCollection)
+    return GeoFacilitiesResponseV1.builder()
+        .type(GeoFacilitiesResponseV1.Type.FeatureCollection)
         .features(
             page(entitiesByIds(ids), page, perPage).stream()
-                .map(e -> geoFacility(facility(e)))
+                .map(e -> geoFacility(facilityV1(e)))
                 .collect(toList()))
         .build();
   }
@@ -337,7 +346,7 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = {"application/geo+json", "application/vnd.geo+json"},
       params = {"!bbox[]", "lat", "long", "!state", "!visn", "!zip"})
-  GeoFacilitiesResponse geoFacilitiesByLatLong(
+  GeoFacilitiesResponseV1 geoFacilitiesByLatLong(
       @RequestParam(value = "lat") BigDecimal latitude,
       @RequestParam(value = "long") BigDecimal longitude,
       @RequestParam(value = "ids", required = false) String ids,
@@ -346,8 +355,8 @@ public class FacilitiesControllerV1 {
       @RequestParam(value = "mobile", required = false) Boolean mobile,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    return GeoFacilitiesResponse.builder()
-        .type(GeoFacilitiesResponse.Type.FeatureCollection)
+    return GeoFacilitiesResponseV1.builder()
+        .type(GeoFacilitiesResponseV1.Type.FeatureCollection)
         .features(
             page(entitiesByLatLong(longitude, latitude, ids, type, services, mobile), page, perPage)
                 .stream()
@@ -361,20 +370,20 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = {"application/geo+json", "application/vnd.geo+json"},
       params = {"!bbox[]", "!lat", "!long", "state", "!visn", "!zip"})
-  GeoFacilitiesResponse geoFacilitiesByState(
+  GeoFacilitiesResponseV1 geoFacilitiesByState(
       @RequestParam(value = "state") String state,
       @RequestParam(value = "type", required = false) String type,
       @RequestParam(value = "services[]", required = false) List<String> services,
       @RequestParam(value = "mobile", required = false) Boolean mobile,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    return GeoFacilitiesResponse.builder()
-        .type(GeoFacilitiesResponse.Type.FeatureCollection)
+    return GeoFacilitiesResponseV1.builder()
+        .type(GeoFacilitiesResponseV1.Type.FeatureCollection)
         .features(
             perPage == 0
                 ? emptyList()
                 : entitiesPageByState(state, type, services, mobile, page, perPage).stream()
-                    .map(e -> geoFacility(facility(e)))
+                    .map(e -> geoFacility(facilityV1(e)))
                     .collect(toList()))
         .build();
   }
@@ -384,15 +393,15 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = {"application/geo+json", "application/vnd.geo+json"},
       params = {"!bbox[]", "!lat", "!long", "!state", "!type", "visn", "!zip"})
-  GeoFacilitiesResponse geoFacilitiesByVisn(
+  GeoFacilitiesResponseV1 geoFacilitiesByVisn(
       @RequestParam(value = "visn") String visn,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    return GeoFacilitiesResponse.builder()
-        .type(GeoFacilitiesResponse.Type.FeatureCollection)
+    return GeoFacilitiesResponseV1.builder()
+        .type(GeoFacilitiesResponseV1.Type.FeatureCollection)
         .features(
             page(facilityRepository.findByVisn(visn), page, perPage).stream()
-                .map(e -> geoFacility(facility(e)))
+                .map(e -> geoFacility(facilityV1(e)))
                 .collect(toList()))
         .build();
   }
@@ -402,20 +411,20 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = {"application/geo+json", "application/vnd.geo+json"},
       params = {"!bbox[]", "!lat", "!long", "!state", "!visn", "zip"})
-  GeoFacilitiesResponse geoFacilitiesByZip(
+  GeoFacilitiesResponseV1 geoFacilitiesByZip(
       @RequestParam(value = "zip") String zip,
       @RequestParam(value = "type", required = false) String type,
       @RequestParam(value = "services[]", required = false) List<String> services,
       @RequestParam(value = "mobile", required = false) Boolean mobile,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    return GeoFacilitiesResponse.builder()
-        .type(GeoFacilitiesResponse.Type.FeatureCollection)
+    return GeoFacilitiesResponseV1.builder()
+        .type(GeoFacilitiesResponseV1.Type.FeatureCollection)
         .features(
             perPage == 0
                 ? emptyList()
                 : entitiesPageByZip(zip, type, services, mobile, page, perPage).stream()
-                    .map(e -> geoFacility(facility(e)))
+                    .map(e -> geoFacility(facilityV1(e)))
                     .collect(toList()))
         .build();
   }
@@ -489,7 +498,7 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = "application/json",
       params = {"!bbox[]", "lat", "long", "!state", "!visn", "!zip"})
-  FacilitiesResponse jsonFacilitiesByLatLong(
+  FacilitiesResponseV1 jsonFacilitiesByLatLong(
       @RequestParam(value = "lat") BigDecimal latitude,
       @RequestParam(value = "long") BigDecimal longitude,
       @RequestParam(value = "ids", required = false) String ids,
@@ -516,20 +525,20 @@ public class FacilitiesControllerV1 {
             .totalEntries(entities.size())
             .build();
     List<DistanceEntity> entitiesPage = page(entities, page, perPage);
-    List<FacilitiesResponse.Distance> distances =
+    List<FacilitiesResponseV1.Distance> distances =
         entitiesPage.stream()
             .map(
                 e ->
-                    FacilitiesResponse.Distance.builder()
+                    FacilitiesResponseV1.Distance.builder()
                         .id(e.facility().id())
                         .distance(e.distance().setScale(2, RoundingMode.HALF_EVEN))
                         .build())
             .collect(toList());
-    return FacilitiesResponse.builder()
+    return FacilitiesResponseV1.builder()
         .data(entitiesPage.stream().map(e -> e.facility()).collect(toList()))
         .links(linker.links())
         .meta(
-            FacilitiesResponse.FacilitiesMetadata.builder()
+            FacilitiesResponseV1.FacilitiesMetadata.builder()
                 .pagination(linker.pagination())
                 .distances(distances)
                 .build())
@@ -541,7 +550,7 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = "application/json",
       params = {"!bbox[]", "!lat", "!long", "state", "!visn", "!zip"})
-  FacilitiesResponse jsonFacilitiesByState(
+  FacilitiesResponseV1 jsonFacilitiesByState(
       @RequestParam(value = "state") String state,
       @RequestParam(value = "type", required = false) String type,
       @RequestParam(value = "services[]", required = false) List<String> services,
@@ -564,14 +573,16 @@ public class FacilitiesControllerV1 {
                     .build())
             .totalEntries((int) entitiesPage.getTotalElements())
             .build();
-    return FacilitiesResponse.builder()
+    return FacilitiesResponseV1.builder()
         .data(
             perPage == 0
                 ? emptyList()
-                : entitiesPage.stream().map(e -> facility(e)).collect(toList()))
+                : entitiesPage.stream().map(e -> facilityV1(e)).collect(toList()))
         .links(linker.links())
         .meta(
-            FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())
+            FacilitiesResponseV1.FacilitiesMetadata.builder()
+                .pagination(linker.pagination())
+                .build())
         .build();
   }
 
@@ -580,7 +591,7 @@ public class FacilitiesControllerV1 {
       value = "/facilities",
       produces = "application/json",
       params = {"!bbox[]", "!lat", "!long", "!state", "!type", "visn", "!zip"})
-  FacilitiesResponse jsonFacilitiesByVisn(
+  FacilitiesResponseV1 jsonFacilitiesByVisn(
       @RequestParam(value = "visn") String visn,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
@@ -596,11 +607,13 @@ public class FacilitiesControllerV1 {
                     .build())
             .totalEntries(entities.size())
             .build();
-    return FacilitiesResponse.builder()
-        .data(page(entities, page, perPage).stream().map(e -> facility(e)).collect(toList()))
+    return FacilitiesResponseV1.builder()
+        .data(page(entities, page, perPage).stream().map(e -> facilityV1(e)).collect(toList()))
         .links(linker.links())
         .meta(
-            FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())
+            FacilitiesResponseV1.FacilitiesMetadata.builder()
+                .pagination(linker.pagination())
+                .build())
         .build();
   }
 
@@ -647,8 +660,8 @@ public class FacilitiesControllerV1 {
   @GetMapping(
       value = "/facilities/{id}",
       produces = {"application/geo+json", "application/vnd.geo+json"})
-  GeoFacilityReadResponse readGeoJson(@PathVariable("id") String id) {
-    return GeoFacilityReadResponse.of(geoFacility(facility(entityById(id))));
+  GeoFacilityReadResponseV1 readGeoJson(@PathVariable("id") String id) {
+    return GeoFacilityReadResponseV1.of(geoFacility(facilityV1(entityById(id))));
   }
 
   /** Read facility. */
@@ -664,11 +677,11 @@ public class FacilitiesControllerV1 {
 
     final BigDecimal distance;
 
-    Facility facility;
+    FacilityV1 facility;
 
-    Facility facility() {
+    FacilityV1 facility() {
       if (facility == null) {
-        facility = FacilitiesControllerV1.facility(entity);
+        facility = FacilitiesControllerV1.facilityV1(entity);
       }
       return facility;
     }

@@ -1,6 +1,5 @@
 package gov.va.api.lighthouse.facilities.v1;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.lighthouse.facilities.HasFacilityPayload;
 import gov.va.api.lighthouse.facilities.api.cms.DetailedService;
@@ -8,16 +7,15 @@ import gov.va.api.lighthouse.facilities.api.v1.FacilityV1;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityV1.ActiveStatus;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityV1.OperatingStatus;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityV1.OperatingStatusCode;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.json.*;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 
 @Builder
 @Value
@@ -26,7 +24,7 @@ public class FacilityOverlayV1 implements Function<HasFacilityPayload, FacilityV
   @NonNull ObjectMapper mapper;
 
   private static void applyCmsOverlayOperatingStatus(
-          FacilityV1 facility, OperatingStatus operatingStatus) {
+      FacilityV1 facility, OperatingStatus operatingStatus) {
     if (operatingStatus == null) {
       log.warn("CMS Overlay for facility {} is missing operating status", facility.id());
     } else {
@@ -49,7 +47,10 @@ public class FacilityOverlayV1 implements Function<HasFacilityPayload, FacilityV
           if (facility.attributes().services().health() != null) {
             facility.attributes().services().health().add(FacilityV1.HealthService.Covid19Vaccine);
           } else {
-            facility.attributes().services().health(List.of(FacilityV1.HealthService.Covid19Vaccine));
+            facility
+                .attributes()
+                .services()
+                .health(List.of(FacilityV1.HealthService.Covid19Vaccine));
           }
           needToSort = true;
           break;
@@ -65,7 +66,7 @@ public class FacilityOverlayV1 implements Function<HasFacilityPayload, FacilityV
   }
 
   private static void applyDetailedServices(
-          FacilityV1 facility, List<DetailedService> detailedServices) {
+      FacilityV1 facility, List<DetailedService> detailedServices) {
     if (detailedServices == null) {
       log.warn("CMS Overlay for facility {} is missing Detailed CMS Services", facility.id());
     } else {
@@ -84,7 +85,8 @@ public class FacilityOverlayV1 implements Function<HasFacilityPayload, FacilityV
   @Override
   @SneakyThrows
   public FacilityV1 apply(HasFacilityPayload entity) {
-    FacilityV1 facility = mapper.readValue(transformSpecialInstructionsToList(entity.facility()), FacilityV1.class);
+    FacilityV1 facility =
+        mapper.readValue(transformSpecialInstructionsToList(entity.facility()), FacilityV1.class);
     if (entity.cmsOperatingStatus() != null) {
       applyCmsOverlayOperatingStatus(
           facility, mapper.readValue(entity.cmsOperatingStatus(), OperatingStatus.class));
@@ -108,8 +110,17 @@ public class FacilityOverlayV1 implements Function<HasFacilityPayload, FacilityV
   private String transformSpecialInstructionsToList(String facility) {
     JSONObject jsonObject = new JSONObject(facility);
     JSONObject jsonAttributes = jsonObject.getJSONObject("attributes");
-    String specialInstructions = jsonAttributes.get("operational_hours_special_instructions").toString();
-    jsonAttributes.put("operational_hours_special_instructions", specialInstructions.split("\\s*\\|\\s*"));
+    String specialInstructions =
+        jsonAttributes.get("operational_hours_special_instructions").toString();
+    if (specialInstructions == null
+        || specialInstructions.equals("null")
+        || specialInstructions.isBlank()) {
+      jsonAttributes.put("operational_hours_special_instructions", new ArrayList<>());
+    } else {
+      jsonAttributes.put(
+          "operational_hours_special_instructions",
+          Arrays.stream(specialInstructions.split("\\s*\\|\\s*")).collect(Collectors.toList()));
+    }
     return jsonObject.toString();
   }
 }
