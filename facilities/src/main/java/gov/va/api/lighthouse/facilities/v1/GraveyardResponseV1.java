@@ -1,7 +1,7 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
-import gov.va.api.lighthouse.facilities.api.cms.CmsOverlay;
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.cms.CmsOverlay;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public final class GraveyardResponse {
+public final class GraveyardResponseV1 {
   @Builder.Default List<Item> facilities = new ArrayList<>();
 
   @Value

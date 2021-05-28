@@ -1,6 +1,11 @@
 package gov.va.api.lighthouse.facilities;
 
-import static gov.va.api.lighthouse.facilities.InternalFacilitiesController.*;
+import static gov.va.api.lighthouse.facilities.InternalFacilitiesController.SPECIAL_INSTRUCTION_OLD_1;
+import static gov.va.api.lighthouse.facilities.InternalFacilitiesController.SPECIAL_INSTRUCTION_OLD_2;
+import static gov.va.api.lighthouse.facilities.InternalFacilitiesController.SPECIAL_INSTRUCTION_OLD_3;
+import static gov.va.api.lighthouse.facilities.InternalFacilitiesController.SPECIAL_INSTRUCTION_UPDATED_1;
+import static gov.va.api.lighthouse.facilities.InternalFacilitiesController.SPECIAL_INSTRUCTION_UPDATED_2;
+import static gov.va.api.lighthouse.facilities.InternalFacilitiesController.SPECIAL_INSTRUCTION_UPDATED_3;
 import static gov.va.api.lighthouse.facilities.api.v0.Facility.FacilityType.va_health_facility;
 import static gov.va.api.lighthouse.facilities.api.v0.Facility.FacilityType.vet_center;
 import static java.util.Collections.emptyList;
@@ -26,6 +31,7 @@ import gov.va.api.lighthouse.facilities.api.v0.Facility.OtherService;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.Services;
 import gov.va.api.lighthouse.facilities.api.v0.ReloadResponse;
 import gov.va.api.lighthouse.facilities.collector.FacilitiesCollector;
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -44,7 +50,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class InternalFacilitiesControllerTest {
+public class InternalFacilitiesControllerV0Test {
   @Autowired FacilityRepository facilityRepository;
 
   @Autowired FacilityGraveyardRepository graveyardRepository;

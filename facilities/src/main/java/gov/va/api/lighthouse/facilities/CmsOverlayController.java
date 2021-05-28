@@ -5,6 +5,7 @@ import static gov.va.api.lighthouse.facilities.collector.FacilitiesCollector.loa
 
 import gov.va.api.lighthouse.facilities.api.cms.CmsOverlay;
 import gov.va.api.lighthouse.facilities.api.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

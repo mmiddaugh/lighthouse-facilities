@@ -13,7 +13,6 @@ import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.DriveTimeBandEntity;
 import gov.va.api.lighthouse.facilities.DriveTimeBandRepository;
 import gov.va.api.lighthouse.facilities.FacilityEntity;
-import gov.va.api.lighthouse.facilities.FacilityRepository;
 import gov.va.api.lighthouse.facilities.FacilitySamples;
 import gov.va.api.lighthouse.facilities.InternalFacilitiesController;
 import gov.va.api.lighthouse.facilities.api.pssg.PathEncoder;
@@ -51,7 +50,7 @@ public class NearbyTest {
     InsecureRestTemplateProvider restTemplateProvider = mock(InsecureRestTemplateProvider.class);
     when(restTemplateProvider.restTemplate()).thenReturn(restTemplate);
     return NearbyControllerV0.builder()
-        .facilityRepository(facilityRepository)
+        .facilityRepositoryV0(facilityRepository)
         .driveTimeBandRepository(driveTimeBandRepository)
         .restTemplateProvider(restTemplateProvider)
         .bingKey("bingKey")

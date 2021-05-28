@@ -1,9 +1,9 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toSet;
 
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Optional;
@@ -38,7 +38,7 @@ import org.springframework.data.domain.Sort;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FacilityEntity implements HasFacilityPayload {
+public class FacilityEntity implements HasFacilityPayloadV1 {
   /**
    * API V0 searches by {type}_{facilityId}. We might want to change that in the future, so we are
    * keeping those two pieces of information separate. However, the two (type + facility) are

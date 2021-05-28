@@ -1,9 +1,9 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static gov.va.api.lighthouse.facilities.Controllers.page;
-import static gov.va.api.lighthouse.facilities.Controllers.validateFacilityType;
-import static gov.va.api.lighthouse.facilities.Controllers.validateServices;
+import static gov.va.api.lighthouse.facilities.v1.Controllers.page;
+import static gov.va.api.lighthouse.facilities.v1.Controllers.validateFacilityType;
+import static gov.va.api.lighthouse.facilities.v1.Controllers.validateServices;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -11,13 +11,18 @@ import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
-import gov.va.api.lighthouse.facilities.api.v0.FacilitiesIdsResponse;
-import gov.va.api.lighthouse.facilities.api.v0.FacilitiesResponse;
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import gov.va.api.lighthouse.facilities.api.v0.FacilityReadResponse;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacilitiesResponse;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacilityReadResponse;
+import gov.va.api.lighthouse.facilities.ApiExceptions;
+import gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig;
+import gov.va.api.lighthouse.facilities.HasFacilityPayload;
+import gov.va.api.lighthouse.facilities.PageLinker;
+import gov.va.api.lighthouse.facilities.Parameters;
+import gov.va.api.lighthouse.facilities.api.v1.FacilitiesIdsResponse;
+import gov.va.api.lighthouse.facilities.api.v1.FacilitiesResponse;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.FacilityReadResponse;
+import gov.va.api.lighthouse.facilities.api.v1.GeoFacilitiesResponse;
+import gov.va.api.lighthouse.facilities.api.v1.GeoFacility;
+import gov.va.api.lighthouse.facilities.api.v1.GeoFacilityReadResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -47,23 +52,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
-@RequestMapping(value = "/v0")
-public class FacilitiesController {
+@RequestMapping(value = "/v1")
+public class FacilitiesControllerV1 {
   private static final ObjectMapper MAPPER = FacilitiesJacksonConfig.createMapper();
 
   private static final FacilityOverlay FACILITY_OVERLAY =
       FacilityOverlay.builder().mapper(MAPPER).build();
 
-  private final FacilityRepository facilityRepository;
+  private final FacilityRepository facilityRepositoryV1;
 
   private final String linkerUrl;
 
   @Builder
-  FacilitiesController(
-      @Autowired FacilityRepository facilityRepository,
+  FacilitiesControllerV1(
+      @Autowired FacilityRepository facilityRepositoryV1,
       @Value("${facilities.url}") String baseUrl,
       @Value("${facilities.base-path}") String basePath) {
-    this.facilityRepository = facilityRepository;
+    this.facilityRepositoryV1 = facilityRepositoryV1;
     String url = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
     String path = basePath.replaceAll("/$", "");
     path = path.isEmpty() ? path : path + "/";
@@ -123,7 +128,7 @@ public class FacilitiesController {
   String all() {
     StringBuilder sb = new StringBuilder();
     sb.append("{\"type\":\"FeatureCollection\",\"features\":[");
-    List<HasFacilityPayload> all = facilityRepository.findAllProjectedBy();
+    List<HasFacilityPayload> all = facilityRepositoryV1.findAllProjectedBy();
     if (!all.isEmpty()) {
       all.parallelStream()
           .map(
@@ -142,9 +147,14 @@ public class FacilitiesController {
   @GetMapping(value = "/facilities/all", produces = "text/csv")
   String allCsv() {
     List<List<String>> rows =
-        facilityRepository.findAllProjectedBy().stream()
+        facilityRepositoryV1.findAllProjectedBy().stream()
             .parallel()
-            .map(e -> CsvTransformer.builder().facility(facility(e)).build().toRow())
+            .map(
+                e ->
+                    gov.va.api.lighthouse.facilities.v1.CsvTransformer.builder()
+                        .facility(facility(e))
+                        .build()
+                        .toRow())
             .collect(toList());
     StringBuilder sb = new StringBuilder();
     try (CSVPrinter printer =
@@ -168,7 +178,7 @@ public class FacilitiesController {
 
     // lng lat lng lat
     List<FacilityEntity> allEntities =
-        facilityRepository.findAll(
+        facilityRepositoryV1.findAll(
             FacilityRepository.BBoxSpecification.builder()
                 .minLongitude(bbox.get(0).min(bbox.get(2)))
                 .maxLongitude(bbox.get(0).max(bbox.get(2)))
@@ -191,7 +201,7 @@ public class FacilitiesController {
   private List<FacilityEntity> entitiesByIds(String ids) {
     List<FacilityEntity.Pk> pks = entityIds(ids);
     Map<FacilityEntity.Pk, FacilityEntity> entities =
-        facilityRepository.findByIdIn(pks).stream()
+        facilityRepositoryV1.findByIdIn(pks).stream()
             .collect(toMap(e -> e.id(), Function.identity()));
     return pks.stream().map(pk -> entities.get(pk)).filter(Objects::nonNull).collect(toList());
   }
@@ -205,9 +215,10 @@ public class FacilitiesController {
       List<String> rawServices,
       Boolean rawMobile) {
     FacilityEntity.Type facilityType = validateFacilityType(rawType);
-    Set<Facility.ServiceType> services = validateServices(rawServices);
+    Set<gov.va.api.lighthouse.facilities.api.v1.Facility.ServiceType> services =
+        validateServices(rawServices);
     List<FacilityEntity> entities =
-        facilityRepository.findAll(
+        facilityRepositoryV1.findAll(
             FacilityRepository.TypeServicesIdsSpecification.builder()
                 .ids(entityIds(ids))
                 .facilityType(facilityType)
@@ -239,7 +250,7 @@ public class FacilitiesController {
     String state = rawState.trim().toUpperCase(Locale.US);
     FacilityEntity.Type facilityType = validateFacilityType(rawType);
     Set<Facility.ServiceType> services = validateServices(rawServices);
-    return facilityRepository.findAll(
+    return facilityRepositoryV1.findAll(
         FacilityRepository.StateSpecification.builder()
             .state(state)
             .facilityType(facilityType)
@@ -261,7 +272,7 @@ public class FacilitiesController {
     FacilityEntity.Type facilityType = validateFacilityType(rawType);
     Set<Facility.ServiceType> services = validateServices(rawServices);
     String zip = rawZip.substring(0, Math.min(rawZip.length(), 5));
-    return facilityRepository.findAll(
+    return facilityRepositoryV1.findAll(
         FacilityRepository.ZipSpecification.builder()
             .zip(zip)
             .facilityType(facilityType)
@@ -278,7 +289,7 @@ public class FacilitiesController {
     } catch (IllegalArgumentException ex) {
       throw new ApiExceptions.NotFound(id, ex);
     }
-    Optional<FacilityEntity> opt = facilityRepository.findById(pk);
+    Optional<FacilityEntity> opt = facilityRepositoryV1.findById(pk);
     if (opt.isEmpty()) {
       throw new ApiExceptions.NotFound(id);
     }
@@ -294,7 +305,7 @@ public class FacilitiesController {
     FacilityEntity.Type facilityType = validateFacilityType(type);
     return FacilitiesIdsResponse.builder()
         .data(
-            facilityRepository.findAllIds().stream()
+            FacilityRepository.findAllIds().stream()
                 .filter(id -> facilityType == null || id.type() == facilityType)
                 .map(id -> id.toIdString())
                 .collect(toList()))
@@ -317,7 +328,7 @@ public class FacilitiesController {
         .type(GeoFacilitiesResponse.Type.FeatureCollection)
         .features(
             page(entitiesByBoundingBox(bbox, type, services, mobile), page, perPage).stream()
-                .map(e -> geoFacility(facility(e)))
+                .map(e -> geoFacility(facility((HasFacilityPayload) e)))
                 .collect(toList()))
         .build();
   }
@@ -335,7 +346,7 @@ public class FacilitiesController {
         .type(GeoFacilitiesResponse.Type.FeatureCollection)
         .features(
             page(entitiesByIds(ids), page, perPage).stream()
-                .map(e -> geoFacility(facility(e)))
+                .map(e -> geoFacility(facility((HasFacilityPayload) e)))
                 .collect(toList()))
         .build();
   }
@@ -382,7 +393,7 @@ public class FacilitiesController {
             perPage == 0
                 ? emptyList()
                 : entitiesPageByState(state, type, services, mobile, page, perPage).stream()
-                    .map(e -> geoFacility(facility(e)))
+                    .map(e -> geoFacility(facility((HasFacilityPayload) e)))
                     .collect(toList()))
         .build();
   }
@@ -399,8 +410,8 @@ public class FacilitiesController {
     return GeoFacilitiesResponse.builder()
         .type(GeoFacilitiesResponse.Type.FeatureCollection)
         .features(
-            page(facilityRepository.findByVisn(visn), page, perPage).stream()
-                .map(e -> geoFacility(facility(e)))
+            page(facilityRepositoryV1.findByVisn(visn), page, perPage).stream()
+                .map(e -> geoFacility(facility((HasFacilityPayload) e)))
                 .collect(toList()))
         .build();
   }
@@ -423,7 +434,7 @@ public class FacilitiesController {
             perPage == 0
                 ? emptyList()
                 : entitiesPageByZip(zip, type, services, mobile, page, perPage).stream()
-                    .map(e -> geoFacility(facility(e)))
+                    .map(e -> geoFacility(facility((HasFacilityPayload) e)))
                     .collect(toList()))
         .build();
   }
@@ -456,7 +467,10 @@ public class FacilitiesController {
             .totalEntries(entities.size())
             .build();
     return FacilitiesResponse.builder()
-        .data(page(entities, page, perPage).stream().map(e -> facility(e)).collect(toList()))
+        .data(
+            page(entities, page, perPage).stream()
+                .map(e -> facility((HasFacilityPayload) e))
+                .collect(toList()))
         .links(linker.links())
         .meta(
             FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())
@@ -485,7 +499,10 @@ public class FacilitiesController {
             .totalEntries(entities.size())
             .build();
     return FacilitiesResponse.builder()
-        .data(page(entities, page, perPage).stream().map(e -> facility(e)).collect(toList()))
+        .data(
+            page(entities, page, perPage).stream()
+                .map(e -> facility((HasFacilityPayload) e))
+                .collect(toList()))
         .links(linker.links())
         .meta(
             FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())
@@ -576,7 +593,9 @@ public class FacilitiesController {
         .data(
             perPage == 0
                 ? emptyList()
-                : entitiesPage.stream().map(e -> facility(e)).collect(toList()))
+                : entitiesPage.stream()
+                    .map(e -> facility((HasFacilityPayload) e))
+                    .collect(toList()))
         .links(linker.links())
         .meta(
             FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())
@@ -592,7 +611,7 @@ public class FacilitiesController {
       @RequestParam(value = "visn") String visn,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    List<FacilityEntity> entities = facilityRepository.findByVisn(visn);
+    List<FacilityEntity> entities = facilityRepositoryV1.findByVisn(visn);
     PageLinker linker =
         PageLinker.builder()
             .url(linkerUrl + "facilities")
@@ -605,7 +624,10 @@ public class FacilitiesController {
             .totalEntries(entities.size())
             .build();
     return FacilitiesResponse.builder()
-        .data(page(entities, page, perPage).stream().map(e -> facility(e)).collect(toList()))
+        .data(
+            page(entities, page, perPage).stream()
+                .map(e -> facility((HasFacilityPayload) e))
+                .collect(toList()))
         .links(linker.links())
         .meta(
             FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())
@@ -644,7 +666,9 @@ public class FacilitiesController {
         .data(
             perPage == 0
                 ? emptyList()
-                : entitiesPage.stream().map(e -> facility(e)).collect(toList()))
+                : entitiesPage.stream()
+                    .map(e -> facility((HasFacilityPayload) e))
+                    .collect(toList()))
         .links(linker.links())
         .meta(
             FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())
@@ -656,13 +680,15 @@ public class FacilitiesController {
       value = "/facilities/{id}",
       produces = {"application/geo+json", "application/vnd.geo+json"})
   GeoFacilityReadResponse readGeoJson(@PathVariable("id") String id) {
-    return GeoFacilityReadResponse.of(geoFacility(facility(entityById(id))));
+    return GeoFacilityReadResponse.of(geoFacility(facility((HasFacilityPayload) entityById(id))));
   }
 
   /** Read facility. */
   @GetMapping(value = "/facilities/{id}", produces = "application/json")
   FacilityReadResponse readJson(@PathVariable("id") String id) {
-    return FacilityReadResponse.builder().facility(facility(entityById(id))).build();
+    return FacilityReadResponse.builder()
+        .facility(facility((HasFacilityPayload) entityById(id)))
+        .build();
   }
 
   @Data
@@ -676,7 +702,7 @@ public class FacilitiesController {
 
     Facility facility() {
       if (facility == null) {
-        facility = FacilitiesController.facility(entity);
+        facility = FacilitiesControllerV1.facility((HasFacilityPayload) entity);
       }
       return facility;
     }

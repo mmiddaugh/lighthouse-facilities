@@ -1,6 +1,5 @@
 package gov.va.api.lighthouse.facilities.tests;
 
-import static gov.va.api.lighthouse.facilities.tests.SystemDefinitions.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.sentinel.ExpectedResponse;

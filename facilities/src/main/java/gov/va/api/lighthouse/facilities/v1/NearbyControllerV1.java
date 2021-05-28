@@ -2,7 +2,7 @@ package gov.va.api.lighthouse.facilities.v1;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
-import static gov.va.api.lighthouse.facilities.Controllers.validateServices;
+import static gov.va.api.lighthouse.facilities.v0.Controllers.validateServices;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -15,11 +15,11 @@ import gov.va.api.lighthouse.facilities.ApiExceptions;
 import gov.va.api.lighthouse.facilities.DriveTimeBandEntity;
 import gov.va.api.lighthouse.facilities.DriveTimeBandRepository;
 import gov.va.api.lighthouse.facilities.FacilityEntity;
-import gov.va.api.lighthouse.facilities.FacilityRepository;
 import gov.va.api.lighthouse.facilities.api.pssg.PathEncoder;
 import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import gov.va.api.lighthouse.facilities.api.v0.NearbyResponse;
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;

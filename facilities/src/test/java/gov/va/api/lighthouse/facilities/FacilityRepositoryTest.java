@@ -2,6 +2,7 @@ package gov.va.api.lighthouse.facilities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

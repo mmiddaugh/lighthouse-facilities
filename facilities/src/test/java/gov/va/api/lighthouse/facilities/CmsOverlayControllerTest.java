@@ -9,6 +9,7 @@ import gov.va.api.lighthouse.facilities.api.cms.CmsOverlay;
 import gov.va.api.lighthouse.facilities.api.cms.DetailedService;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.OperatingStatus;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.OperatingStatusCode;
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;

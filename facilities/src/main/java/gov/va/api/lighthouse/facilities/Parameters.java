@@ -11,7 +11,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @NoArgsConstructor(staticName = "builder")
-final class Parameters {
+public final class Parameters {
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
   static int pageOf(@NonNull MultiValueMap<String, String> parameters) {
@@ -35,12 +35,13 @@ final class Parameters {
     return this;
   }
 
-  Parameters add(String key, @NonNull Object value) {
+  public Parameters add(String key, @NonNull Object value) {
     params.add(key, value.toString());
     return this;
   }
 
-  Parameters addAll(String key, List<?> values) {
+  /** Javadoc required for V1/V0 split. */
+  public Parameters addAll(String key, List<?> values) {
     if (values != null && !isEmpty(values)) {
       for (Object val : values) {
         checkArgument(val != null);
@@ -50,14 +51,15 @@ final class Parameters {
     return this;
   }
 
-  Parameters addIgnoreNull(String key, Object value) {
+  /** Javadoc required for V1/V0 split. */
+  public Parameters addIgnoreNull(String key, Object value) {
     if (value != null) {
       params.add(key, value.toString());
     }
     return this;
   }
 
-  MultiValueMap<String, String> build() {
+  public MultiValueMap<String, String> build() {
     return unmodifiableMultiValueMap(params);
   }
 }

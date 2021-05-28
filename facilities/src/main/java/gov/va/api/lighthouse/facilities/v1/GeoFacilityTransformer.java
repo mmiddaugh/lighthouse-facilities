@@ -1,15 +1,15 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.GeoFacility;
 import java.util.List;
 import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-final class GeoFacilityTransformer {
+public final class GeoFacilityTransformer {
   @NonNull private final Facility facility;
 
   private GeoFacility.Geometry geometry() {
@@ -53,7 +53,8 @@ final class GeoFacilityTransformer {
         .build();
   }
 
-  GeoFacility toGeoFacility() {
+  /** Javadoc required for V0/V1 split. Converts the facility to GeoFacility. */
+  public GeoFacility toGeoFacility() {
     if (isBlank(id())) {
       return null;
     }

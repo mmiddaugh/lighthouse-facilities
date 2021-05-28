@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v0;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Collections.emptyList;
@@ -12,6 +12,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
+import gov.va.api.lighthouse.facilities.ApiExceptions;
+import gov.va.api.lighthouse.facilities.FacilityEntity;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,7 +78,7 @@ public final class Controllers {
     return mapped;
   }
 
-  /** Validates services. */
+  /** Validates services. @return */
   public static Set<Facility.ServiceType> validateServices(Collection<String> services) {
     if (isEmpty(services)) {
       return emptySet();

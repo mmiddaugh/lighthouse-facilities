@@ -16,12 +16,15 @@ import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
 import gov.va.api.lighthouse.facilities.api.v0.GeoFacilityReadResponse;
 import gov.va.api.lighthouse.facilities.api.v0.PageLinks;
 import gov.va.api.lighthouse.facilities.api.v0.Pagination;
+import gov.va.api.lighthouse.facilities.v0.CsvTransformer;
+import gov.va.api.lighthouse.facilities.v0.FacilitiesControllerV0;
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
-public class FacilitiesControllerTest {
+public class FacilitiesControllerV0Test {
   FacilityRepository fr = mock(FacilityRepository.class);
 
   DriveTimeBandRepository dbr = mock(DriveTimeBandRepository.class);
@@ -80,9 +83,9 @@ public class FacilitiesControllerTest {
                 + "730AM-600PM,730AM-600PM,730AM-600PM,730AM-600PM,800AM-400PM,800AM-400PM,NORMAL,");
   }
 
-  private FacilitiesController controller() {
-    return FacilitiesController.builder()
-        .facilityRepository(fr)
+  private FacilitiesControllerV0 controller() {
+    return FacilitiesControllerV0.builder()
+        .facilityRepositoryV0(fr)
         .baseUrl("http://foo/")
         .basePath("bp")
         .build();

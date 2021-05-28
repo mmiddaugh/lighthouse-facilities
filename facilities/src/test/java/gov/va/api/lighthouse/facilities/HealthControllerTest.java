@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.web.context.request.RequestContextHolder.setRequestAttributes;
 
 import gov.va.api.lighthouse.facilities.collector.InsecureRestTemplateProvider;
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

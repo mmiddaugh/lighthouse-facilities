@@ -2,7 +2,7 @@ package gov.va.api.lighthouse.facilities.v0;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
-import static gov.va.api.lighthouse.facilities.Controllers.validateServices;
+import static gov.va.api.lighthouse.facilities.v0.Controllers.validateServices;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.logging.log4j.util.Strings.isBlank;
@@ -16,7 +16,6 @@ import gov.va.api.lighthouse.facilities.ApiExceptions;
 import gov.va.api.lighthouse.facilities.DriveTimeBandEntity;
 import gov.va.api.lighthouse.facilities.DriveTimeBandRepository;
 import gov.va.api.lighthouse.facilities.FacilityEntity;
-import gov.va.api.lighthouse.facilities.FacilityRepository;
 import gov.va.api.lighthouse.facilities.api.pssg.PathEncoder;
 import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
@@ -278,7 +277,7 @@ public class NearbyControllerV0 {
   @GetMapping(
       produces = "application/json",
       params = {"lat", "lng"})
-  NearbyResponse nearbyLatLong(
+  public NearbyResponse nearbyLatLong(
       @RequestParam(value = "lat") BigDecimal latitude,
       @RequestParam(value = "lng") BigDecimal longitude,
       @RequestParam(value = "services[]", required = false) List<String> services,

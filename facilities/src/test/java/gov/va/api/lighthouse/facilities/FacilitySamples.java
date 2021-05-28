@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import gov.va.api.lighthouse.facilities.api.v0.FacilityReadResponse;
 import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
+import gov.va.api.lighthouse.facilities.v0.GeoFacilityTransformer;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

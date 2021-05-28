@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.va.api.lighthouse.facilities.api.v0.FacilitiesIdsResponse;
+import gov.va.api.lighthouse.facilities.v0.FacilitiesControllerV0;
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -17,9 +19,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class FacilitiesIdsControllerTest {
   @Autowired private FacilityRepository repo;
 
-  private FacilitiesController controller() {
-    return FacilitiesController.builder()
-        .facilityRepository(repo)
+  private FacilitiesControllerV0 controller() {
+    return FacilitiesControllerV0.builder()
+        .facilityRepositoryV0(repo)
         .baseUrl("http://foo/")
         .basePath("bp")
         .build();

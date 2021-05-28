@@ -1,7 +1,8 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import gov.va.api.lighthouse.facilities.JacksonSerializersV0;
 import java.io.InputStream;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;

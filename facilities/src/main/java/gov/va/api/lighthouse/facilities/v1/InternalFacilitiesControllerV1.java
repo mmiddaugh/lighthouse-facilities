@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -14,12 +14,11 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Streams;
 import gov.va.api.health.autoconfig.logging.Loggable;
-import gov.va.api.lighthouse.facilities.api.cms.CmsOverlay;
-import gov.va.api.lighthouse.facilities.api.cms.DetailedService;
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import gov.va.api.lighthouse.facilities.api.v0.ReloadResponse;
-import gov.va.api.lighthouse.facilities.collector.FacilitiesCollector;
-import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.ReloadResponse;
+import gov.va.api.lighthouse.facilities.api.v1.cms.CmsOverlay;
+import gov.va.api.lighthouse.facilities.api.v1.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.collector.FacilitiesCollectorV1;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -51,7 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping(value = "/internal/management", produces = "application/json")
-public class InternalFacilitiesController {
+public class InternalFacilitiesControllerV1 {
   static final String SPECIAL_INSTRUCTION_OLD_1 =
       "Expanded or Nontraditional hours are available for some services on a routine and "
           + "or requested basis. Please call our main phone number for details.";
@@ -80,7 +79,7 @@ public class InternalFacilitiesController {
 
   private static final ObjectMapper MAPPER = FacilitiesJacksonConfig.createMapper();
 
-  private final FacilitiesCollector collector;
+  private final FacilitiesCollectorV1 collector;
 
   private final FacilityRepository facilityRepository;
 
@@ -259,13 +258,13 @@ public class InternalFacilitiesController {
   }
 
   @GetMapping("/graveyard")
-  GraveyardResponse graveyardAll() {
-    return GraveyardResponse.builder()
+  GraveyardResponseV1 graveyardAll() {
+    return GraveyardResponseV1.builder()
         .facilities(
             Streams.stream(graveyardRepository.findAll())
                 .map(
                     z ->
-                        GraveyardResponse.Item.builder()
+                        GraveyardResponseV1.Item.builder()
                             .facility(
                                 FacilitiesJacksonConfig.quietlyMap(
                                     MAPPER, z.facility(), Facility.class))
@@ -304,7 +303,7 @@ public class InternalFacilitiesController {
             .map(f -> FacilityEntity.Pk.optionalFromIdString(f.id()).orElse(null))
             .filter(Objects::nonNull)
             .collect(toCollection(LinkedHashSet::new));
-    Set<FacilityEntity.Pk> oldIds = new LinkedHashSet<>(facilityRepository.findAllIds());
+    Set<FacilityEntity.Pk> oldIds = new LinkedHashSet<>(FacilityRepository.findAllIds());
     return ImmutableSet.copyOf(Sets.difference(oldIds, newIds));
   }
 

@@ -16,7 +16,7 @@ import lombok.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-final class PageLinker {
+public final class PageLinker {
   final String url;
 
   final MultiValueMap<String, String> params;
@@ -52,7 +52,8 @@ final class PageLinker {
     return (int) Math.ceil((double) totalEntries / (double) Parameters.perPageOf(params));
   }
 
-  PageLinks links() {
+  /** Links for the page. Default is 10 per page. */
+  public PageLinks links() {
     int page = Parameters.pageOf(params);
     int perPage = Parameters.perPageOf(params);
     // If perPage == 0, only return the self link
@@ -71,7 +72,8 @@ final class PageLinker {
         .build();
   }
 
-  Pagination pagination() {
+  /** Pagination, says what page the user is on and how many entries are displayed. */
+  public Pagination pagination() {
     int page = Parameters.pageOf(params);
     int perPage = Parameters.perPageOf(params);
     return Pagination.builder()

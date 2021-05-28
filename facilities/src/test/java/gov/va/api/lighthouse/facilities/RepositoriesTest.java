@@ -3,6 +3,7 @@ package gov.va.api.lighthouse.facilities;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.lighthouse.facilities.api.v0.Facility.HealthService;
+import gov.va.api.lighthouse.facilities.v0.FacilityRepository;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

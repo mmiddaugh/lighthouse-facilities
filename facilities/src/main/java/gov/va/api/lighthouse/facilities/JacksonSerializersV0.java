@@ -22,7 +22,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
 @UtilityClass
-final class JacksonSerializersV0 {
+public final class JacksonSerializersV0 {
   private static boolean hasParent(JsonGenerator jgen, Class<?> clazz) {
     return parents(jgen).stream().anyMatch(p -> clazz.isInstance(p));
   }
@@ -70,7 +70,7 @@ final class JacksonSerializersV0 {
   }
 
   /** Custom serialization rules for V0 API classes. */
-  static SimpleModule serializersV0() {
+  public static SimpleModule serializersV0() {
     SimpleModule mod = new SimpleModule();
     mod.addSerializer(Facility.Address.class, new AddressSerializer());
     mod.addSerializer(Facility.Addresses.class, new AddressesSerializer());

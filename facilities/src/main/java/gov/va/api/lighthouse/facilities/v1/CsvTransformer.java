@@ -1,14 +1,15 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.FacilityEntity;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
 import java.util.List;
 import java.util.Optional;
 import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-final class CsvTransformer {
-  static final List<String> HEADERS =
+public final class CsvTransformer {
+  public static final List<String> HEADERS =
       List.of(
           "id",
           "name",
@@ -80,7 +81,8 @@ final class CsvTransformer {
     return attributes().map(a -> a.phone());
   }
 
-  List<String> toRow() {
+  /** Javadoc required for V0/V1 split. Maps the CSV file to fields in facility. */
+  public List<String> toRow() {
     return List.of(
         facility.id(),
         attributes().map(a -> a.name()).orElse(""),
