@@ -35,7 +35,7 @@ public class FacilitySamples {
         .build();
   }
 
-  Facility facility(String id) {
+  public Facility facility(String id) {
     var f = facilities.get(id);
     assertThat(f).describedAs(id).isNotNull();
     return f;
@@ -50,7 +50,7 @@ public class FacilitySamples {
         facility(id));
   }
 
-  GeoFacility geoFacility(String id) {
+  public GeoFacility geoFacility(String id) {
     return GeoFacilityTransformer.builder().facility(facility(id)).build().toGeoFacility();
   }
 }

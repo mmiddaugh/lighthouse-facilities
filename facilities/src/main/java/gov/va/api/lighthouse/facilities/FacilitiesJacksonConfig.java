@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-class FacilitiesJacksonConfig {
-  static ObjectMapper createMapper() {
+public class FacilitiesJacksonConfig {
+  public static ObjectMapper createMapper() {
     return new FacilitiesJacksonConfig().objectMapper();
   }
 
@@ -27,7 +27,7 @@ class FacilitiesJacksonConfig {
 
   /** Mask away checked exception so this Jackson can be used in streams. */
   @SneakyThrows
-  static String quietlyWriteValueAsString(ObjectMapper mapper, Object obj) {
+  public static String quietlyWriteValueAsString(ObjectMapper mapper, Object obj) {
     return mapper.writeValueAsString(obj);
   }
 

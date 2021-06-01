@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v0;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +8,13 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import gov.va.api.lighthouse.facilities.ApiExceptions;
+import gov.va.api.lighthouse.facilities.CsvTransformer;
+import gov.va.api.lighthouse.facilities.DriveTimeBandRepository;
+import gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig;
+import gov.va.api.lighthouse.facilities.FacilityEntity;
+import gov.va.api.lighthouse.facilities.FacilityRepository;
+import gov.va.api.lighthouse.facilities.FacilitySamples;
 import gov.va.api.lighthouse.facilities.api.v0.FacilitiesResponse;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import gov.va.api.lighthouse.facilities.api.v0.FacilityReadResponse;
@@ -19,9 +26,10 @@ import gov.va.api.lighthouse.facilities.api.v0.Pagination;
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class FacilitiesControllerTest {
+public class FacilitiesControllerV0Test {
   FacilityRepository fr = mock(FacilityRepository.class);
 
   DriveTimeBandRepository dbr = mock(DriveTimeBandRepository.class);
@@ -37,7 +45,7 @@ public class FacilitiesControllerTest {
                 samples.facilityEntity("vha_740GA"),
                 samples.facilityEntity("vha_757")));
     String actual = controller().all();
-    assertThat(
+    Assertions.assertThat(
             FacilitiesJacksonConfig.createMapper()
                 .readValue(actual, GeoFacilitiesResponse.class)
                 .features())
@@ -80,8 +88,8 @@ public class FacilitiesControllerTest {
                 + "730AM-600PM,730AM-600PM,730AM-600PM,730AM-600PM,800AM-400PM,800AM-400PM,NORMAL,");
   }
 
-  private FacilitiesController controller() {
-    return FacilitiesController.builder()
+  private FacilitiesControllerV0 controller() {
+    return FacilitiesControllerV0.builder()
         .facilityRepository(fr)
         .baseUrl("http://foo/")
         .basePath("bp")

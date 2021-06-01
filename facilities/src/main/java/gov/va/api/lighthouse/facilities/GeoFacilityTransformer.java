@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-final class GeoFacilityTransformer {
+public final class GeoFacilityTransformer {
   @NonNull private final Facility facility;
 
   private GeoFacility.Geometry geometry() {
@@ -53,7 +53,8 @@ final class GeoFacilityTransformer {
         .build();
   }
 
-  GeoFacility toGeoFacility() {
+  /** Adds the GeoFacility information to the facility, i.e. Lat, Lng. */
+  public GeoFacility toGeoFacility() {
     if (isBlank(id())) {
       return null;
     }

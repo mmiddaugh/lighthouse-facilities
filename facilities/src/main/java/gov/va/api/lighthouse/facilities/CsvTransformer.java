@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-final class CsvTransformer {
-  static final List<String> HEADERS =
+public final class CsvTransformer {
+  public static final List<String> HEADERS =
       List.of(
           "id",
           "name",
@@ -80,7 +80,8 @@ final class CsvTransformer {
     return attributes().map(a -> a.phone());
   }
 
-  List<String> toRow() {
+  /** Maps the fields to the facility object. */
+  public List<String> toRow() {
     return List.of(
         facility.id(),
         attributes().map(a -> a.name()).orElse(""),

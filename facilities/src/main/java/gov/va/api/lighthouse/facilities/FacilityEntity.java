@@ -140,7 +140,7 @@ public class FacilityEntity implements HasFacilityPayload {
         mobile);
   }
 
-  static Sort naturalOrder() {
+  public static Sort naturalOrder() {
     return Sort.by("id").ascending();
   }
 
@@ -191,7 +191,7 @@ public class FacilityEntity implements HasFacilityPayload {
     /**
      * Create a Pk from the {type}_{id} style used in the Facilities API ID, suppressing exceptions.
      */
-    static Optional<Pk> optionalFromIdString(@NonNull String typeAndStationNumber) {
+    public static Optional<Pk> optionalFromIdString(@NonNull String typeAndStationNumber) {
       try {
         return Optional.ofNullable(fromIdString(typeAndStationNumber));
       } catch (IllegalArgumentException ex) {

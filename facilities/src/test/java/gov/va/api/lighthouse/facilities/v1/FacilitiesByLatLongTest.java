@@ -1,9 +1,12 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gov.va.api.lighthouse.facilities.ApiExceptions;
+import gov.va.api.lighthouse.facilities.FacilityRepository;
+import gov.va.api.lighthouse.facilities.FacilitySamples;
 import gov.va.api.lighthouse.facilities.api.v0.FacilitiesResponse;
 import gov.va.api.lighthouse.facilities.api.v0.GeoFacilitiesResponse;
 import gov.va.api.lighthouse.facilities.api.v0.PageLinks;
@@ -21,8 +24,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class FacilitiesByLatLongTest {
   @Autowired private FacilityRepository repo;
 
-  private FacilitiesController controller() {
-    return FacilitiesController.builder()
+  private FacilitiesControllerV1 controller() {
+    return FacilitiesControllerV1.builder()
         .facilityRepository(repo)
         .baseUrl("http://foo/")
         .basePath("")
