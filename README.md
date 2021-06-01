@@ -40,7 +40,7 @@ OpenAPI documentation on the
   This data is aggregated during the nightly facilities collection.
 * `Website CSV` is a
   [CSV document](facilities/src/main/resources/websites.csv)
-  of facility website URLS, maintained in this repository.
+  of facility website URLs, maintained in this repository.
   This data is aggregated during facilities collection to augment the _live_ sources.
 * `Corporate Data Warehouse (CDW)` undergoes a nightly ETL process to transfer various data resources to the _SQL52_ server, where it is consumed during facilities collection. Namely:
     - Mental Health, Clinical Services, and Stop Codes from the _A01_ server, sourced from the VHA Support Center (VSSC) and Office of Mental Health.
@@ -63,8 +63,8 @@ OpenAPI documentation on the
   endpoint. Operating status is stored in the operational database along side facility data.
 
 ### Update Frequency for Data Sources
-Facilities collection occurs every 24 hours. This updates the local cache in facilities-operational-db with the most up-to-date data.
-* CDW, ATC, Cemeteries.XML, and Website.CSV are updated daily
+Facilities collection occurs every 24 hours. This updates the local cache in `facilities-operational-db` with the most up-to-date data.
+* CDW, ATC, the Cemeteries XML, and the Website CSV are updated daily
 * Drive Time Bands are updated monthly
 * CMS data is updated on-demand
 
@@ -80,7 +80,7 @@ Within CDW, the following databases/tables are read during facility collection:
 # Local Development
 
 Refer to [health-apis-parent](https://github.com/department-of-veterans-affairs/health-apis-parent)
-for basic environment setup. (Java, Maven, Docker, etc.)
+for basic environment setup (e.g., Java, Maven, Docker, etc.).
 Execute `mvn clean install` to build all of the modules, then follow the local development
 instructions for [mock-services](facilities-mock-services/README.md#local-development),
 [local-db](facilities-local-db/README.md#local-development),
