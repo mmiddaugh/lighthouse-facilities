@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.api.cms;
+package gov.va.api.lighthouse.facilities.api.v0.cms;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;

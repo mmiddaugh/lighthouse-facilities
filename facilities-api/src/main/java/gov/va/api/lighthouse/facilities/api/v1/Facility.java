@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.api.v0;
+package gov.va.api.lighthouse.facilities.api.v1;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -208,7 +208,7 @@ public final class Facility {
         example = "Normal business hours are Monday through Friday, 8:00 a.m. to 4:30 p.m.",
         nullable = true)
     @JsonProperty("operational_hours_special_instructions")
-    String operationalHoursSpecialInstructions;
+    List<String> operationalHoursSpecialInstructions;
 
     @Schema(nullable = true)
     @Valid
@@ -248,7 +248,7 @@ public final class Facility {
 
     public static final class FacilityAttributesBuilder {
       @JsonProperty("operationalHoursSpecialInstructions")
-      public FacilityAttributesBuilder instructions(String val) {
+      public FacilityAttributesBuilder instructions(List<String> val) {
         return operationalHoursSpecialInstructions(val);
       }
     }

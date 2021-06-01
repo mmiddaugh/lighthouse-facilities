@@ -4,11 +4,11 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import gov.va.api.health.autoconfig.logging.Loggable;
-import gov.va.api.lighthouse.facilities.api.pssg.BandResult;
-import gov.va.api.lighthouse.facilities.api.pssg.BandUpdateResponse;
-import gov.va.api.lighthouse.facilities.api.pssg.PathEncoder;
-import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand;
-import gov.va.api.lighthouse.facilities.api.pssg.PssgResponse;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.BandResult;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.BandUpdateResponse;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.PathEncoder;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.PssgDriveTimeBand;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.PssgResponse;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Optional;

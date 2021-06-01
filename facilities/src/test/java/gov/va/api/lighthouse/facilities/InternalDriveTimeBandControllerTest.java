@@ -5,10 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import gov.va.api.lighthouse.facilities.api.pssg.BandResult;
-import gov.va.api.lighthouse.facilities.api.pssg.PathEncoder;
-import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand;
-import gov.va.api.lighthouse.facilities.api.pssg.PssgResponse;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.BandResult;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.PathEncoder;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.PssgDriveTimeBand;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.PssgResponse;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;

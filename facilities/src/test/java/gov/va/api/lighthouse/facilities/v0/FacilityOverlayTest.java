@@ -1,15 +1,17 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v0;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.va.api.lighthouse.facilities.api.cms.CmsOverlay;
-import gov.va.api.lighthouse.facilities.api.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig;
+import gov.va.api.lighthouse.facilities.FacilityEntity;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.ActiveStatus;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.FacilityAttributes;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.OperatingStatus;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.OperatingStatusCode;
+import gov.va.api.lighthouse.facilities.api.v0.cms.CmsOverlay;
+import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

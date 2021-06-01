@@ -15,7 +15,6 @@ import gov.va.api.lighthouse.facilities.ApiExceptions;
 import gov.va.api.lighthouse.facilities.CsvTransformer;
 import gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig;
 import gov.va.api.lighthouse.facilities.FacilityEntity;
-import gov.va.api.lighthouse.facilities.FacilityOverlay;
 import gov.va.api.lighthouse.facilities.FacilityRepository;
 import gov.va.api.lighthouse.facilities.GeoFacilityTransformer;
 import gov.va.api.lighthouse.facilities.HasFacilityPayload;

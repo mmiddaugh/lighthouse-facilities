@@ -1,7 +1,7 @@
 package gov.va.api.lighthouse.facilities;
 
-import gov.va.api.lighthouse.facilities.api.cms.CmsOverlay;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.api.v0.cms.CmsOverlay;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

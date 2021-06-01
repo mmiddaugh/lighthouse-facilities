@@ -5,7 +5,7 @@ import static java.util.stream.Collectors.toList;
 
 import gov.va.api.health.sentinel.Environment;
 import gov.va.api.health.sentinel.ExpectedResponse;
-import gov.va.api.lighthouse.facilities.api.pssg.BandUpdateResponse;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.BandUpdateResponse;
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
 import java.util.ArrayList;

@@ -1,9 +1,9 @@
-package gov.va.api.lighthouse.facilities.api.v0;
+package gov.va.api.lighthouse.facilities.api.v1;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.api.v1.cms.DetailedService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
@@ -84,7 +84,7 @@ public final class GeoFacility {
 
     @NotNull
     @JsonProperty("facility_type")
-    Facility.FacilityType facilityType;
+    gov.va.api.lighthouse.facilities.api.v1.Facility.FacilityType facilityType;
 
     @Schema(example = "VA Medical Center (VAMC)", nullable = true)
     String classification;
@@ -94,41 +94,41 @@ public final class GeoFacility {
 
     @Schema(nullable = true)
     @Valid
-    Facility.Addresses address;
+    gov.va.api.lighthouse.facilities.api.v1.Facility.Addresses address;
 
     @Schema(nullable = true)
     @Valid
-    Facility.Phone phone;
+    gov.va.api.lighthouse.facilities.api.v1.Facility.Phone phone;
 
     @Schema(nullable = true)
     @Valid
-    Facility.Hours hours;
+    gov.va.api.lighthouse.facilities.api.v1.Facility.Hours hours;
 
     @Schema(
         example = "Administrative hours are Monday-Friday 8:00 a.m. to 4:30 p.m.",
         nullable = true)
     @JsonProperty("operational_hours_special_instructions")
-    String operationalHoursSpecialInstructions;
+    List<String> operationalHoursSpecialInstructions;
 
     @Schema(nullable = true)
     @Valid
-    Facility.Services services;
+    gov.va.api.lighthouse.facilities.api.v1.Facility.Services services;
 
     @Schema(nullable = true)
     @Valid
-    Facility.Satisfaction satisfaction;
+    gov.va.api.lighthouse.facilities.api.v1.Facility.Satisfaction satisfaction;
 
     @Valid
     @Schema(nullable = true)
     @JsonProperty("wait_times")
-    Facility.WaitTimes waitTimes;
+    gov.va.api.lighthouse.facilities.api.v1.Facility.WaitTimes waitTimes;
 
     @Schema(example = "false", nullable = true)
     Boolean mobile;
 
     @Schema(nullable = true)
     @JsonProperty("active_status")
-    Facility.ActiveStatus activeStatus;
+    gov.va.api.lighthouse.facilities.api.v1.Facility.ActiveStatus activeStatus;
 
     @Valid
     @NotNull

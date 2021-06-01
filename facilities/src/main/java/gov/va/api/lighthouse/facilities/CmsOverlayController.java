@@ -3,8 +3,8 @@ package gov.va.api.lighthouse.facilities;
 import static gov.va.api.health.autoconfig.logging.LogSanitizer.sanitize;
 import static gov.va.api.lighthouse.facilities.collector.FacilitiesCollector.loadWebsites;
 
-import gov.va.api.lighthouse.facilities.api.cms.CmsOverlay;
-import gov.va.api.lighthouse.facilities.api.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.api.v0.cms.CmsOverlay;
+import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

@@ -1,10 +1,10 @@
-package gov.va.api.lighthouse.facilities.api.pssg;
+package gov.va.api.lighthouse.facilities.api.v0.pssg;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
-import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand.Attributes;
-import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand.Geometry;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.PssgDriveTimeBand.Attributes;
+import gov.va.api.lighthouse.facilities.api.v0.pssg.PssgDriveTimeBand.Geometry;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.util.List;

@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.api.pssg;
+package gov.va.api.lighthouse.facilities.api.v0.pssg;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

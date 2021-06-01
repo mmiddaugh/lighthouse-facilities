@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.api.pssg;
+package gov.va.api.lighthouse.facilities.api.v0.pssg;
 
 import java.awt.geom.Path2D;
 import java.nio.ByteBuffer;

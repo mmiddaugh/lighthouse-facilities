@@ -1,8 +1,8 @@
-package gov.va.api.lighthouse.facilities.api.cms;
+package gov.va.api.lighthouse.facilities.api.v1.cms;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
