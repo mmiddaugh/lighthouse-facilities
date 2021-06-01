@@ -1,6 +1,7 @@
 package gov.va.api.lighthouse.facilities.api.v0;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.lighthouse.facilities.api.v1.FacilityV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,8 +13,8 @@ import lombok.Value;
 @Value
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public final class FacilitiesResponse {
-  @Valid List<Facility> data;
+public final class FacilitiesResponseV1 {
+  @Valid List<FacilityV1> data;
 
   @Valid @NotNull PageLinks links;
 

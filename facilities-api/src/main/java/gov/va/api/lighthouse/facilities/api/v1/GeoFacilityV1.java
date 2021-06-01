@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.api.v0;
+package gov.va.api.lighthouse.facilities.api.v1;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,7 +20,7 @@ import lombok.Value;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "GeoJSON-complaint Feature object describing a VA Facility")
-public final class GeoFacility {
+public final class GeoFacilityV1 {
   @Schema(example = "Feature")
   @NotNull
   Type type;
@@ -84,7 +84,7 @@ public final class GeoFacility {
 
     @NotNull
     @JsonProperty("facility_type")
-    Facility.FacilityType facilityType;
+    FacilityV1.FacilityType facilityType;
 
     @Schema(example = "VA Medical Center (VAMC)", nullable = true)
     String classification;
@@ -94,46 +94,46 @@ public final class GeoFacility {
 
     @Schema(nullable = true)
     @Valid
-    Facility.Addresses address;
+    FacilityV1.Addresses address;
 
     @Schema(nullable = true)
     @Valid
-    Facility.Phone phone;
+    FacilityV1.Phone phone;
 
     @Schema(nullable = true)
     @Valid
-    Facility.Hours hours;
+    FacilityV1.Hours hours;
 
     @Schema(
         example = "Administrative hours are Monday-Friday 8:00 a.m. to 4:30 p.m.",
         nullable = true)
     @JsonProperty("operational_hours_special_instructions")
-    String operationalHoursSpecialInstructions;
+    List<String> operationalHoursSpecialInstructions;
 
     @Schema(nullable = true)
     @Valid
-    Facility.Services services;
+    FacilityV1.Services services;
 
     @Schema(nullable = true)
     @Valid
-    Facility.Satisfaction satisfaction;
+    FacilityV1.Satisfaction satisfaction;
 
     @Valid
     @Schema(nullable = true)
     @JsonProperty("wait_times")
-    Facility.WaitTimes waitTimes;
+    FacilityV1.WaitTimes waitTimes;
 
     @Schema(example = "false", nullable = true)
     Boolean mobile;
 
     @Schema(nullable = true)
     @JsonProperty("active_status")
-    Facility.ActiveStatus activeStatus;
+    FacilityV1.ActiveStatus activeStatus;
 
     @Valid
     @NotNull
     @JsonProperty(value = "operating_status", required = true)
-    Facility.OperatingStatus operatingStatus;
+    FacilityV1.OperatingStatus operatingStatus;
 
     @Valid
     @JsonProperty(value = "detailed_services")

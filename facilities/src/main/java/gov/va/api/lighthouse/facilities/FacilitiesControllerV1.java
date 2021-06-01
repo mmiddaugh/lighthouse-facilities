@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
 import gov.va.api.lighthouse.facilities.api.v0.*;
 
-import gov.va.api.lighthouse.facilities.api.v1.FacilitiesResponseV1;
+import gov.va.api.lighthouse.facilities.api.v0.FacilitiesResponseV1;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityReadResponseV1;
 import gov.va.api.lighthouse.facilities.api.v1.FacilityV1;
 import gov.va.api.lighthouse.facilities.api.v1.GeoFacilitiesResponseV1;

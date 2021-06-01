@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.api.v0;
+package gov.va.api.lighthouse.facilities.api.v1;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.List;
@@ -13,10 +13,10 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public final class GeoFacilitiesResponse {
+public final class GeoFacilitiesResponseV1 {
   @NotNull Type type;
 
-  @Valid List<GeoFacility> features;
+  @Valid List<GeoFacilityV1> features;
 
   public enum Type {
     FeatureCollection

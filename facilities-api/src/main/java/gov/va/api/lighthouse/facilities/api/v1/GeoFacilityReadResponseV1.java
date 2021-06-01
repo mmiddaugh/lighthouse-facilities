@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.api.v0;
+package gov.va.api.lighthouse.facilities.api.v1;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import javax.validation.Valid;
@@ -13,16 +13,16 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public final class GeoFacilityReadResponse {
-  @NotNull GeoFacility.Type type;
+public final class GeoFacilityReadResponseV1 {
+  @NotNull GeoFacilityV1.Type type;
 
-  @Valid @NotNull GeoFacility.Geometry geometry;
+  @Valid @NotNull GeoFacilityV1.Geometry geometry;
 
-  @Valid @NotNull GeoFacility.Properties properties;
+  @Valid @NotNull GeoFacilityV1.Properties properties;
 
   /** Create GeoFacilityReadResponse with the same type, geometry, and properties. */
-  public static GeoFacilityReadResponse of(@NonNull GeoFacility facility) {
-    return GeoFacilityReadResponse.builder()
+  public static GeoFacilityReadResponseV1 of(@NonNull GeoFacilityV1 facility) {
+    return GeoFacilityReadResponseV1.builder()
         .type(facility.type())
         .geometry(facility.geometry())
         .properties(facility.properties())
