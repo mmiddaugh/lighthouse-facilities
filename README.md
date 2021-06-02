@@ -27,7 +27,7 @@ OpenAPI documentation on the
   through the facilities collection process.
   Operating status and extended services may be updated at any time by CMS.
   Drive time band data is refreshed on an as-needed basis.
-* `facilities-timer` is a AWS Lambda Cron pod that fires nightly to trigger the facilities
+* `facilities-timer` consists of various Jenkins Jobs (Agent-J) that fires nightly to trigger the facilities
   collection/data reload process.
 * `Access to Care (ATC)` provides
   [wait times](https://www.accesstocare.va.gov/atcapis/v1.1/patientwaittimes) and
@@ -44,7 +44,7 @@ OpenAPI documentation on the
   This data is aggregated during facilities collection to augment the _live_ sources.
 * `Corporate Data Warehouse (CDW)` undergoes a nightly ETL process to transfer various data resources to the _SQL52_ server, where it is consumed during facilities collection. Namely:
     - Mental Health, Clinical Services, and Stop Codes from the _A01_ server, sourced from the VHA Support Center (VSSC) and Office of Mental Health.
-    - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from Business Intelligence Service Line (BISL).
+    - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from the  Geospatial Data Library (GeoBISL).
     - Health facilities and Veteran centers from the _A06_ server, sourced from Veteran Affairs Site Tracking (VAST).
 * `Geographer Support Services Center (GSSC) Drive Band` documents are periodically uploaded to the `facilities`
   application through management APIs.  These are updated on a monthly basis.
@@ -66,7 +66,7 @@ OpenAPI documentation on the
 Facilities collection occurs every 24 hours. This updates the local cache in `facilities-operational-db` with the most up-to-date data.
 * CDW, ATC, the Cemeteries XML, and the Website CSV are updated daily
 * Drive Time Bands are updated monthly
-* CMS data is updated on-demand
+* CMS data is updated on-demand via the Facilities API's `cms_overlay` endpoint
 
 ### CDW Data Source Details
 Within CDW, the following databases/tables are read during facility collection:
