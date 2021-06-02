@@ -27,7 +27,7 @@ OpenAPI documentation on the
   through the facilities collection process.
   Operating status and extended services may be updated at any time by CMS.
   Drive time band data is refreshed on an as-needed basis.
-* `facilities-timer` is a Jenkins Jobs (Agent-J) that fires nightly to trigger the facilities
+* `facilities-timer` is a Jenkins Job (Agent-J) that fires nightly to trigger the facilities
   collection/data reload process.
 * `Access to Care (ATC)` provides
   [wait times](https://www.accesstocare.va.gov/atcapis/v1.1/patientwaittimes) and
