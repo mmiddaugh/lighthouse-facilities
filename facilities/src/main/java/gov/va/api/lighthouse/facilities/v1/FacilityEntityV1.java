@@ -1,13 +1,16 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v1;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.stream.Collectors.toSet;
+import gov.va.api.lighthouse.facilities.HasFacilityPayload;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import org.springframework.data.domain.Sort;
 
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.Optional;
-import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -22,14 +25,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import org.springframework.data.domain.Sort;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.toSet;
 
 @Data
 @Entity

@@ -1,13 +1,14 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v0;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.api.v0.FacilityV0;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntity;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-public class FacilityEntityTest {
+public class FacilityEntityV0Test {
   @Test
   void pkFromIdStringParsesId() {
     assertThat(FacilityEntity.Pk.fromIdString("vba_A1B2C3"))
@@ -48,13 +49,13 @@ public class FacilityEntityTest {
     FacilityEntity e = FacilityEntity.builder().build();
     e.servicesFromServiceTypes(
         Set.of(
-            Facility.HealthService.SpecialtyCare,
-            Facility.BenefitsService.ApplyingForBenefits,
-            Facility.OtherService.OnlineScheduling));
+            FacilityV0.HealthService.SpecialtyCare,
+            FacilityV0.BenefitsService.ApplyingForBenefits,
+            FacilityV0.OtherService.OnlineScheduling));
     assertThat(e.services())
         .containsExactlyInAnyOrder(
-            Facility.HealthService.SpecialtyCare.toString(),
-            Facility.BenefitsService.ApplyingForBenefits.toString(),
-            Facility.OtherService.OnlineScheduling.toString());
+            FacilityV0.HealthService.SpecialtyCare.toString(),
+            FacilityV0.BenefitsService.ApplyingForBenefits.toString(),
+            FacilityV0.OtherService.OnlineScheduling.toString());
   }
 }

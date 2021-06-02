@@ -1,21 +1,25 @@
-package gov.va.api.lighthouse.facilities.v0;
+package gov.va.api.lighthouse.facilities.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.lighthouse.facilities.HasFacilityPayload;
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import gov.va.api.lighthouse.facilities.api.v0.Facility.ActiveStatus;
-import gov.va.api.lighthouse.facilities.api.v0.Facility.OperatingStatus;
-import gov.va.api.lighthouse.facilities.api.v0.Facility.OperatingStatusCode;
-import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.api.v1.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.Facility.ActiveStatus;
+import gov.va.api.lighthouse.facilities.api.v1.Facility.OperatingStatus;
+import gov.va.api.lighthouse.facilities.api.v1.Facility.OperatingStatusCode;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 
 @Builder
 @Value
@@ -24,7 +28,7 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
   @NonNull ObjectMapper mapper;
 
   private static void applyCmsOverlayOperatingStatus(
-      Facility facility, Facility.OperatingStatus operatingStatus) {
+      Facility facility, OperatingStatus operatingStatus) {
     if (operatingStatus == null) {
       log.warn("CMS Overlay for facility {} is missing operating status", facility.id());
     } else {
@@ -82,10 +86,11 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
   @Override
   @SneakyThrows
   public Facility apply(HasFacilityPayload entity) {
-    Facility facility = mapper.readValue(entity.facility(), Facility.class);
+    Facility facility =
+        mapper.readValue(transformSpecialInstructionsToList(entity.facility()), Facility.class);
     if (entity.cmsOperatingStatus() != null) {
       applyCmsOverlayOperatingStatus(
-          facility, mapper.readValue(entity.cmsOperatingStatus(), Facility.OperatingStatus.class));
+          facility, mapper.readValue(entity.cmsOperatingStatus(), OperatingStatus.class));
     }
     if (facility.attributes().operatingStatus() == null) {
       facility
@@ -101,5 +106,26 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
           facility, List.of(mapper.readValue(entity.cmsServices(), DetailedService[].class)));
     }
     return facility;
+  }
+
+  private String transformSpecialInstructionsToList(String pipedFacility) {
+    JSONObject jsonObject = new JSONObject(pipedFacility);
+    if (!jsonObject.has("attributes")
+        || !jsonObject.has("operational_hours_special_instructions")) {
+      return pipedFacility;
+    }
+    JSONObject jsonAttributes = jsonObject.getJSONObject("attributes");
+    String specialInstructions =
+        jsonAttributes.get("operational_hours_special_instructions").toString();
+    if (specialInstructions == null
+        || specialInstructions.equals("null")
+        || specialInstructions.isBlank()) {
+      jsonAttributes.put("operational_hours_special_instructions", new ArrayList<>());
+    } else {
+      jsonAttributes.put(
+          "operational_hours_special_instructions",
+          Arrays.stream(specialInstructions.split("\\s*\\|\\s*")).collect(Collectors.toList()));
+    }
+    return jsonObject.toString();
   }
 }

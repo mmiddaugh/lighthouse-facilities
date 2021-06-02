@@ -3,7 +3,7 @@ package gov.va.api.lighthouse.facilities.api.v1;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.api.v1.cms.DetailedService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,7 +18,7 @@ import lombok.Data;
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "JSON API-compliant object describing a VA facility")
-public final class Facility {
+public final class FacilityV1 {
   @Schema(example = "vha_688")
   @NotNull
   String id;

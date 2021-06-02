@@ -2,6 +2,7 @@ package gov.va.api.lighthouse.facilities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.lighthouse.facilities.v0.FacilityEntity;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
-public class FacilityRepositoryTest {
+public class FacilityV0RepositoryTest {
   @Autowired FacilityRepository repository;
 
   private FacilityEntity facilityEntity(String stnNumber, Instant lastUpdated) {

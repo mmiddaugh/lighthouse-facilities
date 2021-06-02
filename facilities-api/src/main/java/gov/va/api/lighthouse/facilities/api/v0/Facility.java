@@ -18,7 +18,7 @@ import lombok.Data;
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "JSON API-compliant object describing a VA facility")
-public final class Facility {
+public final class FacilityV0 {
   @Schema(example = "vha_688")
   @NotNull
   String id;

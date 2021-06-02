@@ -1,34 +1,30 @@
-package gov.va.api.lighthouse.facilities.v1;
+package gov.va.api.lighthouse.facilities.v0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.lighthouse.facilities.HasFacilityPayload;
+import gov.va.api.lighthouse.facilities.api.v0.FacilityV0;
+import gov.va.api.lighthouse.facilities.api.v0.FacilityV0.ActiveStatus;
+import gov.va.api.lighthouse.facilities.api.v0.FacilityV0.OperatingStatus;
+import gov.va.api.lighthouse.facilities.api.v0.FacilityV0.OperatingStatusCode;
 import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
-import gov.va.api.lighthouse.facilities.api.v1.Facility;
-import gov.va.api.lighthouse.facilities.api.v1.Facility.ActiveStatus;
-import gov.va.api.lighthouse.facilities.api.v1.Facility.OperatingStatus;
-import gov.va.api.lighthouse.facilities.api.v1.Facility.OperatingStatusCode;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 
 @Builder
 @Value
 @Slf4j
-public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
+public class FacilityOverlay implements Function<HasFacilityPayload, FacilityV0> {
   @NonNull ObjectMapper mapper;
 
   private static void applyCmsOverlayOperatingStatus(
-      Facility facility, OperatingStatus operatingStatus) {
+      FacilityV0 facility, FacilityV0.OperatingStatus operatingStatus) {
     if (operatingStatus == null) {
       log.warn("CMS Overlay for facility {} is missing operating status", facility.id());
     } else {
@@ -41,7 +37,7 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
     }
   }
 
-  private static void applyCmsOverlayServices(Facility facility, Set<String> overlayServices) {
+  private static void applyCmsOverlayServices(FacilityV0 facility, Set<String> overlayServices) {
     if (overlayServices == null) {
       log.warn("CMS Overlay for facility {} is missing CMS Services", facility.id());
     } else {
@@ -49,9 +45,12 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
       for (String overlayService : overlayServices) {
         if ("Covid19Vaccine".equals(overlayService)) {
           if (facility.attributes().services().health() != null) {
-            facility.attributes().services().health().add(Facility.HealthService.Covid19Vaccine);
+            facility.attributes().services().health().add(FacilityV0.HealthService.Covid19Vaccine);
           } else {
-            facility.attributes().services().health(List.of(Facility.HealthService.Covid19Vaccine));
+            facility
+                .attributes()
+                .services()
+                .health(List.of(FacilityV0.HealthService.Covid19Vaccine));
           }
           needToSort = true;
           break;
@@ -67,7 +66,7 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
   }
 
   private static void applyDetailedServices(
-      Facility facility, List<DetailedService> detailedServices) {
+      FacilityV0 facility, List<DetailedService> detailedServices) {
     if (detailedServices == null) {
       log.warn("CMS Overlay for facility {} is missing Detailed CMS Services", facility.id());
     } else {
@@ -85,12 +84,12 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
 
   @Override
   @SneakyThrows
-  public Facility apply(HasFacilityPayload entity) {
-    Facility facility =
-        mapper.readValue(transformSpecialInstructionsToList(entity.facility()), Facility.class);
+  public FacilityV0 apply(HasFacilityPayload entity) {
+    FacilityV0 facility = mapper.readValue(entity.facility(), FacilityV0.class);
     if (entity.cmsOperatingStatus() != null) {
       applyCmsOverlayOperatingStatus(
-          facility, mapper.readValue(entity.cmsOperatingStatus(), OperatingStatus.class));
+          facility,
+          mapper.readValue(entity.cmsOperatingStatus(), FacilityV0.OperatingStatus.class));
     }
     if (facility.attributes().operatingStatus() == null) {
       facility
@@ -106,22 +105,5 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
           facility, List.of(mapper.readValue(entity.cmsServices(), DetailedService[].class)));
     }
     return facility;
-  }
-
-  private String transformSpecialInstructionsToList(String facility) {
-    JSONObject jsonObject = new JSONObject(facility);
-    JSONObject jsonAttributes = jsonObject.getJSONObject("attributes");
-    String specialInstructions =
-        jsonAttributes.get("operational_hours_special_instructions").toString();
-    if (specialInstructions == null
-        || specialInstructions.equals("null")
-        || specialInstructions.isBlank()) {
-      jsonAttributes.put("operational_hours_special_instructions", new ArrayList<>());
-    } else {
-      jsonAttributes.put(
-          "operational_hours_special_instructions",
-          Arrays.stream(specialInstructions.split("\\s*\\|\\s*")).collect(Collectors.toList()));
-    }
-    return jsonObject.toString();
   }
 }
