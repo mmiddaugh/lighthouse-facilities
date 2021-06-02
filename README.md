@@ -27,7 +27,7 @@ OpenAPI documentation on the
   through the facilities collection process.
   Operating status and extended services may be updated at any time by CMS.
   Drive time band data is refreshed on an as-needed basis.
-* `facilities-timer` consists of various Jenkins Jobs (Agent-J) that fires nightly to trigger the facilities
+* `facilities-timer` is a Jenkins Jobs (Agent-J) that fires nightly to trigger the facilities
   collection/data reload process.
 * `Access to Care (ATC)` provides
   [wait times](https://www.accesstocare.va.gov/atcapis/v1.1/patientwaittimes) and
@@ -66,7 +66,7 @@ OpenAPI documentation on the
 Facilities collection occurs every 24 hours. This updates the local cache in `facilities-operational-db` with the most up-to-date data.
 * CDW, ATC, the Cemeteries XML, and the Website CSV are updated daily
 * Drive Time Bands are updated monthly
-* CMS data is updated on-demand via the Facilities API's `cms_overlay` endpoint
+* CMS data is updated on-demand by a data push triggered by the CMS platform
 
 ### CDW Data Source Details
 Within CDW, the following databases/tables are read during facility collection:
