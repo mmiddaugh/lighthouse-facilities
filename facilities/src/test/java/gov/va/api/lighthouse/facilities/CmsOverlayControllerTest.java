@@ -9,6 +9,7 @@ import gov.va.api.lighthouse.facilities.api.v0.Facility.OperatingStatus;
 import gov.va.api.lighthouse.facilities.api.v0.Facility.OperatingStatusCode;
 import gov.va.api.lighthouse.facilities.api.v0.cms.CmsOverlay;
 import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -105,8 +106,8 @@ public class CmsOverlayControllerTest {
   @Test
   @SneakyThrows
   void updateIsAcceptedForKnownStation() {
-    var pk = FacilityEntity.Pk.fromIdString("vha_402");
-    FacilityEntity entity = FacilityEntity.builder().id(pk).build();
+    var pk = FacilityEntityV0.Pk.fromIdString("vha_402");
+    FacilityEntityV0 entity = FacilityEntityV0.builder().id(pk).build();
     when(repository.findById(pk)).thenReturn(Optional.of(entity));
     CmsOverlay overlay = overlay();
     ResponseEntity<Void> response = controller().saveOverlay("vha_402", overlay);
@@ -127,7 +128,7 @@ public class CmsOverlayControllerTest {
 
   @Test
   void updateIsSkippedForUnknownStation() {
-    var pk = FacilityEntity.Pk.fromIdString("vha_666");
+    var pk = FacilityEntityV0.Pk.fromIdString("vha_666");
     when(repository.findById(pk)).thenReturn(Optional.empty());
     ResponseEntity<Void> response = controller().saveOverlay("vha_666", overlay());
     verifyNoMoreInteractions(repository);
@@ -137,8 +138,8 @@ public class CmsOverlayControllerTest {
   @Test
   @SneakyThrows
   void verifyServicePathUpdated() {
-    var pk = FacilityEntity.Pk.fromIdString("vha_402");
-    FacilityEntity entity = FacilityEntity.builder().id(pk).build();
+    var pk = FacilityEntityV0.Pk.fromIdString("vha_402");
+    FacilityEntityV0 entity = FacilityEntityV0.builder().id(pk).build();
     when(repository.findById(pk)).thenReturn(Optional.of(entity));
 
     CmsOverlay overlay = overlay();

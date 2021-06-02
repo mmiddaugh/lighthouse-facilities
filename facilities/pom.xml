@@ -18,6 +18,7 @@
     <mssql-jdbc.version>7.4.1.jre8</mssql-jdbc.version>
     <swagger-maven-plugin.version>2.1.1</swagger-maven-plugin.version>
     <orgjson.version>20210307</orgjson.version>
+    <jacoco.coverage>0.90</jacoco.coverage>
   </properties>
   <dependencies>
     <dependency>

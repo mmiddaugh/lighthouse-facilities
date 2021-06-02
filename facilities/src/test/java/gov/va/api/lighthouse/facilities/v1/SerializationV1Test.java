@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.v0;
+package gov.va.api.lighthouse.facilities.v1;
 
 import static gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig.createMapper;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * source messages have been edited to replace empty strings with null, and to remove any trailing
  * whitespace.
  */
-public class SerializationV0Test {
+public class SerializationV1Test {
   @Test
   @SneakyThrows
   void all() {

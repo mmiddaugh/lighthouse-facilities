@@ -1,24 +1,24 @@
-package gov.va.api.lighthouse.facilities.v0;
+package gov.va.api.lighthouse.facilities.v1;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig;
-import gov.va.api.lighthouse.facilities.api.v0.FacilityV0;
-import gov.va.api.lighthouse.facilities.api.v0.FacilityV0.ActiveStatus;
-import gov.va.api.lighthouse.facilities.api.v0.FacilityV0.FacilityAttributes;
-import gov.va.api.lighthouse.facilities.api.v0.FacilityV0.OperatingStatus;
-import gov.va.api.lighthouse.facilities.api.v0.FacilityV0.OperatingStatusCode;
-import gov.va.api.lighthouse.facilities.api.v0.cms.CmsOverlay;
-import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.Facility.ActiveStatus;
+import gov.va.api.lighthouse.facilities.api.v1.Facility.FacilityAttributes;
+import gov.va.api.lighthouse.facilities.api.v1.Facility.OperatingStatus;
+import gov.va.api.lighthouse.facilities.api.v1.Facility.OperatingStatusCode;
+import gov.va.api.lighthouse.facilities.api.v1.cms.CmsOverlay;
+import gov.va.api.lighthouse.facilities.api.v1.cms.DetailedService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
-public class FacilityOverlayV0Test {
-  private static final ObjectMapper mapper = FacilitiesJacksonConfig.createMapper();
+public class FacilityOverlayV1Test {
+  private static final ObjectMapper mapper = FacilitiesJacksonConfig.createMapperV1();
 
   @Test
   void activeStatusIsPopulatedByOperatingStatusWhenAvailable() {
@@ -39,14 +39,14 @@ public class FacilityOverlayV0Test {
     assertStatus(
         ActiveStatus.A,
         op(OperatingStatusCode.LIMITED, "neato"),
-        List.of(FacilityV0.HealthService.Covid19Vaccine),
+        List.of(Facility.HealthService.Covid19Vaccine),
         entity(
             fromActiveStatus(ActiveStatus.T),
             overlay(op(OperatingStatusCode.LIMITED, "neato"), true)));
     assertStatus(
         ActiveStatus.T,
         op(OperatingStatusCode.CLOSED, "neato"),
-        List.of(FacilityV0.HealthService.Covid19Vaccine),
+        List.of(Facility.HealthService.Covid19Vaccine),
         entity(
             fromActiveStatus(ActiveStatus.A),
             overlay(op(OperatingStatusCode.CLOSED, "neato"), true)));
@@ -55,9 +55,9 @@ public class FacilityOverlayV0Test {
   private void assertStatus(
       ActiveStatus expectedActiveStatus,
       OperatingStatus expectedOperatingStatus,
-      List<FacilityV0.HealthService> expectedHealthServices,
-      FacilityEntityV0 entity) {
-    FacilityV0 facility = FacilityOverlayV0.builder().mapper(mapper).build().apply(entity);
+      List<Facility.HealthService> expectedHealthServices,
+      FacilityEntityV1 entity) {
+    Facility facility = FacilityOverlayV1.builder().mapper(mapper).build().apply(entity);
     assertThat(facility.attributes().activeStatus()).isEqualTo(expectedActiveStatus);
     assertThat(facility.attributes().operatingStatus()).isEqualTo(expectedOperatingStatus);
     assertThat(facility.attributes().services().health()).isEqualTo(expectedHealthServices);
@@ -68,7 +68,7 @@ public class FacilityOverlayV0Test {
     assertStatus(
         null,
         OperatingStatus.builder().code(OperatingStatusCode.NORMAL).build(),
-        List.of(FacilityV0.HealthService.Covid19Vaccine),
+        List.of(Facility.HealthService.Covid19Vaccine),
         entity(fromActiveStatus(null), overlay(null, true)));
     assertStatus(
         null,
@@ -141,7 +141,7 @@ public class FacilityOverlayV0Test {
   }
 
   @SneakyThrows
-  private FacilityEntityV0 entity(FacilityV0 facility, CmsOverlay overlay) {
+  private FacilityEntityV1 entity(Facility facility, CmsOverlay overlay) {
     Set<String> detailedServices = null;
     if (overlay != null) {
       detailedServices = new HashSet<>();
@@ -151,7 +151,7 @@ public class FacilityOverlayV0Test {
         }
       }
     }
-    return FacilityEntityV0.builder()
+    return FacilityEntityV1.builder()
         .facility(mapper.writeValueAsString(facility))
         .cmsOperatingStatus(
             overlay == null ? null : mapper.writeValueAsString(overlay.operatingStatus()))
@@ -160,8 +160,8 @@ public class FacilityOverlayV0Test {
         .build();
   }
 
-  private FacilityV0 fromActiveStatus(ActiveStatus status) {
-    return FacilityV0.builder()
+  private Facility fromActiveStatus(ActiveStatus status) {
+    return Facility.builder()
         .attributes(FacilityAttributes.builder().activeStatus(status).build())
         .build();
   }

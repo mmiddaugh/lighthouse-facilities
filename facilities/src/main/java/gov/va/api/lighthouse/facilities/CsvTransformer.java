@@ -1,6 +1,7 @@
 package gov.va.api.lighthouse.facilities;
 
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.util.List;
 import java.util.Optional;
 import lombok.Builder;
@@ -85,7 +86,7 @@ public final class CsvTransformer {
     return List.of(
         facility.id(),
         attributes().map(a -> a.name()).orElse(""),
-        FacilityEntity.Pk.fromIdString(facility.id()).stationNumber(),
+        FacilityEntityV0.Pk.fromIdString(facility.id()).stationNumber(),
         attributes().map(a -> a.latitude()).map(d -> d.toString()).orElse(""),
         attributes().map(a -> a.longitude()).map(d -> d.toString()).orElse(""),
         attributes().map(a -> a.facilityType()).map(t -> t.toString()).orElse(""),

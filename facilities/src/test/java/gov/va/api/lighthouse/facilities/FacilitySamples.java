@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import gov.va.api.lighthouse.facilities.api.v0.FacilityReadResponse;
 import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +42,10 @@ public class FacilitySamples {
     return f;
   }
 
-  public FacilityEntity facilityEntity(String id) {
+  public FacilityEntityV0 facilityEntity(String id) {
     return InternalFacilitiesController.populate(
-        FacilityEntity.builder()
-            .id(FacilityEntity.Pk.fromIdString(id))
+        FacilityEntityV0.builder()
+            .id(FacilityEntityV0.Pk.fromIdString(id))
             .lastUpdated(Instant.now())
             .build(),
         facility(id));

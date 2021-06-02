@@ -1,8 +1,8 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v0;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.lighthouse.facilities.v0.FacilityEntity;
+import gov.va.api.lighthouse.facilities.FacilityRepository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
-public class FacilityV0RepositoryTest {
+public class FacilityRepositoryV0Test {
   @Autowired FacilityRepository repository;
 
-  private FacilityEntity facilityEntity(String stnNumber, Instant lastUpdated) {
-    return FacilityEntity.builder()
-        .id(FacilityEntity.Pk.of(FacilityEntity.Type.vha, stnNumber))
+  private FacilityEntityV0 facilityEntity(String stnNumber, Instant lastUpdated) {
+    return FacilityEntityV0.builder()
+        .id(FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, stnNumber))
         .facility("vha_" + stnNumber)
         .lastUpdated(lastUpdated)
         .build();
@@ -24,8 +24,8 @@ public class FacilityV0RepositoryTest {
 
   @Test
   void findAllIds() {
-    List<FacilityEntity.Pk> expected = new ArrayList<>();
-    FacilityEntity entity;
+    List<FacilityEntityV0.Pk> expected = new ArrayList<>();
+    FacilityEntityV0 entity;
     var now = Instant.now();
     for (int i = 0; i < 5; i++) {
       entity = facilityEntity("" + i, now);

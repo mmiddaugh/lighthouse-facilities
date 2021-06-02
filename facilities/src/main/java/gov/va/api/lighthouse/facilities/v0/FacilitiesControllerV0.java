@@ -14,7 +14,6 @@ import com.google.common.base.Splitter;
 import gov.va.api.lighthouse.facilities.ApiExceptions;
 import gov.va.api.lighthouse.facilities.CsvTransformer;
 import gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig;
-import gov.va.api.lighthouse.facilities.FacilityEntity;
 import gov.va.api.lighthouse.facilities.FacilityRepository;
 import gov.va.api.lighthouse.facilities.GeoFacilityTransformer;
 import gov.va.api.lighthouse.facilities.HasFacilityPayload;
@@ -60,8 +59,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class FacilitiesControllerV0 {
   private static final ObjectMapper MAPPER = FacilitiesJacksonConfig.createMapper();
 
-  private static final FacilityOverlay FACILITY_OVERLAY =
-      FacilityOverlay.builder().mapper(MAPPER).build();
+  private static final FacilityOverlayV0 FACILITY_OVERLAY =
+      FacilityOverlayV0.builder().mapper(MAPPER).build();
 
   private final FacilityRepository facilityRepository;
 
@@ -80,13 +79,13 @@ public class FacilitiesControllerV0 {
   }
 
   /** Unitless distance approximation based on geometric distance formula. For sorting only. */
-  private static double distance(@NonNull FacilityEntity entity, double lng, double lat) {
+  private static double distance(@NonNull FacilityEntityV0 entity, double lng, double lat) {
     double lngDiff = entity.longitude() - lng;
     double latDiff = entity.latitude() - lat;
     return Math.sqrt(lngDiff * lngDiff + latDiff * latDiff);
   }
 
-  private static List<FacilityEntity.Pk> entityIds(String ids) {
+  private static List<FacilityEntityV0.Pk> entityIds(String ids) {
     if (ids == null) {
       return emptyList();
     }
@@ -95,7 +94,7 @@ public class FacilitiesControllerV0 {
         .map(id -> trimToNull(id))
         .filter(Objects::nonNull)
         .distinct()
-        .map(id -> FacilityEntity.Pk.optionalFromIdString(id).orElse(null))
+        .map(id -> FacilityEntityV0.Pk.optionalFromIdString(id).orElse(null))
         .filter(Objects::nonNull)
         .collect(toList());
   }
@@ -110,7 +109,7 @@ public class FacilitiesControllerV0 {
   }
 
   /** Distance in miles using Haversine algorithm. */
-  private static double haversine(@NonNull FacilityEntity entity, double lng, double lat) {
+  private static double haversine(@NonNull FacilityEntityV0 entity, double lng, double lat) {
     double lon1 = Math.toRadians(entity.longitude());
     double lat1 = Math.toRadians(entity.latitude());
     double lon2 = Math.toRadians(lng);
@@ -167,16 +166,16 @@ public class FacilitiesControllerV0 {
     }
   }
 
-  private List<FacilityEntity> entitiesByBoundingBox(
+  private List<FacilityEntityV0> entitiesByBoundingBox(
       List<BigDecimal> bbox, String rawType, List<String> rawServices, Boolean rawMobile) {
     if (bbox.size() != 4) {
       throw new ApiExceptions.InvalidParameter("bbox", bbox);
     }
-    FacilityEntity.Type facilityType = validateFacilityType(rawType);
+    FacilityEntityV0.Type facilityType = validateFacilityType(rawType);
     Set<Facility.ServiceType> services = validateServices(rawServices);
 
     // lng lat lng lat
-    List<FacilityEntity> allEntities =
+    List<FacilityEntityV0> allEntities =
         facilityRepository.findAll(
             FacilityRepository.BBoxSpecification.builder()
                 .minLongitude(bbox.get(0).min(bbox.get(2)))
@@ -197,9 +196,9 @@ public class FacilitiesControllerV0 {
         .collect(toList());
   }
 
-  private List<FacilityEntity> entitiesByIds(String ids) {
-    List<FacilityEntity.Pk> pks = entityIds(ids);
-    Map<FacilityEntity.Pk, FacilityEntity> entities =
+  private List<FacilityEntityV0> entitiesByIds(String ids) {
+    List<FacilityEntityV0.Pk> pks = entityIds(ids);
+    Map<FacilityEntityV0.Pk, FacilityEntityV0> entities =
         facilityRepository.findByIdIn(pks).stream()
             .collect(toMap(e -> e.id(), Function.identity()));
     return pks.stream().map(pk -> entities.get(pk)).filter(Objects::nonNull).collect(toList());
@@ -213,9 +212,9 @@ public class FacilitiesControllerV0 {
       String rawType,
       List<String> rawServices,
       Boolean rawMobile) {
-    FacilityEntity.Type facilityType = validateFacilityType(rawType);
+    FacilityEntityV0.Type facilityType = validateFacilityType(rawType);
     Set<Facility.ServiceType> services = validateServices(rawServices);
-    List<FacilityEntity> entities =
+    List<FacilityEntityV0> entities =
         facilityRepository.findAll(
             FacilityRepository.TypeServicesIdsSpecification.builder()
                 .ids(entityIds(ids))
@@ -236,7 +235,7 @@ public class FacilitiesControllerV0 {
         .collect(toList());
   }
 
-  private Page<FacilityEntity> entitiesPageByState(
+  private Page<FacilityEntityV0> entitiesPageByState(
       String rawState,
       String rawType,
       List<String> rawServices,
@@ -246,7 +245,7 @@ public class FacilitiesControllerV0 {
     checkArgument(page >= 1);
     checkArgument(perPage >= 1);
     String state = rawState.trim().toUpperCase(Locale.US);
-    FacilityEntity.Type facilityType = validateFacilityType(rawType);
+    FacilityEntityV0.Type facilityType = validateFacilityType(rawType);
     Set<Facility.ServiceType> services = validateServices(rawServices);
     return facilityRepository.findAll(
         FacilityRepository.StateSpecification.builder()
@@ -255,10 +254,10 @@ public class FacilitiesControllerV0 {
             .services(services)
             .mobile(rawMobile)
             .build(),
-        PageRequest.of(page - 1, perPage, FacilityEntity.naturalOrder()));
+        PageRequest.of(page - 1, perPage, FacilityEntityV0.naturalOrder()));
   }
 
-  private Page<FacilityEntity> entitiesPageByZip(
+  private Page<FacilityEntityV0> entitiesPageByZip(
       String rawZip,
       String rawType,
       List<String> rawServices,
@@ -267,7 +266,7 @@ public class FacilitiesControllerV0 {
       int perPage) {
     checkArgument(page >= 1);
     checkArgument(perPage >= 1);
-    FacilityEntity.Type facilityType = validateFacilityType(rawType);
+    FacilityEntityV0.Type facilityType = validateFacilityType(rawType);
     Set<Facility.ServiceType> services = validateServices(rawServices);
     String zip = rawZip.substring(0, Math.min(rawZip.length(), 5));
     return facilityRepository.findAll(
@@ -277,17 +276,17 @@ public class FacilitiesControllerV0 {
             .services(services)
             .mobile(rawMobile)
             .build(),
-        PageRequest.of(page - 1, perPage, FacilityEntity.naturalOrder()));
+        PageRequest.of(page - 1, perPage, FacilityEntityV0.naturalOrder()));
   }
 
-  private FacilityEntity entityById(String id) {
-    FacilityEntity.Pk pk = null;
+  private FacilityEntityV0 entityById(String id) {
+    FacilityEntityV0.Pk pk = null;
     try {
-      pk = FacilityEntity.Pk.fromIdString(id);
+      pk = FacilityEntityV0.Pk.fromIdString(id);
     } catch (IllegalArgumentException ex) {
       throw new ApiExceptions.NotFound(id, ex);
     }
-    Optional<FacilityEntity> opt = facilityRepository.findById(pk);
+    Optional<FacilityEntityV0> opt = facilityRepository.findById(pk);
     if (opt.isEmpty()) {
       throw new ApiExceptions.NotFound(id);
     }
@@ -300,7 +299,7 @@ public class FacilitiesControllerV0 {
       produces = {"application/json"})
   public FacilitiesIdsResponse facilityIdsByType(
       @RequestParam(value = "type", required = false) String type) {
-    FacilityEntity.Type facilityType = validateFacilityType(type);
+    FacilityEntityV0.Type facilityType = validateFacilityType(type);
     return FacilitiesIdsResponse.builder()
         .data(
             facilityRepository.findAllIds().stream()
@@ -449,7 +448,7 @@ public class FacilitiesControllerV0 {
       @RequestParam(value = "mobile", required = false) Boolean mobile,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    List<FacilityEntity> entities = entitiesByBoundingBox(bbox, type, services, mobile);
+    List<FacilityEntityV0> entities = entitiesByBoundingBox(bbox, type, services, mobile);
     PageLinker linker =
         PageLinker.builder()
             .url(linkerUrl + "facilities")
@@ -481,7 +480,7 @@ public class FacilitiesControllerV0 {
       @RequestParam(value = "ids") String ids,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    List<FacilityEntity> entities = entitiesByIds(ids);
+    List<FacilityEntityV0> entities = entitiesByIds(ids);
     PageLinker linker =
         PageLinker.builder()
             .url(linkerUrl + "facilities")
@@ -565,7 +564,7 @@ public class FacilitiesControllerV0 {
       @RequestParam(value = "mobile", required = false) Boolean mobile,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    Page<FacilityEntity> entitiesPage =
+    Page<FacilityEntityV0> entitiesPage =
         entitiesPageByState(state, type, services, mobile, page, Math.max(perPage, 1));
     PageLinker linker =
         PageLinker.builder()
@@ -601,7 +600,7 @@ public class FacilitiesControllerV0 {
       @RequestParam(value = "visn") String visn,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    List<FacilityEntity> entities = facilityRepository.findByVisn(visn);
+    List<FacilityEntityV0> entities = facilityRepository.findByVisn(visn);
     PageLinker linker =
         PageLinker.builder()
             .url(linkerUrl + "facilities")
@@ -633,7 +632,7 @@ public class FacilitiesControllerV0 {
       @RequestParam(value = "mobile", required = false) Boolean mobile,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "per_page", defaultValue = "10") @Min(0) int perPage) {
-    Page<FacilityEntity> entitiesPage =
+    Page<FacilityEntityV0> entitiesPage =
         entitiesPageByZip(zip, type, services, mobile, page, Math.max(perPage, 1));
     PageLinker linker =
         PageLinker.builder()
@@ -677,7 +676,7 @@ public class FacilitiesControllerV0 {
   @Data
   @Builder
   private static final class DistanceEntity {
-    final FacilityEntity entity;
+    final FacilityEntityV0 entity;
 
     final BigDecimal distance;
 

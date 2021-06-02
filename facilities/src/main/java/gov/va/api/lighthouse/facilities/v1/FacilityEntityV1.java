@@ -1,16 +1,14 @@
 package gov.va.api.lighthouse.facilities.v1;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.toSet;
+
 import gov.va.api.lighthouse.facilities.HasFacilityPayload;
 import gov.va.api.lighthouse.facilities.api.v1.Facility;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import org.springframework.data.domain.Sort;
-
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -25,13 +23,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.Optional;
-import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.stream.Collectors.toSet;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import org.springframework.data.domain.Sort;
 
 @Data
 @Entity
@@ -40,7 +39,7 @@ import static java.util.stream.Collectors.toSet;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FacilityEntity implements HasFacilityPayload {
+public class FacilityEntityV1 implements HasFacilityPayload {
   /**
    * API V0 searches by {type}_{facilityId}. We might want to change that in the future, so we are
    * keeping those two pieces of information separate. However, the two (type + facility) are
@@ -108,7 +107,7 @@ public class FacilityEntity implements HasFacilityPayload {
   @Builder(
       builderMethodName = "typeSafeBuilder",
       builderClassName = "FacilityEntityTypeSafeBuilder")
-  public FacilityEntity(
+  public FacilityEntityV1(
       Pk id,
       String zip,
       String state,

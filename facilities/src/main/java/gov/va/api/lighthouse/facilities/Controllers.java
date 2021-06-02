@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,17 +27,17 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public final class Controllers {
-  private static final Map<String, FacilityEntity.Type> ENTITY_TYPE_LOOKUP =
+  private static final Map<String, FacilityEntityV0.Type> ENTITY_TYPE_LOOKUP =
       caseInsensitiveMap(
           ImmutableMap.of(
               "benefits",
-              FacilityEntity.Type.vba,
+              FacilityEntityV0.Type.vba,
               "cemetery",
-              FacilityEntity.Type.nca,
+              FacilityEntityV0.Type.nca,
               "health",
-              FacilityEntity.Type.vha,
+              FacilityEntityV0.Type.vha,
               "vet_center",
-              FacilityEntity.Type.vc));
+              FacilityEntityV0.Type.vc));
 
   private static final Map<String, Facility.ServiceType> SERVICE_LOOKUP =
       caseInsensitiveMap(
@@ -68,8 +69,8 @@ public final class Controllers {
   }
 
   /** Validates facility types. */
-  public static FacilityEntity.Type validateFacilityType(String type) {
-    FacilityEntity.Type mapped = ENTITY_TYPE_LOOKUP.get(trimToEmpty(type));
+  public static FacilityEntityV0.Type validateFacilityType(String type) {
+    FacilityEntityV0.Type mapped = ENTITY_TYPE_LOOKUP.get(trimToEmpty(type));
     if (mapped == null && isNotBlank(type)) {
       throw new ApiExceptions.InvalidParameter("type", type);
     }

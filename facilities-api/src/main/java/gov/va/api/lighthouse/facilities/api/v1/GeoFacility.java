@@ -84,7 +84,7 @@ public final class GeoFacility {
 
     @NotNull
     @JsonProperty("facility_type")
-    gov.va.api.lighthouse.facilities.api.v1.Facility.FacilityType facilityType;
+    Facility.FacilityType facilityType;
 
     @Schema(example = "VA Medical Center (VAMC)", nullable = true)
     String classification;
@@ -94,15 +94,15 @@ public final class GeoFacility {
 
     @Schema(nullable = true)
     @Valid
-    gov.va.api.lighthouse.facilities.api.v1.Facility.Addresses address;
+    Facility.Addresses address;
 
     @Schema(nullable = true)
     @Valid
-    gov.va.api.lighthouse.facilities.api.v1.Facility.Phone phone;
+    Facility.Phone phone;
 
     @Schema(nullable = true)
     @Valid
-    gov.va.api.lighthouse.facilities.api.v1.Facility.Hours hours;
+    Facility.Hours hours;
 
     @Schema(
         example = "Administrative hours are Monday-Friday 8:00 a.m. to 4:30 p.m.",
@@ -112,23 +112,23 @@ public final class GeoFacility {
 
     @Schema(nullable = true)
     @Valid
-    gov.va.api.lighthouse.facilities.api.v1.Facility.Services services;
+    Facility.Services services;
 
     @Schema(nullable = true)
     @Valid
-    gov.va.api.lighthouse.facilities.api.v1.Facility.Satisfaction satisfaction;
+    Facility.Satisfaction satisfaction;
 
     @Valid
     @Schema(nullable = true)
     @JsonProperty("wait_times")
-    gov.va.api.lighthouse.facilities.api.v1.Facility.WaitTimes waitTimes;
+    Facility.WaitTimes waitTimes;
 
     @Schema(example = "false", nullable = true)
     Boolean mobile;
 
     @Schema(nullable = true)
     @JsonProperty("active_status")
-    gov.va.api.lighthouse.facilities.api.v1.Facility.ActiveStatus activeStatus;
+    Facility.ActiveStatus activeStatus;
 
     @Valid
     @NotNull

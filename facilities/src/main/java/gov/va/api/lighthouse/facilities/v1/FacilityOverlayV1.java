@@ -2,11 +2,11 @@ package gov.va.api.lighthouse.facilities.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.lighthouse.facilities.HasFacilityPayload;
-import gov.va.api.lighthouse.facilities.api.v1.cms.DetailedService;
 import gov.va.api.lighthouse.facilities.api.v1.Facility;
 import gov.va.api.lighthouse.facilities.api.v1.Facility.ActiveStatus;
 import gov.va.api.lighthouse.facilities.api.v1.Facility.OperatingStatus;
 import gov.va.api.lighthouse.facilities.api.v1.Facility.OperatingStatusCode;
+import gov.va.api.lighthouse.facilities.api.v1.cms.DetailedService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,7 +24,7 @@ import org.json.JSONObject;
 @Builder
 @Value
 @Slf4j
-public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
+public class FacilityOverlayV1 implements Function<HasFacilityPayload, Facility> {
   @NonNull ObjectMapper mapper;
 
   private static void applyCmsOverlayOperatingStatus(
@@ -86,7 +86,7 @@ public class FacilityOverlay implements Function<HasFacilityPayload, Facility> {
   @Override
   @SneakyThrows
   public Facility apply(HasFacilityPayload entity) {
-    Facility facility =
+    Facility facility = // mapper.readValue(entity.facility(), FacilityV1.class);
         mapper.readValue(transformSpecialInstructionsToList(entity.facility()), Facility.class);
     if (entity.cmsOperatingStatus() != null) {
       applyCmsOverlayOperatingStatus(

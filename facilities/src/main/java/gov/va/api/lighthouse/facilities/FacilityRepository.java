@@ -5,6 +5,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 import gov.va.api.health.autoconfig.logging.Loggable;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,23 +29,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Loggable
 @Transactional(isolation = Isolation.READ_UNCOMMITTED)
 public interface FacilityRepository
-    extends CrudRepository<FacilityEntity, FacilityEntity.Pk>,
-        JpaSpecificationExecutor<FacilityEntity> {
+    extends CrudRepository<FacilityEntityV0, FacilityEntityV0.Pk>,
+        JpaSpecificationExecutor<FacilityEntityV0> {
   @Query("select e.id from #{#entityName} e")
-  List<FacilityEntity.Pk> findAllIds();
+  List<FacilityEntityV0.Pk> findAllIds();
 
   List<HasFacilityPayload> findAllProjectedBy();
 
-  List<FacilityEntity> findByIdIn(Collection<FacilityEntity.Pk> ids);
+  List<FacilityEntityV0> findByIdIn(Collection<FacilityEntityV0.Pk> ids);
 
-  List<FacilityEntity> findByVisn(String visn);
+  List<FacilityEntityV0> findByVisn(String visn);
 
   @Query("select max(e.lastUpdated) from #{#entityName} e")
   Instant findLastUpdated();
 
   @Value
   @Builder
-  final class BBoxSpecification implements Specification<FacilityEntity> {
+  final class BBoxSpecification implements Specification<FacilityEntityV0> {
     @NonNull BigDecimal minLongitude;
 
     @NonNull BigDecimal maxLongitude;
@@ -53,7 +54,7 @@ public interface FacilityRepository
 
     @NonNull BigDecimal maxLatitude;
 
-    FacilityEntity.Type facilityType;
+    FacilityEntityV0.Type facilityType;
 
     @Builder.Default Set<Facility.ServiceType> services = emptySet();
 
@@ -61,7 +62,7 @@ public interface FacilityRepository
 
     @Override
     public Predicate toPredicate(
-        Root<FacilityEntity> root,
+        Root<FacilityEntityV0> root,
         CriteriaQuery<?> criteriaQuery,
         CriteriaBuilder criteriaBuilder) {
       List<Predicate> basePredicates = new ArrayList<>(5);
@@ -101,10 +102,10 @@ public interface FacilityRepository
 
   @Value
   @Builder
-  final class StateSpecification implements Specification<FacilityEntity> {
+  final class StateSpecification implements Specification<FacilityEntityV0> {
     @NonNull String state;
 
-    FacilityEntity.Type facilityType;
+    FacilityEntityV0.Type facilityType;
 
     @Builder.Default Set<Facility.ServiceType> services = emptySet();
 
@@ -112,7 +113,7 @@ public interface FacilityRepository
 
     @Override
     public Predicate toPredicate(
-        Root<FacilityEntity> root,
+        Root<FacilityEntityV0> root,
         CriteriaQuery<?> criteriaQuery,
         CriteriaBuilder criteriaBuilder) {
       List<Predicate> basePredicates = new ArrayList<>(2);
@@ -149,16 +150,16 @@ public interface FacilityRepository
 
   @Value
   @Builder
-  final class StationNumbersSpecification implements Specification<FacilityEntity> {
+  final class StationNumbersSpecification implements Specification<FacilityEntityV0> {
     @Builder.Default Set<String> stationNumbers = emptySet();
 
-    FacilityEntity.Type facilityType;
+    FacilityEntityV0.Type facilityType;
 
     @Builder.Default Set<Facility.ServiceType> services = emptySet();
 
     @Override
     public Predicate toPredicate(
-        Root<FacilityEntity> root,
+        Root<FacilityEntityV0> root,
         CriteriaQuery<?> criteriaQuery,
         CriteriaBuilder criteriaBuilder) {
       if (isEmpty(stationNumbers)) {
@@ -199,10 +200,10 @@ public interface FacilityRepository
 
   @Value
   @Builder
-  final class TypeServicesIdsSpecification implements Specification<FacilityEntity> {
-    @Builder.Default Collection<FacilityEntity.Pk> ids = emptySet();
+  final class TypeServicesIdsSpecification implements Specification<FacilityEntityV0> {
+    @Builder.Default Collection<FacilityEntityV0.Pk> ids = emptySet();
 
-    FacilityEntity.Type facilityType;
+    FacilityEntityV0.Type facilityType;
 
     @Builder.Default Set<Facility.ServiceType> services = emptySet();
 
@@ -210,12 +211,12 @@ public interface FacilityRepository
 
     @Override
     public Predicate toPredicate(
-        Root<FacilityEntity> root,
+        Root<FacilityEntityV0> root,
         CriteriaQuery<?> criteriaQuery,
         CriteriaBuilder criteriaBuilder) {
       List<Predicate> basePredicates = new ArrayList<>(2);
       if (!isEmpty(ids)) {
-        CriteriaBuilder.In<FacilityEntity.Pk> idsInClause = criteriaBuilder.in(root.get("id"));
+        CriteriaBuilder.In<FacilityEntityV0.Pk> idsInClause = criteriaBuilder.in(root.get("id"));
         ids.forEach(idsInClause::value);
         basePredicates.add(idsInClause);
       }
@@ -251,10 +252,10 @@ public interface FacilityRepository
 
   @Value
   @Builder
-  final class ZipSpecification implements Specification<FacilityEntity> {
+  final class ZipSpecification implements Specification<FacilityEntityV0> {
     @NonNull String zip;
 
-    FacilityEntity.Type facilityType;
+    FacilityEntityV0.Type facilityType;
 
     @Builder.Default Set<Facility.ServiceType> services = emptySet();
 
@@ -262,7 +263,7 @@ public interface FacilityRepository
 
     @Override
     public Predicate toPredicate(
-        Root<FacilityEntity> root,
+        Root<FacilityEntityV0> root,
         CriteriaQuery<?> criteriaQuery,
         CriteriaBuilder criteriaBuilder) {
       List<Predicate> basePredicates = new ArrayList<>(2);

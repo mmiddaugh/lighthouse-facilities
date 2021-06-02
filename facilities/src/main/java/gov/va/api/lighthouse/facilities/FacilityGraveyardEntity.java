@@ -1,5 +1,6 @@
 package gov.va.api.lighthouse.facilities;
 
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.time.Instant;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FacilityGraveyardEntity {
-  @EqualsAndHashCode.Include @EmbeddedId private FacilityEntity.Pk id;
+  @EqualsAndHashCode.Include @EmbeddedId private FacilityEntityV0.Pk id;
 
   @Version private Integer version;
 

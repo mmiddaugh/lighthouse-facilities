@@ -14,12 +14,12 @@ import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.ApiExceptions;
 import gov.va.api.lighthouse.facilities.DriveTimeBandEntity;
 import gov.va.api.lighthouse.facilities.DriveTimeBandRepository;
-import gov.va.api.lighthouse.facilities.FacilityEntity;
 import gov.va.api.lighthouse.facilities.FacilityRepository;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import gov.va.api.lighthouse.facilities.api.v0.NearbyResponse;
 import gov.va.api.lighthouse.facilities.api.v0.pssg.PathEncoder;
 import gov.va.api.lighthouse.facilities.api.v0.pssg.PssgDriveTimeBand;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
@@ -171,11 +171,11 @@ public class NearbyControllerV1 {
     log.info("{} bands found in {} ms", maybeBands.size(), timer.elapsed(TimeUnit.MILLISECONDS));
     Map<String, DriveTimeBandEntity> bandsByStation =
         intersections(longitude, latitude, maybeBands);
-    List<FacilityEntity> facilityEntities =
+    List<FacilityEntityV0> facilityEntities =
         facilityRepository.findAll(
             FacilityRepository.StationNumbersSpecification.builder()
                 .stationNumbers(bandsByStation.keySet())
-                .facilityType(FacilityEntity.Type.vha)
+                .facilityType(FacilityEntityV0.Type.vha)
                 .services(services)
                 .build());
     return facilityEntities.stream()

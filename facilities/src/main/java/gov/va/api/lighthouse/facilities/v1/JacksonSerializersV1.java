@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities.v0;
+package gov.va.api.lighthouse.facilities.v1;
 
 import static java.util.Collections.emptyList;
 
@@ -9,11 +9,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import gov.va.api.lighthouse.facilities.api.v0.FacilitiesResponse;
 import gov.va.api.lighthouse.facilities.api.v0.FacilityReadResponse;
-import gov.va.api.lighthouse.facilities.api.v0.Facility;
-import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
 import gov.va.api.lighthouse.facilities.api.v0.GeoFacilityReadResponse;
 import gov.va.api.lighthouse.facilities.api.v0.NearbyResponse;
 import gov.va.api.lighthouse.facilities.api.v0.PageLinks;
+import gov.va.api.lighthouse.facilities.api.v1.Facility;
+import gov.va.api.lighthouse.facilities.api.v1.GeoFacility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +22,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
 @UtilityClass
-public final class JacksonSerializersV0 {
+public final class JacksonSerializersV1 {
   private static boolean hasParent(JsonGenerator jgen, Class<?> clazz) {
     return parents(jgen).stream().anyMatch(p -> clazz.isInstance(p));
   }
@@ -131,8 +131,7 @@ public final class JacksonSerializersV0 {
 
     @Override
     @SneakyThrows
-    public void serialize(
-            Facility.Address value, JsonGenerator jgen, SerializerProvider provider) {
+    public void serialize(Facility.Address value, JsonGenerator jgen, SerializerProvider provider) {
       jgen.writeStartObject();
       if (!empty(value)) {
         if (emptyExcludeAddr1(value) && idStartsWith(jgen, "nca_s")) {
@@ -173,7 +172,7 @@ public final class JacksonSerializersV0 {
     @Override
     @SneakyThrows
     public void serialize(
-            Facility.Addresses value, JsonGenerator jgen, SerializerProvider provider) {
+        Facility.Addresses value, JsonGenerator jgen, SerializerProvider provider) {
       jgen.writeStartObject();
       if (!empty(value)) {
         jgen.writeObjectField(
@@ -224,7 +223,7 @@ public final class JacksonSerializersV0 {
     @Override
     @SneakyThrows
     public void serialize(
-            Facility.FacilityAttributes value, JsonGenerator jgen, SerializerProvider provider) {
+        Facility.FacilityAttributes value, JsonGenerator jgen, SerializerProvider provider) {
       jgen.writeStartObject();
       jgen.writeObjectField("name", value.name());
       jgen.writeObjectField("facility_type", value.facilityType());
@@ -392,7 +391,7 @@ public final class JacksonSerializersV0 {
     @Override
     @SneakyThrows
     public void serialize(
-            Facility.PatientWaitTime value, JsonGenerator jgen, SerializerProvider provider) {
+        Facility.PatientWaitTime value, JsonGenerator jgen, SerializerProvider provider) {
       jgen.writeStartObject();
       jgen.writeObjectField("service", value.service());
       jgen.writeObjectField("new", value.newPatientWaitTime());
@@ -523,7 +522,7 @@ public final class JacksonSerializersV0 {
     @Override
     @SneakyThrows
     public void serialize(
-            Facility.Satisfaction value, JsonGenerator jgen, SerializerProvider provider) {
+        Facility.Satisfaction value, JsonGenerator jgen, SerializerProvider provider) {
       jgen.writeStartObject();
       if (!empty(value) || idStartsWith(jgen, "vha_")) {
         jgen.writeObjectField(
@@ -548,7 +547,7 @@ public final class JacksonSerializersV0 {
     @Override
     @SneakyThrows
     public void serialize(
-            Facility.Services value, JsonGenerator jgen, SerializerProvider provider) {
+        Facility.Services value, JsonGenerator jgen, SerializerProvider provider) {
       jgen.writeStartObject();
       if (idStartsWith(jgen, "vha_")) {
         jgen.writeObjectField("other", Optional.ofNullable(value.other()).orElse(emptyList()));
@@ -589,7 +588,7 @@ public final class JacksonSerializersV0 {
     @Override
     @SneakyThrows
     public void serialize(
-            Facility.WaitTimes value, JsonGenerator jgen, SerializerProvider provider) {
+        Facility.WaitTimes value, JsonGenerator jgen, SerializerProvider provider) {
       jgen.writeStartObject();
       if (!empty(value) || idStartsWith(jgen, "vha_")) {
         jgen.writeObjectField("health", Optional.ofNullable(value.health()).orElse(emptyList()));

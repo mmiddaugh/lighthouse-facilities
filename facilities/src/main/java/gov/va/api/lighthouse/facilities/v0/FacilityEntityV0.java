@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toSet;
 
 import gov.va.api.lighthouse.facilities.HasFacilityPayload;
-import gov.va.api.lighthouse.facilities.api.v0.FacilityV0;
+import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Optional;
@@ -39,7 +39,7 @@ import org.springframework.data.domain.Sort;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FacilityEntity implements HasFacilityPayload {
+public class FacilityEntityV0 implements HasFacilityPayload {
   /**
    * API V0 searches by {type}_{facilityId}. We might want to change that in the future, so we are
    * keeping those two pieces of information separate. However, the two (type + facility) are
@@ -107,7 +107,7 @@ public class FacilityEntity implements HasFacilityPayload {
   @Builder(
       builderMethodName = "typeSafeBuilder",
       builderClassName = "FacilityEntityTypeSafeBuilder")
-  public FacilityEntity(
+  public FacilityEntityV0(
       Pk id,
       String zip,
       String state,
@@ -116,9 +116,9 @@ public class FacilityEntity implements HasFacilityPayload {
       String facility,
       String cmsOperatingStatus,
       String cmsServices,
-      Set<FacilityV0.ServiceType> overlayServiceTypes,
+      Set<Facility.ServiceType> overlayServiceTypes,
       Integer version,
-      Set<FacilityV0.ServiceType> servicesTypes,
+      Set<Facility.ServiceType> servicesTypes,
       Long missingTimestamp,
       Instant lastUpdated,
       String visn,
@@ -146,12 +146,12 @@ public class FacilityEntity implements HasFacilityPayload {
   }
 
   /** Populate overlay services from a type safe collection. */
-  public void overlayServicesFromServiceTypes(Set<FacilityV0.ServiceType> overlayServiceTypes) {
+  public void overlayServicesFromServiceTypes(Set<Facility.ServiceType> overlayServiceTypes) {
     overlayServices(overlayServiceTypes.stream().map(Object::toString).collect(toSet()));
   }
 
   /** Populate services from a type safe collection. */
-  public void servicesFromServiceTypes(Set<FacilityV0.ServiceType> serviceTypes) {
+  public void servicesFromServiceTypes(Set<Facility.ServiceType> serviceTypes) {
     services(serviceTypes.stream().map(Object::toString).collect(toSet()));
   }
 

@@ -3,6 +3,7 @@ package gov.va.api.lighthouse.facilities;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.lighthouse.facilities.api.v0.Facility.HealthService;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,9 +41,9 @@ public class RepositoriesTest {
 
   @Test
   void addFacilityEntities() {
-    FacilityEntity f123Vha =
-        FacilityEntity.typeSafeBuilder()
-            .id(FacilityEntity.Pk.of(FacilityEntity.Type.vha, "123"))
+    FacilityEntityV0 f123Vha =
+        FacilityEntityV0.typeSafeBuilder()
+            .id(FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "123"))
             .latitude(70)
             .longitude(30)
             .zip("90210")

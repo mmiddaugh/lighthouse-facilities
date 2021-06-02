@@ -20,8 +20,7 @@ public class ReadHealthByIdJsonTest {
 
   private Facility.PatientWaitTime patientWaitTime(
       Facility.HealthService service, Double newPat, Double oldPat) {
-    gov.va.api.lighthouse.facilities.api.v1.Facility.PatientWaitTime.PatientWaitTimeBuilder wait =
-        gov.va.api.lighthouse.facilities.api.v1.Facility.PatientWaitTime.builder();
+    Facility.PatientWaitTime.PatientWaitTimeBuilder wait = Facility.PatientWaitTime.builder();
     if (service != null) {
       wait.service(service);
     }
@@ -38,28 +37,22 @@ public class ReadHealthByIdJsonTest {
   private FacilityReadResponse sample() {
     return FacilityReadResponse.builder()
         .facility(
-            gov.va.api.lighthouse.facilities.api.v1.Facility.builder()
+            Facility.builder()
                 .id("vha_402GA")
-                .type(gov.va.api.lighthouse.facilities.api.v1.Facility.Type.va_facilities)
+                .type(Facility.Type.va_facilities)
                 .attributes(
-                    gov.va.api.lighthouse.facilities.api.v1.Facility.FacilityAttributes.builder()
+                    Facility.FacilityAttributes.builder()
                         .name("Caribou VA Clinic")
-                        .facilityType(
-                            gov.va.api.lighthouse.facilities.api.v1.Facility.FacilityType
-                                .va_health_facility)
+                        .facilityType(Facility.FacilityType.va_health_facility)
                         .classification("Primary Care CBOC")
                         .website("https://www.maine.va.gov/locations/caribou.asp")
                         .latitude(BigDecimal.valueOf(46.8780264900001))
                         .longitude(BigDecimal.valueOf(-68.00939541))
                         .address(
-                            gov.va.api.lighthouse.facilities.api.v1.Facility.Addresses.builder()
-                                .mailing(
-                                    gov.va.api.lighthouse.facilities.api.v1.Facility.Address
-                                        .builder()
-                                        .build())
+                            Facility.Addresses.builder()
+                                .mailing(Facility.Address.builder().build())
                                 .physical(
-                                    gov.va.api.lighthouse.facilities.api.v1.Facility.Address
-                                        .builder()
+                                    Facility.Address.builder()
                                         .zip("04736-3567")
                                         .city("Caribou")
                                         .state("ME")
@@ -68,7 +61,7 @@ public class ReadHealthByIdJsonTest {
                                         .build())
                                 .build())
                         .phone(
-                            gov.va.api.lighthouse.facilities.api.v1.Facility.Phone.builder()
+                            Facility.Phone.builder()
                                 .fax("207-493-3877")
                                 .main("207-493-3800")
                                 .pharmacy("207-623-8411 x5770")
@@ -78,7 +71,7 @@ public class ReadHealthByIdJsonTest {
                                 .enrollmentCoordinator("207-623-8411 x5688")
                                 .build())
                         .hours(
-                            gov.va.api.lighthouse.facilities.api.v1.Facility.Hours.builder()
+                            Facility.Hours.builder()
                                 .monday("700AM-430PM")
                                 .tuesday("700AM-430PM")
                                 .wednesday("700AM-430PM")
@@ -88,54 +81,40 @@ public class ReadHealthByIdJsonTest {
                                 .sunday("Closed")
                                 .build())
                         .services(
-                            gov.va.api.lighthouse.facilities.api.v1.Facility.Services.builder()
+                            Facility.Services.builder()
                                 .other(new ArrayList<>())
                                 .health(
                                     List.of(
-                                        gov.va.api.lighthouse.facilities.api.v1.Facility
-                                            .HealthService.EmergencyCare,
-                                        gov.va.api.lighthouse.facilities.api.v1.Facility
-                                            .HealthService.PrimaryCare,
-                                        gov.va.api.lighthouse.facilities.api.v1.Facility
-                                            .HealthService.MentalHealthCare,
-                                        gov.va.api.lighthouse.facilities.api.v1.Facility
-                                            .HealthService.Dermatology,
-                                        gov.va.api.lighthouse.facilities.api.v1.Facility
-                                            .HealthService.SpecialtyCare))
+                                        Facility.HealthService.EmergencyCare,
+                                        Facility.HealthService.PrimaryCare,
+                                        Facility.HealthService.MentalHealthCare,
+                                        Facility.HealthService.Dermatology,
+                                        Facility.HealthService.SpecialtyCare))
                                 .lastUpdated(LocalDate.parse("2020-02-24"))
                                 .build())
                         .satisfaction(
-                            gov.va.api.lighthouse.facilities.api.v1.Facility.Satisfaction.builder()
+                            Facility.Satisfaction.builder()
                                 .health(
-                                    gov.va.api.lighthouse.facilities.api.v1.Facility
-                                        .PatientSatisfaction.builder()
+                                    Facility.PatientSatisfaction.builder()
                                         .primaryCareUrgent(BigDecimal.valueOf(0.89))
                                         .primaryCareRoutine(BigDecimal.valueOf(0.91))
                                         .build())
                                 .effectiveDate(LocalDate.parse("2019-06-20"))
                                 .build())
                         .waitTimes(
-                            gov.va.api.lighthouse.facilities.api.v1.Facility.WaitTimes.builder()
+                            Facility.WaitTimes.builder()
                                 .health(
                                     List.of(
                                         patientWaitTime(
-                                            gov.va.api.lighthouse.facilities.api.v1.Facility
-                                                .HealthService.Dermatology,
-                                            3.714285,
-                                            null),
+                                            Facility.HealthService.Dermatology, 3.714285, null),
                                         patientWaitTime(
-                                            gov.va.api.lighthouse.facilities.api.v1.Facility
-                                                .HealthService.PrimaryCare,
+                                            Facility.HealthService.PrimaryCare,
                                             13.727272,
                                             10.392441),
                                         patientWaitTime(
-                                            gov.va.api.lighthouse.facilities.api.v1.Facility
-                                                .HealthService.SpecialtyCare,
-                                            5.222222,
-                                            0.0),
+                                            Facility.HealthService.SpecialtyCare, 5.222222, 0.0),
                                         patientWaitTime(
-                                            gov.va.api.lighthouse.facilities.api.v1.Facility
-                                                .HealthService.MentalHealthCare,
+                                            Facility.HealthService.MentalHealthCare,
                                             5.75,
                                             2.634703)))
                                 .effectiveDate(LocalDate.parse("2020-02-24"))

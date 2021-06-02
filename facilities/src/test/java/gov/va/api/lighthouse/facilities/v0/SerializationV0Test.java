@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.v0;
 
 import static gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig.createMapper;
 import static org.assertj.core.api.Assertions.assertThat;

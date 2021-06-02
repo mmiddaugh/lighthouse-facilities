@@ -26,6 +26,7 @@ import gov.va.api.lighthouse.facilities.api.v0.ReloadResponse;
 import gov.va.api.lighthouse.facilities.api.v0.cms.CmsOverlay;
 import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
 import gov.va.api.lighthouse.facilities.collector.FacilitiesCollector;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -154,12 +155,12 @@ public class InternalFacilitiesControllerV0Test {
         .build();
   }
 
-  private FacilityEntity _entity(Facility fac) {
+  private FacilityEntityV0 _entity(Facility fac) {
     return _entityWithOverlay(fac, null);
   }
 
   @SneakyThrows
-  private FacilityEntity _entityWithOverlay(Facility fac, CmsOverlay overlay) {
+  private FacilityEntityV0 _entityWithOverlay(Facility fac, CmsOverlay overlay) {
     String operatingStatusString = null;
     Set<String> cmsServicesNames = null;
     String cmsServicesString = null;
@@ -182,8 +183,8 @@ public class InternalFacilitiesControllerV0Test {
       }
     }
     return InternalFacilitiesController.populate(
-        FacilityEntity.builder()
-            .id(FacilityEntity.Pk.fromIdString(fac.id()))
+        FacilityEntityV0.builder()
+            .id(FacilityEntityV0.Pk.fromIdString(fac.id()))
             .cmsOperatingStatus(operatingStatusString)
             .overlayServices(cmsServicesNames)
             .cmsServices(cmsServicesString)
@@ -215,7 +216,7 @@ public class InternalFacilitiesControllerV0Test {
               : JacksonConfig.createMapper().writeValueAsString(overlay.detailedServices());
     }
     return FacilityGraveyardEntity.builder()
-        .id(FacilityEntity.Pk.fromIdString(fac.id()))
+        .id(FacilityEntityV0.Pk.fromIdString(fac.id()))
         .facility(FacilitiesJacksonConfig.createMapper().writeValueAsString(fac))
         .cmsOperatingStatus(operatingStatusString)
         .graveyardOverlayServices(cmsServicesNames)
@@ -254,7 +255,7 @@ public class InternalFacilitiesControllerV0Test {
     ReloadResponse response = _controller().reload().getBody();
     assertThat(response.facilitiesRevived()).isEqualTo(List.of("vha_f1"));
     assertThat(graveyardRepository.findAll()).isEmpty();
-    FacilityEntity result = Iterables.getOnlyElement(facilityRepository.findAll());
+    FacilityEntityV0 result = Iterables.getOnlyElement(facilityRepository.findAll());
     assertThat(result.id()).isEqualTo(entity.id());
     assertThat(result.facility())
         .isEqualTo(FacilitiesJacksonConfig.createMapper().writeValueAsString(f1));
@@ -299,7 +300,7 @@ public class InternalFacilitiesControllerV0Test {
     ReloadResponse response = _controller().reload().getBody();
     assertThat(response.facilitiesUpdated()).isEqualTo(List.of("vha_f1"));
     assertThat(response.facilitiesMissing()).isEqualTo(List.of("vha_f2", "vha_f3", "vha_f4"));
-    List<FacilityEntity> findAll = ImmutableList.copyOf(facilityRepository.findAll());
+    List<FacilityEntityV0> findAll = ImmutableList.copyOf(facilityRepository.findAll());
     assertThat(findAll).hasSize(4);
     assertThat(findAll.get(0).missingTimestamp()).isNull();
     assertThat(findAll.get(0).services()).isEqualTo(Set.of("MentalHealthCare"));
@@ -319,7 +320,7 @@ public class InternalFacilitiesControllerV0Test {
     when(collector.collectFacilities()).thenReturn(List.of(f1));
     ReloadResponse response = _controller().reload().getBody();
     assertThat(response.facilitiesUpdated()).isEqualTo(List.of("vha_f1"));
-    FacilityEntity result = Iterables.getOnlyElement(facilityRepository.findAll());
+    FacilityEntityV0 result = Iterables.getOnlyElement(facilityRepository.findAll());
     assertThat(result.missingTimestamp()).isNull();
     assertThat(result.services()).isEqualTo(Set.of("MentalHealthCare"));
   }
@@ -334,7 +335,7 @@ public class InternalFacilitiesControllerV0Test {
     when(collector.collectFacilities()).thenReturn(emptyList());
     ReloadResponse response = _controller().reload().getBody();
     assertThat(response.facilitiesMissing()).isEqualTo(List.of("vha_f1"));
-    FacilityEntity result = Iterables.getOnlyElement(facilityRepository.findAll());
+    FacilityEntityV0 result = Iterables.getOnlyElement(facilityRepository.findAll());
     assertThat(result.missingTimestamp()).isEqualTo(early);
   }
 
@@ -399,7 +400,7 @@ public class InternalFacilitiesControllerV0Test {
     Facility f1Old =
         _facility("vha_f1", "NO", "666", 9.0, 9.1, List.of(HealthService.SpecialtyCare));
     long threeDaysAgo = LocalDateTime.now().minusDays(3).toInstant(ZoneOffset.UTC).toEpochMilli();
-    FacilityEntity entity = _entityWithOverlay(f1Old, _overlay()).missingTimestamp(threeDaysAgo);
+    FacilityEntityV0 entity = _entityWithOverlay(f1Old, _overlay()).missingTimestamp(threeDaysAgo);
     facilityRepository.save(entity);
     when(collector.collectFacilities()).thenReturn(emptyList());
     ReloadResponse response = _controller().reload().getBody();
@@ -463,7 +464,7 @@ public class InternalFacilitiesControllerV0Test {
             controller.deleteFromGraveyard(
                 response,
                 FacilityGraveyardEntity.builder()
-                    .id(FacilityEntity.Pk.fromIdString("vha_f1"))
+                    .id(FacilityEntityV0.Pk.fromIdString("vha_f1"))
                     .build()));
     assertThat(response.problems())
         .isEqualTo(
@@ -603,7 +604,7 @@ public class InternalFacilitiesControllerV0Test {
   @Test
   void updateAndSave_error() {
     FacilityRepository repo = mock(FacilityRepository.class);
-    when(repo.save(any(FacilityEntity.class))).thenThrow(new RuntimeException("oh noez"));
+    when(repo.save(any(FacilityEntityV0.class))).thenThrow(new RuntimeException("oh noez"));
     InternalFacilitiesController controller =
         InternalFacilitiesController.builder().facilityRepository(repo).build();
     Facility f1 =
@@ -615,7 +616,7 @@ public class InternalFacilitiesControllerV0Test {
         () ->
             controller.updateAndSave(
                 response,
-                FacilityEntity.builder().id(FacilityEntity.Pk.fromIdString("vha_f1")).build(),
+                FacilityEntityV0.builder().id(FacilityEntityV0.Pk.fromIdString("vha_f1")).build(),
                 f1));
     assertThat(response.problems())
         .isEqualTo(
@@ -653,35 +654,44 @@ public class InternalFacilitiesControllerV0Test {
     _controller()
         .updateAndSave(
             response,
-            FacilityEntity.builder().id(FacilityEntity.Pk.fromIdString("vha_f1")).build(),
+            FacilityEntityV0.builder().id(FacilityEntityV0.Pk.fromIdString("vha_f1")).build(),
             f1);
     assertThat(f1.attributes().operationalHoursSpecialInstructions())
         .isEqualTo(SPECIAL_INSTRUCTION_UPDATED_1);
 
     assertThat(
-            facilityRepository.findById(FacilityEntity.Pk.fromIdString("vha_f1")).get().facility())
+            facilityRepository
+                .findById(FacilityEntityV0.Pk.fromIdString("vha_f1"))
+                .get()
+                .facility())
         .contains(SPECIAL_INSTRUCTION_UPDATED_1);
 
     _controller()
         .updateAndSave(
             response,
-            FacilityEntity.builder().id(FacilityEntity.Pk.fromIdString("vha_f2")).build(),
+            FacilityEntityV0.builder().id(FacilityEntityV0.Pk.fromIdString("vha_f2")).build(),
             f2);
     assertThat(f2.attributes().operationalHoursSpecialInstructions())
         .isEqualTo(SPECIAL_INSTRUCTION_UPDATED_2);
     assertThat(
-            facilityRepository.findById(FacilityEntity.Pk.fromIdString("vha_f2")).get().facility())
+            facilityRepository
+                .findById(FacilityEntityV0.Pk.fromIdString("vha_f2"))
+                .get()
+                .facility())
         .contains(SPECIAL_INSTRUCTION_UPDATED_2);
 
     _controller()
         .updateAndSave(
             response,
-            FacilityEntity.builder().id(FacilityEntity.Pk.fromIdString("vha_f3")).build(),
+            FacilityEntityV0.builder().id(FacilityEntityV0.Pk.fromIdString("vha_f3")).build(),
             f3);
     assertThat(f3.attributes().operationalHoursSpecialInstructions())
         .isEqualTo(SPECIAL_INSTRUCTION_UPDATED_3);
     assertThat(
-            facilityRepository.findById(FacilityEntity.Pk.fromIdString("vha_f3")).get().facility())
+            facilityRepository
+                .findById(FacilityEntityV0.Pk.fromIdString("vha_f3"))
+                .get()
+                .facility())
         .contains(SPECIAL_INSTRUCTION_UPDATED_3);
   }
 

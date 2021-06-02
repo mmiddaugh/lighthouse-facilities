@@ -19,6 +19,7 @@ import gov.va.api.lighthouse.facilities.api.v0.ReloadResponse;
 import gov.va.api.lighthouse.facilities.api.v0.cms.CmsOverlay;
 import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
 import gov.va.api.lighthouse.facilities.collector.FacilitiesCollector;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -107,7 +108,7 @@ public class InternalFacilitiesController {
 
   /** Populate the given record with facility data _EXCEPT_ of the PK. */
   @SneakyThrows
-  public static FacilityEntity populate(FacilityEntity record, Facility facility) {
+  public static FacilityEntityV0 populate(FacilityEntityV0 record, Facility facility) {
     checkArgument(record.id() != null);
     record.latitude(facility.attributes().latitude().doubleValue());
     record.longitude(facility.attributes().longitude().doubleValue());
@@ -174,7 +175,7 @@ public class InternalFacilitiesController {
 
   @DeleteMapping(value = "/facilities/{id}/cms-overlay")
   ResponseEntity<Void> deleteCmsOverlayById(@PathVariable("id") String id) {
-    Optional<FacilityEntity> entity = entityById(id);
+    Optional<FacilityEntityV0> entity = entityById(id);
     if (entity.isEmpty()) {
       log.info("Facility {} does not exist, ignoring request.", sanitize(id));
       return ResponseEntity.accepted().build();
@@ -188,7 +189,7 @@ public class InternalFacilitiesController {
 
   @DeleteMapping(value = "/facilities/{id}")
   ResponseEntity<String> deleteFacilityById(@PathVariable("id") String id) {
-    Optional<FacilityEntity> entity = entityById(id);
+    Optional<FacilityEntityV0> entity = entityById(id);
     if (entity.isEmpty()) {
       log.info("Facility {} does not exist, ignoring request.", sanitize(id));
       return ResponseEntity.accepted().build();
@@ -226,10 +227,10 @@ public class InternalFacilitiesController {
     }
   }
 
-  private Optional<FacilityEntity> entityById(String id) {
-    FacilityEntity.Pk pk = null;
+  private Optional<FacilityEntityV0> entityById(String id) {
+    FacilityEntityV0.Pk pk = null;
     try {
-      pk = FacilityEntity.Pk.fromIdString(id);
+      pk = FacilityEntityV0.Pk.fromIdString(id);
     } catch (IllegalArgumentException ex) {
       return Optional.empty();
     }
@@ -297,18 +298,19 @@ public class InternalFacilitiesController {
         .build();
   }
 
-  private Set<FacilityEntity.Pk> missingIds(List<Facility> collectedFacilities) {
-    Set<FacilityEntity.Pk> newIds =
+  private Set<FacilityEntityV0.Pk> missingIds(List<Facility> collectedFacilities) {
+    Set<FacilityEntityV0.Pk> newIds =
         collectedFacilities.stream()
-            .map(f -> FacilityEntity.Pk.optionalFromIdString(f.id()).orElse(null))
+            .map(f -> FacilityEntityV0.Pk.optionalFromIdString(f.id()).orElse(null))
             .filter(Objects::nonNull)
             .collect(toCollection(LinkedHashSet::new));
-    Set<FacilityEntity.Pk> oldIds = new LinkedHashSet<>(facilityRepository.findAllIds());
+    Set<FacilityEntityV0.Pk> oldIds = new LinkedHashSet<>(facilityRepository.findAllIds());
     return ImmutableSet.copyOf(Sets.difference(oldIds, newIds));
   }
 
-  private void moveToGraveyard(ReloadResponse response, FacilityEntity entity) {
-    FacilityEntity.Pk id = FacilityEntity.Pk.of(entity.id().type(), entity.id().stationNumber());
+  private void moveToGraveyard(ReloadResponse response, FacilityEntityV0 entity) {
+    FacilityEntityV0.Pk id =
+        FacilityEntityV0.Pk.of(entity.id().type(), entity.id().stationNumber());
     try {
       Instant now = response.timing().completeCollection();
       response.facilitiesRemoved().add(id.toIdString());
@@ -342,7 +344,7 @@ public class InternalFacilitiesController {
     log.info("Facilities collected: {}", collectedFacilities.size());
     try {
       collectedFacilities.parallelStream().forEach(f -> updateFacility(response, f));
-      for (FacilityEntity.Pk missingId : missingIds(collectedFacilities)) {
+      for (FacilityEntityV0.Pk missingId : missingIds(collectedFacilities)) {
         processMissingFacility(response, missingId);
       }
     } catch (Exception e) {
@@ -354,10 +356,10 @@ public class InternalFacilitiesController {
     return ResponseEntity.ok(response);
   }
 
-  private void processMissingFacility(ReloadResponse response, FacilityEntity.Pk id) {
-    Optional<FacilityEntity> optEntity = facilityRepository.findById(id);
+  private void processMissingFacility(ReloadResponse response, FacilityEntityV0.Pk id) {
+    Optional<FacilityEntityV0> optEntity = facilityRepository.findById(id);
     checkState(optEntity.isPresent());
-    FacilityEntity entity = optEntity.get();
+    FacilityEntityV0 entity = optEntity.get();
     Instant now = response.timing().completeCollection();
     if (entity.missingTimestamp() == null) {
       entity.missingTimestamp(now.toEpochMilli());
@@ -377,8 +379,8 @@ public class InternalFacilitiesController {
     return process(response, collectedFacilities);
   }
 
-  private void saveAsMissing(ReloadResponse response, FacilityEntity entity) {
-    FacilityEntity.Pk id = entity.id();
+  private void saveAsMissing(ReloadResponse response, FacilityEntityV0 entity) {
+    FacilityEntityV0.Pk id = entity.id();
     try {
       response.facilitiesMissing().add(id.toIdString());
       log.warn("Marking facility {} as missing.", id.toIdString());
@@ -396,7 +398,7 @@ public class InternalFacilitiesController {
   }
 
   @SneakyThrows
-  void updateAndSave(ReloadResponse response, FacilityEntity record, Facility facility) {
+  void updateAndSave(ReloadResponse response, FacilityEntityV0 record, Facility facility) {
     facility
         .attributes()
         .operationalHoursSpecialInstructions(
@@ -532,9 +534,9 @@ public class InternalFacilitiesController {
   }
 
   private void updateFacility(ReloadResponse response, Facility facility) {
-    FacilityEntity.Pk pk;
+    FacilityEntityV0.Pk pk;
     try {
-      pk = FacilityEntity.Pk.fromIdString(facility.id());
+      pk = FacilityEntityV0.Pk.fromIdString(facility.id());
     } catch (IllegalArgumentException e) {
       log.error("Cannot process facility {}, ID not understood", facility.id(), e);
       response.problems().add(ReloadResponse.Problem.of(facility.id(), "Cannot parse ID"));
@@ -559,8 +561,8 @@ public class InternalFacilitiesController {
       FacilityGraveyardEntity zombieEntity = zombie.get();
       // only thing to retain from graveyard is CMS overlay
       // all other fields will be populated in updateAndSave()
-      FacilityEntity facilityEntity =
-          FacilityEntity.builder()
+      FacilityEntityV0 facilityEntity =
+          FacilityEntityV0.builder()
               .id(pk)
               .cmsOperatingStatus(zombieEntity.cmsOperatingStatus())
               .cmsServices(zombieEntity.cmsServices())
@@ -575,7 +577,7 @@ public class InternalFacilitiesController {
     }
     response.facilitiesCreated().add(facility.id());
     log.warn("Creating new facility {}", facility.id());
-    updateAndSave(response, FacilityEntity.builder().id(pk).build(), facility);
+    updateAndSave(response, FacilityEntityV0.builder().id(pk).build(), facility);
   }
 
   @PostMapping(value = "/reload")

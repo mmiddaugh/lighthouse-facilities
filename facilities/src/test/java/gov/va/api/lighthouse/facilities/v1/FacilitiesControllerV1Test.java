@@ -12,7 +12,6 @@ import gov.va.api.lighthouse.facilities.ApiExceptions;
 import gov.va.api.lighthouse.facilities.CsvTransformer;
 import gov.va.api.lighthouse.facilities.DriveTimeBandRepository;
 import gov.va.api.lighthouse.facilities.FacilitiesJacksonConfig;
-import gov.va.api.lighthouse.facilities.FacilityEntity;
 import gov.va.api.lighthouse.facilities.FacilityRepository;
 import gov.va.api.lighthouse.facilities.FacilitySamples;
 import gov.va.api.lighthouse.facilities.api.v0.FacilitiesResponse;
@@ -23,6 +22,7 @@ import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
 import gov.va.api.lighthouse.facilities.api.v0.GeoFacilityReadResponse;
 import gov.va.api.lighthouse.facilities.api.v0.PageLinks;
 import gov.va.api.lighthouse.facilities.api.v0.Pagination;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
@@ -100,9 +100,9 @@ public class FacilitiesControllerV1Test {
   void geoFacilitiesByIds() {
     when(fr.findByIdIn(
             List.of(
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "691GB"),
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "740GA"),
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "757"))))
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "691GB"),
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "740GA"),
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "757"))))
         .thenReturn(
             List.of(
                 FacilitySamples.defaultSamples().facilityEntity("vha_757"),
@@ -120,9 +120,9 @@ public class FacilitiesControllerV1Test {
   void jsonFacilitiesByIds() {
     when(fr.findByIdIn(
             List.of(
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "691GB"),
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "740GA"),
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "757"))))
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "691GB"),
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "740GA"),
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "757"))))
         .thenReturn(
             List.of(
                 FacilitySamples.defaultSamples().facilityEntity("vha_740GA"),
@@ -162,9 +162,9 @@ public class FacilitiesControllerV1Test {
   void jsonFacilitiesByIds_perPageZero() {
     when(fr.findByIdIn(
             List.of(
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "691GB"),
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "740GA"),
-                FacilityEntity.Pk.of(FacilityEntity.Type.vha, "757"))))
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "691GB"),
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "740GA"),
+                FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "757"))))
         .thenReturn(
             List.of(
                 FacilitySamples.defaultSamples().facilityEntity("vha_691GB"),
@@ -195,8 +195,8 @@ public class FacilitiesControllerV1Test {
   @Test
   void readGeoJson() {
     GeoFacility geo = FacilitySamples.defaultSamples().geoFacility("vha_691GB");
-    FacilityEntity entity = FacilitySamples.defaultSamples().facilityEntity("vha_691GB");
-    when(fr.findById(FacilityEntity.Pk.of(FacilityEntity.Type.vha, "691GB")))
+    FacilityEntityV0 entity = FacilitySamples.defaultSamples().facilityEntity("vha_691GB");
+    when(fr.findById(FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "691GB")))
         .thenReturn(Optional.of(entity));
     assertThat(controller().readGeoJson("vha_691GB")).isEqualTo(GeoFacilityReadResponse.of(geo));
   }
@@ -204,8 +204,8 @@ public class FacilitiesControllerV1Test {
   @Test
   void readJson() {
     Facility facility = FacilitySamples.defaultSamples().facility("vha_691GB");
-    FacilityEntity entity = FacilitySamples.defaultSamples().facilityEntity("vha_691GB");
-    when(fr.findById(FacilityEntity.Pk.of(FacilityEntity.Type.vha, "691GB")))
+    FacilityEntityV0 entity = FacilitySamples.defaultSamples().facilityEntity("vha_691GB");
+    when(fr.findById(FacilityEntityV0.Pk.of(FacilityEntityV0.Type.vha, "691GB")))
         .thenReturn(Optional.of(entity));
     assertThat(controller().readJson("vha_691GB"))
         .isEqualTo(FacilityReadResponse.builder().facility(facility).build());

@@ -5,6 +5,7 @@ import static gov.va.api.lighthouse.facilities.collector.FacilitiesCollector.loa
 
 import gov.va.api.lighthouse.facilities.api.v0.cms.CmsOverlay;
 import gov.va.api.lighthouse.facilities.api.v0.cms.DetailedService;
+import gov.va.api.lighthouse.facilities.v0.FacilityEntityV0;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,14 +51,14 @@ public class CmsOverlayController {
   @SneakyThrows
   ResponseEntity<Void> saveOverlay(
       @PathVariable("id") String id, @Valid @RequestBody CmsOverlay overlay) {
-    Optional<FacilityEntity> existingEntity =
-        repository.findById(FacilityEntity.Pk.fromIdString(id));
+    Optional<FacilityEntityV0> existingEntity =
+        repository.findById(FacilityEntityV0.Pk.fromIdString(id));
     if (existingEntity.isEmpty()) {
       log.info("Received Unknown Facility ID ({}) for CMS Overlay", sanitize(id));
       return ResponseEntity.accepted().build();
     }
 
-    FacilityEntity entity = existingEntity.get();
+    FacilityEntityV0 entity = existingEntity.get();
 
     if (overlay.operatingStatus() != null) {
       entity.cmsOperatingStatus(
