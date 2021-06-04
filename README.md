@@ -71,7 +71,7 @@ Facilities collection occurs every 24 hours. This updates the local cache in `fa
 ### CDW Data Source Details
 Within CDW, the following databases/tables are read during facility collection:
 * Mental Health data is from `A01.[OMHSP_PERC_Share].[DOEx].[FieldDataEntry_MHPhone]`.
-* Clinical Services data and stop code data is from `A01.[VSSC_Out].[DOEx].[DST_ClinicalServices]`.
+* Clinical Services data and stop code data are from `A01.[VSSC_Out].[DOEx].[DST_ClinicalServices]`.
 * Facilities data is from `A06.[CDWWork].[Dim].[VAST]` which is populated from the VSSC SQL Server.
 * National Cemeteries data is from `SQL40.[BISL_GIS_SpatialData].[DOEx].[v_FacilityLocator_NCA]`.
 * Benefit Centers data is from `SQL40.[BISL_GIS_SpatialData].[DOEx].[v_FacilityLocator_VBA]`.
