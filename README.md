@@ -31,7 +31,7 @@ OpenAPI documentation on the
   collection/data reload process.
 * `Access to Care (ATC)` provides
   [wait times](https://www.accesstocare.va.gov/atcapis/v1.1/patientwaittimes) and
-  [satisfaction scores](https://www.accesstopwt.va.gov/Shep/getRawData?location=*)
+  [satisfaction scores](https://www.acceswt.va.gov/Shep/getRawData?location=*)
   for various services offered by VA health facilities.
   This data is aggregated during the nightly facilities collection.
 * `Cemetery XML` is an externally-maintained
@@ -71,7 +71,7 @@ Facilities collection occurs every 24 hours. This updates the local cache in `fa
 ### CDW Data Source Details
 Within CDW, the following databases/tables are read during facility collection:
 * Mental Health data is from `A01.[OMHSP_PERC_Share].[DOEx].[FieldDataEntry_MHPhone]`.
-* Clinical Services data is from `A01.[VSSC_Out].[DOEx].[DST_ClinicalServices]`.
+* Clinical Services data and stop code data is from `A01.[VSSC_Out].[DOEx].[DST_ClinicalServices]`.
 * Facilities data is from `A06.[CDWWork].[Dim].[VAST]` which is populated from the VSSC SQL Server.
 * National Cemeteries data is from `SQL40.[BISL_GIS_SpatialData].[DOEx].[v_FacilityLocator_NCA]`.
 * Benefit Centers data is from `SQL40.[BISL_GIS_SpatialData].[DOEx].[v_FacilityLocator_VBA]`.
