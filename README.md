@@ -31,7 +31,7 @@ OpenAPI documentation on the
   collection/data reload process.
 * `Access to Care (ATC)` provides
   [wait times](https://www.accesstocare.va.gov/atcapis/v1.1/patientwaittimes) and
-  [satisfaction scores](https://www.acceswt.va.gov/Shep/getRawData?location=*)
+  [satisfaction scores](https://www.accesstopwt.va.gov/Shep/getRawData?location=*)
   for various services offered by VA health facilities.
   This data is aggregated during the nightly facilities collection.
 * `Cemetery XML` is an externally-maintained
