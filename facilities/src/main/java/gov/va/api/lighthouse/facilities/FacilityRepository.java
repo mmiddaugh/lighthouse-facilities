@@ -44,7 +44,7 @@ public interface FacilityRepository
 
   @Value
   @Builder
-  final class BBoxSpecification implements Specification<FacilityEntity> {
+  final class BoundingBoxSpecification implements Specification<FacilityEntity> {
     @NonNull BigDecimal minLongitude;
 
     @NonNull BigDecimal maxLongitude;

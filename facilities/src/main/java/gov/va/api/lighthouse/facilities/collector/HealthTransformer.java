@@ -48,6 +48,8 @@ final class HealthTransformer {
 
   @NonNull private final Map<String, String> websites;
 
+  @NonNull private final ArrayList<String> cscFacilities;
+
   private static Map<String, Facility.HealthService> initHealthServicesMap() {
     Map<String, Facility.HealthService> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     map.put("AUDIOLOGY", Facility.HealthService.Audiology);
@@ -197,6 +199,10 @@ final class HealthTransformer {
     }
   }
 
+  boolean hasCaregiverSupport() {
+    return !allBlank(id()) && cscFacilities.contains(id());
+  }
+
   private Facility.Hours hours() {
     String mon = hoursToClosed(vast.monday());
     String tue = hoursToClosed(vast.tuesday());
@@ -334,6 +340,9 @@ final class HealthTransformer {
     }
     if (stopCodes().stream().anyMatch(sc -> StopCode.PODIATRY.contains(trimToEmpty(sc.code())))) {
       services.add(Facility.HealthService.Podiatry);
+    }
+    if (hasCaregiverSupport()) {
+      services.add(Facility.HealthService.CaregiverSupport);
     }
     Collections.sort(services, (left, right) -> left.name().compareToIgnoreCase(right.name()));
     return emptyToNull(services);

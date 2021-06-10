@@ -12,6 +12,7 @@ import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.SneakyThrows;
@@ -158,6 +159,7 @@ class HealthsCollectorJpaTest {
             HealthsCollector.builder()
                 .atcBaseUrl("http://atc/")
                 .atpBaseUrl("http://atp/")
+                .cscFacilities(new ArrayList<>())
                 .jdbcTemplate(jdbcTemplate)
                 .insecureRestTemplate(insecureRestTemplate)
                 .vastEntities(List.of(entity))

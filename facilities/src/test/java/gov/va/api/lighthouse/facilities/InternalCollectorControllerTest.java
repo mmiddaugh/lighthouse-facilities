@@ -30,7 +30,6 @@ public class InternalCollectorControllerTest {
             + "MHPhone VARCHAR,"
             + "Extension VARCHAR"
             + ")");
-
     template.execute(
         "INSERT INTO App.VHA_Mental_Health_Contact_Info ("
             + "StationNumber,"
@@ -41,11 +40,27 @@ public class InternalCollectorControllerTest {
             + "'800-867-5309',"
             + "'1234'"
             + ")");
-
     assertThat(InternalCollectorController.builder().jdbc(template).build().mentalHealthContacts())
         .isEqualTo(
             List.of(
                 Map.of("STATIONNUMBER", "999", "MHPHONE", "800-867-5309", "EXTENSION", "1234")));
+  }
+
+  @Test
+  @SneakyThrows
+  void nca() {
+    template.execute(
+        "CREATE TABLE App.FacilityLocator_NCA (" + "FULL_NAME VARCHAR," + "SITE_ID VARCHAR" + ")");
+    template.execute(
+        "INSERT INTO App.FacilityLocator_NCA ("
+            + "FULL_NAME,"
+            + "SITE_ID"
+            + ") VALUES ("
+            + "'Some NCA',"
+            + "'123'"
+            + ")");
+    assertThat(InternalCollectorController.builder().jdbc(template).build().nca())
+        .isEqualTo(List.of(Map.of("FULL_NAME", "Some NCA", "SITE_ID", "123")));
   }
 
   @Test
@@ -58,7 +73,6 @@ public class InternalCollectorControllerTest {
             + "PrimaryStopCodeName VARCHAR,"
             + "AvgWaitTimeNew VARCHAR"
             + ")");
-
     template.execute(
         "INSERT INTO App.VSSC_ClinicalServices ("
             + "Sta6a,"
@@ -71,7 +85,6 @@ public class InternalCollectorControllerTest {
             + "'PRIMARY CARE/MEDICINE',"
             + "'14.15'"
             + ")");
-
     assertThat(InternalCollectorController.builder().jdbc(template).build().stopCodes())
         .isEqualTo(
             List.of(
@@ -91,7 +104,6 @@ public class InternalCollectorControllerTest {
   void vast() {
     template.execute(
         "CREATE TABLE App.Vast (" + "StationNumber VARCHAR," + "StationName VARCHAR" + ")");
-
     template.execute(
         "INSERT INTO App.Vast ("
             + "StationNumber,"
@@ -100,8 +112,27 @@ public class InternalCollectorControllerTest {
             + "'123',"
             + "'Some VAMC'"
             + ")");
-
     assertThat(InternalCollectorController.builder().jdbc(template).build().vast())
         .isEqualTo(List.of(Map.of("STATIONNUMBER", "123", "STATIONNAME", "Some VAMC")));
+  }
+
+  @Test
+  @SneakyThrows
+  void vba() {
+    template.execute(
+        "CREATE TABLE App.FacilityLocator_VBA ("
+            + "FACILITY_NAME VARCHAR,"
+            + "FACILITY_NUMBER VARCHAR"
+            + ")");
+    template.execute(
+        "INSERT INTO App.FacilityLocator_VBA ("
+            + "FACILITY_NAME,"
+            + "FACILITY_NUMBER"
+            + ") VALUES ("
+            + "'Some VBA',"
+            + "'123'"
+            + ")");
+    assertThat(InternalCollectorController.builder().jdbc(template).build().vba())
+        .isEqualTo(List.of(Map.of("FACILITY_NAME", "Some VBA", "FACILITY_NUMBER", "123")));
   }
 }

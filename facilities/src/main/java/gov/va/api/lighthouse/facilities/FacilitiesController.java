@@ -169,7 +169,7 @@ public class FacilitiesController {
     // lng lat lng lat
     List<FacilityEntity> allEntities =
         facilityRepository.findAll(
-            FacilityRepository.BBoxSpecification.builder()
+            FacilityRepository.BoundingBoxSpecification.builder()
                 .minLongitude(bbox.get(0).min(bbox.get(2)))
                 .maxLongitude(bbox.get(0).max(bbox.get(2)))
                 .minLatitude(bbox.get(1).min(bbox.get(3)))

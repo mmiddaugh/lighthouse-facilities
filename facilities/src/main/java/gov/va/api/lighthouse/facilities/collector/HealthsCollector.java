@@ -19,6 +19,7 @@ import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +54,8 @@ final class HealthsCollector {
   @NonNull final Collection<VastEntity> vastEntities;
 
   @NonNull final Map<String, String> websites;
+
+  @NonNull final ArrayList<String> cscFacilities;
 
   @SneakyThrows
   static void putMentalHealthContact(ResultSet resultSet, Map<String, String> map) {
@@ -130,6 +133,7 @@ final class HealthsCollector {
                       .vast(v)
                       .accessToCare(accessToCareEntries)
                       .accessToPwt(accessToPwtEntries)
+                      .cscFacilities(cscFacilities)
                       .mentalHealthPhoneNumbers(mentalHealthPhoneNumbers)
                       .stopCodesMap(stopCodesMap)
                       .websites(websites)

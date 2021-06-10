@@ -9,9 +9,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +37,8 @@ import org.springframework.stereotype.Component;
 public class FacilitiesCollector {
   private static final String WEBSITES_CSV_RESOURCE_NAME = "websites.csv";
 
+  private static final String CSC_STATIONS_RESOURCE_NAME = "csc_stations.txt";
+
   private final InsecureRestTemplateProvider insecureRestTemplateProvider;
 
   private final JdbcTemplate jdbcTemplate;
@@ -57,6 +61,31 @@ public class FacilitiesCollector {
     this.atcBaseUrl = withTrailingSlash(atcBaseUrl);
     this.atpBaseUrl = withTrailingSlash(atpBaseUrl);
     this.cemeteriesBaseUrl = withTrailingSlash(cemeteriesBaseUrl);
+  }
+
+  /** Caregiver support facilities given a resource name. */
+  @SneakyThrows
+  public static ArrayList<String> loadCaregiverSupport(String resourceName) {
+    final Stopwatch totalWatch = Stopwatch.createStarted();
+
+    ArrayList<String> cscFacilities = new ArrayList<>();
+
+    try (BufferedReader reader =
+        new BufferedReader(
+            new InputStreamReader(
+                new ClassPathResource(resourceName).getInputStream(), StandardCharsets.UTF_8))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        cscFacilities.add("vha_" + line);
+      }
+    }
+
+    log.info(
+        "Loading caregiver support facilities took {} millis for {} entries",
+        totalWatch.stop().elapsed(TimeUnit.MILLISECONDS),
+        cscFacilities.size());
+    checkState(!cscFacilities.isEmpty(), "No caregiver support entries");
+    return cscFacilities;
   }
 
   /** Load websites given a resource name. */
@@ -137,9 +166,12 @@ public class FacilitiesCollector {
   public List<Facility> collectFacilities() {
     Map<String, String> websites;
     Collection<VastEntity> vastEntities;
+    ArrayList<String> cscFacilities;
+
     try {
       websites = loadWebsites(WEBSITES_CSV_RESOURCE_NAME);
       vastEntities = loadVast();
+      cscFacilities = loadCaregiverSupport(CSC_STATIONS_RESOURCE_NAME);
     } catch (Exception e) {
       throw new CollectorExceptions.CollectorException(e);
     }
@@ -148,6 +180,7 @@ public class FacilitiesCollector {
         HealthsCollector.builder()
             .atcBaseUrl(atcBaseUrl)
             .atpBaseUrl(atpBaseUrl)
+            .cscFacilities(cscFacilities)
             .jdbcTemplate(jdbcTemplate)
             .insecureRestTemplate(insecureRestTemplateProvider.restTemplate())
             .vastEntities(vastEntities)

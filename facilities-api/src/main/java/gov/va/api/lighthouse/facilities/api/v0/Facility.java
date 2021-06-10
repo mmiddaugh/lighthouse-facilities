@@ -61,6 +61,7 @@ public final class Facility {
   public enum HealthService implements ServiceType {
     Audiology,
     Cardiology,
+    CaregiverSupport,
     Covid19Vaccine,
     DentalServices,
     Dermatology,

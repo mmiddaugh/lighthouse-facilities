@@ -14,6 +14,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ class HealthsCollectorTest {
             HealthsCollector.builder()
                 .atcBaseUrl("http://atc/")
                 .atpBaseUrl("http://atp/")
+                .cscFacilities(new ArrayList<>())
                 .vastEntities(emptyList())
                 .jdbcTemplate(mock(JdbcTemplate.class))
                 .insecureRestTemplate(insecureRestTemplate)
