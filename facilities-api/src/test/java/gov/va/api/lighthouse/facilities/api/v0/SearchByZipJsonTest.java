@@ -67,6 +67,7 @@ public class SearchByZipJsonTest {
                             .website("https://www.orlando.va.gov/locations/Viera.asp")
                             .latitude(BigDecimal.valueOf(28.2552385700001))
                             .longitude(BigDecimal.valueOf(-80.73907113))
+                            .timeZone("America/New_York")
                             .address(
                                 Facility.Addresses.builder()
                                     .mailing(Facility.Address.builder().build())

@@ -48,6 +48,7 @@ public class ReadHealthByIdJsonTest {
                         .website("https://www.maine.va.gov/locations/caribou.asp")
                         .latitude(BigDecimal.valueOf(46.8780264900001))
                         .longitude(BigDecimal.valueOf(-68.00939541))
+                        .timeZone("America/New_York")
                         .address(
                             Facility.Addresses.builder()
                                 .mailing(Facility.Address.builder().build())

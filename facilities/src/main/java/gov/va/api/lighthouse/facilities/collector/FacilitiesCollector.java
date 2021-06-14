@@ -172,6 +172,7 @@ public class FacilitiesCollector {
       websites = loadWebsites(WEBSITES_CSV_RESOURCE_NAME);
       vastEntities = loadVast();
       cscFacilities = loadCaregiverSupport(CSC_STATIONS_RESOURCE_NAME);
+
     } catch (Exception e) {
       throw new CollectorExceptions.CollectorException(e);
     }

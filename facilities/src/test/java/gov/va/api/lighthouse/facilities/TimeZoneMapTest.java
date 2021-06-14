@@ -2,9 +2,12 @@ package gov.va.api.lighthouse.facilities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import us.dustinj.timezonemap.TimeZoneMap;
 
+@Slf4j
 public class TimeZoneMapTest {
   public TimeZoneMap calculateTimeZoneMap(double latitude, double longitude) {
     double regionBoundary = 0.0001;
@@ -27,30 +30,35 @@ public class TimeZoneMapTest {
     City newOrleans = new City(29.953269, -90.093790, "America/Chicago");
     City bangor = new City(44.801035, -68.781614, "America/New_York");
     String anchorageZone =
-        calculateTimeZoneMap(anchorage.latitude, anchorage.longitude)
-            .getOverlappingTimeZone(anchorage.latitude, anchorage.longitude)
+        Objects.requireNonNull(
+                calculateTimeZoneMap(anchorage.latitude, anchorage.longitude)
+                    .getOverlappingTimeZone(anchorage.latitude, anchorage.longitude))
             .getZoneId();
     String fresnoZone =
-        calculateTimeZoneMap(fresno.latitude, fresno.longitude)
-            .getOverlappingTimeZone(fresno.latitude, fresno.longitude)
+        Objects.requireNonNull(
+                calculateTimeZoneMap(fresno.latitude, fresno.longitude)
+                    .getOverlappingTimeZone(fresno.latitude, fresno.longitude))
             .getZoneId();
     String saltLakeCityZone =
-        calculateTimeZoneMap(saltLakeCity.latitude, saltLakeCity.longitude)
-            .getOverlappingTimeZone(saltLakeCity.latitude, saltLakeCity.longitude)
+        Objects.requireNonNull(
+                calculateTimeZoneMap(saltLakeCity.latitude, saltLakeCity.longitude)
+                    .getOverlappingTimeZone(saltLakeCity.latitude, saltLakeCity.longitude))
             .getZoneId();
     String newOrleansZone =
-        calculateTimeZoneMap(newOrleans.latitude, newOrleans.longitude)
-            .getOverlappingTimeZone(newOrleans.latitude, newOrleans.longitude)
+        Objects.requireNonNull(
+                calculateTimeZoneMap(newOrleans.latitude, newOrleans.longitude)
+                    .getOverlappingTimeZone(newOrleans.latitude, newOrleans.longitude))
             .getZoneId();
     String bangorZone =
-        calculateTimeZoneMap(bangor.latitude, bangor.longitude)
-            .getOverlappingTimeZone(bangor.latitude, bangor.longitude)
+        Objects.requireNonNull(
+                calculateTimeZoneMap(bangor.latitude, bangor.longitude)
+                    .getOverlappingTimeZone(bangor.latitude, bangor.longitude))
             .getZoneId();
-    assertThat(anchorageZone == anchorage.olsenTime);
-    assertThat(fresnoZone == fresno.olsenTime);
-    assertThat(saltLakeCityZone == saltLakeCity.olsenTime);
-    assertThat(newOrleansZone == newOrleans.olsenTime);
-    assertThat(bangorZone == bangor.olsenTime);
+    assertThat(anchorageZone).isEqualTo(anchorage.olsenTime);
+    assertThat(fresnoZone).isEqualTo(fresno.olsenTime);
+    assertThat(saltLakeCityZone).isEqualTo(saltLakeCity.olsenTime);
+    assertThat(newOrleansZone).isEqualTo(newOrleans.olsenTime);
+    assertThat(bangorZone).isEqualTo(bangor.olsenTime);
   }
 
   @Test
@@ -58,20 +66,20 @@ public class TimeZoneMapTest {
   void timezoneEurope() {
     TimeZoneMap map = TimeZoneMap.forRegion(43.5, 8.0, 53.00, 26.0);
     String berlin = // Returns "Europe/Berlin"
-        map.getOverlappingTimeZone(52.518424, 13.404776).getZoneId();
+        Objects.requireNonNull(map.getOverlappingTimeZone(52.518424, 13.404776)).getZoneId();
     String prague = // Returns "Europe/Prague"
-        map.getOverlappingTimeZone(50.074154, 14.437403).getZoneId();
+        Objects.requireNonNull(map.getOverlappingTimeZone(50.074154, 14.437403)).getZoneId();
     String budapest = // Returns "Europe/Budapest"
-        map.getOverlappingTimeZone(47.49642, 19.04970).getZoneId();
+        Objects.requireNonNull(map.getOverlappingTimeZone(47.49642, 19.04970)).getZoneId();
     String milan = // Returns "Europe/Rome"
-        map.getOverlappingTimeZone(45.466677, 9.188258).getZoneId();
+        Objects.requireNonNull(map.getOverlappingTimeZone(45.466677, 9.188258)).getZoneId();
     String adriaticSea = // Returns "Etc/GMT-1"
-        map.getOverlappingTimeZone(44.337, 13.8282).getZoneId();
-    assertThat(berlin == "Europe/Berlin");
-    assertThat(prague == "Europe/Prague");
-    assertThat(budapest == "Europe/Budapest");
-    assertThat(milan == "Europe/Rome");
-    assertThat(adriaticSea == "Etc/GMT-1");
+        Objects.requireNonNull(map.getOverlappingTimeZone(44.337, 13.8282)).getZoneId();
+    assertThat(berlin).isEqualTo("Europe/Berlin");
+    assertThat(prague).isEqualTo("Europe/Prague");
+    assertThat(budapest).isEqualTo("Europe/Budapest");
+    assertThat(milan).isEqualTo("Europe/Rome");
+    assertThat(adriaticSea).isEqualTo("Etc/GMT-1");
   }
 
   private static class City {

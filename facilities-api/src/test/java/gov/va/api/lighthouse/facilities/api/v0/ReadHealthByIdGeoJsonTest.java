@@ -49,6 +49,7 @@ public class ReadHealthByIdGeoJsonTest {
                 .facilityType(Facility.FacilityType.va_health_facility)
                 .classification("Primary Care CBOC")
                 .website("https://www.maine.va.gov/locations/caribou.asp")
+                .timeZone("America/New_York")
                 .address(
                     Facility.Addresses.builder()
                         .mailing(Facility.Address.builder().build())

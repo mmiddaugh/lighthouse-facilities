@@ -55,6 +55,7 @@ public class SearchByZipGeoJsonTest {
                             .facilityType(Facility.FacilityType.va_health_facility)
                             .classification("Health Care Center (HCC)")
                             .website("https://www.orlando.va.gov/locations/Viera.asp")
+                            .timeZone("America/New_York")
                             .address(
                                 Facility.Addresses.builder()
                                     .mailing(Facility.Address.builder().build())

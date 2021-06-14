@@ -62,6 +62,7 @@ public final class GeoFacility {
     "facility_type",
     "classification",
     "website",
+    "time_zone",
     "address",
     "phone",
     "hours",
@@ -91,6 +92,10 @@ public final class GeoFacility {
 
     @Schema(example = "http://www.washingtondc.va.gov", nullable = true)
     String website;
+
+    @Schema(description = "Facility timezone", format = "String", example = "America/New_York")
+    @JsonProperty("time_zone")
+    String timeZone;
 
     @Schema(nullable = true)
     @Valid

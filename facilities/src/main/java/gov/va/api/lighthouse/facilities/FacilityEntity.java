@@ -57,6 +57,9 @@ public class FacilityEntity implements HasFacilityPayload {
 
   @Column private double longitude;
 
+  @Column(name = "time_zone")
+  private String timeZone;
+
   @ElementCollection(targetClass = String.class)
   @CollectionTable(
       name = "facility_services",
@@ -112,6 +115,7 @@ public class FacilityEntity implements HasFacilityPayload {
       String state,
       double latitude,
       double longitude,
+      String timeZone,
       String facility,
       String cmsOperatingStatus,
       String cmsServices,
@@ -128,6 +132,7 @@ public class FacilityEntity implements HasFacilityPayload {
         state,
         latitude,
         longitude,
+        timeZone,
         servicesTypes.stream().map(Object::toString).collect(toSet()),
         facility,
         cmsOperatingStatus,

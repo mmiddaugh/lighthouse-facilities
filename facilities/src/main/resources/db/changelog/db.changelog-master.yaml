@@ -327,6 +327,7 @@ databaseChangeLog:
                 type: boolean
                 constraints:
                   nullable: true
+
   - changeSet:
       id: 11
       author: axolotl
@@ -391,7 +392,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-
         - createIndex:
             tableName: cms_overlay_detailed_services
             schemaName: app
@@ -431,7 +431,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-
         - createIndex:
             tableName: cms_graveyard_overlay_detailed_services
             schemaName: app
@@ -455,3 +454,17 @@ databaseChangeLog:
             - column:
                 name: month_year
                 type: varchar(7)
+
+  - changeSet:
+      id: 16
+      author: axolotl
+      changes:
+        addColumn:
+          tableName: facility
+          schemaName: app
+          columns:
+            - column:
+                name: time_zone
+                type: varchar(32)
+                constraints:
+                  nullable: true

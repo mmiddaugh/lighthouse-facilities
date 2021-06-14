@@ -231,6 +231,7 @@ final class JacksonSerializersV0 {
       jgen.writeObjectField("website", value.website());
       jgen.writeObjectField("lat", value.latitude());
       jgen.writeObjectField("long", value.longitude());
+      jgen.writeObjectField("time_zone", value.timeZone());
       jgen.writeObjectField(
           "address",
           Optional.ofNullable(value.address()).orElse(Facility.Addresses.builder().build()));
@@ -478,6 +479,7 @@ final class JacksonSerializersV0 {
       jgen.writeObjectField("facility_type", value.facilityType());
       jgen.writeObjectField("classification", value.classification());
       jgen.writeObjectField("website", value.website());
+      jgen.writeObjectField("time_zone", value.timeZone());
       jgen.writeObjectField(
           "address",
           Optional.ofNullable(value.address()).orElse(Facility.Addresses.builder().build()));
