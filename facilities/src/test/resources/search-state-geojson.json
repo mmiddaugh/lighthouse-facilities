@@ -16,6 +16,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Multi-Specialty CBOC",
         "website" : "https://www.biloxi.va.gov/locations/JACC.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -162,6 +163,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "VA Medical Center (VAMC)",
         "website" : "https://www.baypines.va.gov/locations/directions.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -315,6 +317,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Health Care Center (HCC)",
         "website" : "https://www.baypines.va.gov/locations/Lee_County_VA_Healthcare_Center_Cape_Coral_FL.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -460,6 +463,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Multi-Specialty CBOC",
         "website" : "https://www.baypines.va.gov/locations/Sarasota_Florida.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -580,6 +584,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Primary Care CBOC",
         "website" : "https://www.baypines.va.gov/locations/St_Petersburg_Florida.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -670,6 +675,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Multi-Specialty CBOC",
         "website" : "https://www.baypines.va.gov/locations/Bradenton_Florida.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -797,6 +803,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Primary Care CBOC",
         "website" : "https://www.baypines.va.gov/locations/Sebring_Florida.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -899,6 +906,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Primary Care CBOC",
         "website" : "https://www.baypines.va.gov/locations/Palm_Harbor_Florida.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -1001,6 +1009,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "VA Medical Center (VAMC)",
         "website" : "https://www.northflorida.va.gov/locations/LakeCity.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -1128,6 +1137,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Primary Care CBOC",
         "website" : "https://www.northflorida.va.gov/locations/Ocala.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {

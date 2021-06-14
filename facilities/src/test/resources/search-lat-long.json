@@ -10,6 +10,7 @@
         "website" : null,
         "lat" : 28.12169212,
         "long" : -80.65539095,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -56,6 +57,7 @@
         "website" : "https://www.orlando.va.gov/locations/Viera.asp",
         "lat" : 28.2552385700001,
         "long" : -80.73907113,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -190,6 +192,7 @@
         "website" : "https://www.westpalmbeach.va.gov/locations/Vero_Beach_CBOC.asp",
         "lat" : 27.6325183800001,
         "long" : -80.38028023,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -281,6 +284,7 @@
         "website" : "https://www.orlando.va.gov/locations/directions.asp",
         "lat" : 28.3666915700001,
         "long" : -81.27650339,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -429,6 +433,7 @@
         "website" : "NULL",
         "lat" : 28.36758244,
         "long" : -81.27709119,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -488,6 +493,7 @@
         "website" : null,
         "lat" : 28.48229037,
         "long" : -81.30999967,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -534,6 +540,7 @@
         "website" : "https://www.orlando.va.gov/locations/Kissimmee.asp",
         "lat" : 28.3128777100001,
         "long" : -81.40857002,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -625,6 +632,7 @@
         "website" : "https://www.cem.va.gov/cems/nchp/capecanaveral.asp",
         "lat" : 28.7551827,
         "long" : -80.8738888,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : {
             "zip" : "32754-4826",
@@ -679,6 +687,7 @@
         "website" : "https://www.orlando.va.gov/locations/Crossroads.asp",
         "lat" : 28.5845601300001,
         "long" : -81.3068096,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -754,6 +763,7 @@
         "website" : "https://www.orlando.va.gov/locations/LakeBaldwin.asp",
         "lat" : 28.57912757,
         "long" : -81.32166083,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {

@@ -26,6 +26,8 @@ final class BenefitsTransformer {
         .classification(cdwFacility.facilityType())
         .latitude(cdwFacility.latitude())
         .longitude(cdwFacility.longitude())
+        .timeZone(
+            CalculateTimeZone.calculateTimeZones(cdwFacility.latitude(), cdwFacility.longitude()))
         .website(website(cdwFacility.websiteUrl()))
         .address(
             Facility.Addresses.builder()

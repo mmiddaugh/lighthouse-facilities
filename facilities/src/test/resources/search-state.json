@@ -10,6 +10,7 @@
         "website" : "https://www.biloxi.va.gov/locations/JACC.asp",
         "lat" : 30.4004362900001,
         "long" : -87.29290128,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -151,6 +152,7 @@
         "website" : "https://www.baypines.va.gov/locations/directions.asp",
         "lat" : 27.81385727,
         "long" : -82.77945771,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -299,6 +301,7 @@
         "website" : "https://www.baypines.va.gov/locations/Lee_County_VA_Healthcare_Center_Cape_Coral_FL.asp",
         "lat" : 26.68356763,
         "long" : -81.92037569,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -439,6 +442,7 @@
         "website" : "https://www.baypines.va.gov/locations/Sarasota_Florida.asp",
         "lat" : 27.2987631400001,
         "long" : -82.45619019,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -554,6 +558,7 @@
         "website" : "https://www.baypines.va.gov/locations/St_Petersburg_Florida.asp",
         "lat" : 27.7806798600001,
         "long" : -82.6467013399999,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -639,6 +644,7 @@
         "website" : "https://www.baypines.va.gov/locations/Bradenton_Florida.asp",
         "lat" : 27.49404365,
         "long" : -82.49214224,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -761,6 +767,7 @@
         "website" : "https://www.baypines.va.gov/locations/Sebring_Florida.asp",
         "lat" : 27.5352350900001,
         "long" : -81.50267174,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -858,6 +865,7 @@
         "website" : "https://www.baypines.va.gov/locations/Palm_Harbor_Florida.asp",
         "lat" : 28.0922923000001,
         "long" : -82.7393997299999,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -955,6 +963,7 @@
         "website" : "https://www.northflorida.va.gov/locations/LakeCity.asp",
         "lat" : 30.18177024,
         "long" : -82.6369190199999,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -1077,6 +1086,7 @@
         "website" : "https://www.northflorida.va.gov/locations/Ocala.asp",
         "lat" : 29.1869977000001,
         "long" : -82.11769006,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {

@@ -9,6 +9,7 @@
       "website" : "https://www.losangeles.va.gov/locations/directions-SB.asp",
       "lat" : 34.4423637,
       "long" : -119.77646693,
+      "time_zone" : "America/New_York",
       "address" : {
         "mailing" : { },
         "physical" : {

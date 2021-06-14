@@ -16,6 +16,7 @@
         "facility_type" : "vet_center",
         "classification" : null,
         "website" : null,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -67,6 +68,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Health Care Center (HCC)",
         "website" : "https://www.orlando.va.gov/locations/Viera.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -206,6 +208,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Primary Care CBOC",
         "website" : "https://www.westpalmbeach.va.gov/locations/Vero_Beach_CBOC.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -302,6 +305,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "VA Medical Center (VAMC)",
         "website" : "https://www.orlando.va.gov/locations/directions.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -455,6 +459,7 @@
         "facility_type" : "va_benefits_facility",
         "classification" : "Voc Rehab And Employment",
         "website" : "NULL",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -519,6 +524,7 @@
         "facility_type" : "vet_center",
         "classification" : null,
         "website" : null,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -570,6 +576,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Primary Care CBOC",
         "website" : "https://www.orlando.va.gov/locations/Kissimmee.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -666,6 +673,7 @@
         "facility_type" : "va_cemetery",
         "classification" : "National Cemetery",
         "website" : "https://www.cem.va.gov/cems/nchp/capecanaveral.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : {
             "zip" : "32754-4826",
@@ -725,6 +733,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Other Outpatient Services (OOS)",
         "website" : "https://www.orlando.va.gov/locations/Crossroads.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -805,6 +814,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "VA Medical Center (VAMC)",
         "website" : "https://www.orlando.va.gov/locations/LakeBaldwin.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {

@@ -9,6 +9,7 @@
       "website" : "http://www.va.state.al.us/spanishfort.aspx",
       "lat" : 30.7346233,
       "long" : -87.8985442,
+      "time_zone" : "America/New_York",
       "address" : {
         "mailing" : { },
         "physical" : {

@@ -16,6 +16,7 @@
         "facility_type" : "va_health_facility",
         "classification" : "Health Care Center (HCC)",
         "website" : "https://www.orlando.va.gov/locations/Viera.asp",
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {

@@ -10,6 +10,7 @@
         "website" : "https://www.cem.va.gov/cems/lots/evergreen.asp",
         "lat" : 39.0696513,
         "long" : -84.4688541,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : {
             "zip" : "40356",
@@ -64,6 +65,7 @@
         "website" : "http://www.va.state.al.us/spanishfort.aspx",
         "lat" : 30.7346233,
         "long" : -87.8985442,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -109,6 +111,7 @@
         "website" : "NULL",
         "lat" : 32.3615470600001,
         "long" : -86.24177373,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -161,6 +164,7 @@
         "website" : null,
         "lat" : 42.3445959000001,
         "long" : -71.0361051099999,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -207,6 +211,7 @@
         "website" : "https://www.maine.va.gov/locations/caribou.asp",
         "lat" : 46.8780264900001,
         "long" : -68.00939541,
+        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {

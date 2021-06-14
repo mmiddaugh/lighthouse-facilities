@@ -9,6 +9,7 @@
       "website" : "https://www.maine.va.gov/locations/caribou.asp",
       "lat" : 46.8780264900001,
       "long" : -68.00939541,
+      "time_zone" : "America/New_York",
       "address" : {
         "mailing" : { },
         "physical" : {

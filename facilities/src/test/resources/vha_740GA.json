@@ -9,6 +9,7 @@
       "website" : "https://www.texasvalley.va.gov/locations/Harlingen_OPC.asp",
       "lat" : 26.1745479800001,
       "long" : -97.6667188,
+      "time_zone" : "America/New_York",
       "address" : {
         "mailing" : { },
         "physical" : {

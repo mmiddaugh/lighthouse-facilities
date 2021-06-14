@@ -13,6 +13,7 @@
     "facility_type" : "va_benefits_facility",
     "classification" : "Voc Rehab And Employment",
     "website" : "NULL",
+    "time_zone" : "America/New_York",
     "address" : {
       "mailing" : { },
       "physical" : {
