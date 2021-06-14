@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StateCemeteryTransformer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities.collector</a> &gt; <span class="el_source">StateCemeteryTransformer.java</span></div><h1>StateCemeteryTransformer.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities.collector;
+
+import static gov.va.api.lighthouse.facilities.collector.Transformers.allBlank;
+import static gov.va.api.lighthouse.facilities.collector.Transformers.checkAngleBracketNull;
+import static gov.va.api.lighthouse.facilities.collector.Transformers.phoneTrim;
+import static org.apache.commons.lang3.StringUtils.indexOf;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static org.apache.commons.lang3.StringUtils.upperCase;
+
+import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import java.math.BigDecimal;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import lombok.Builder;
+import lombok.NonNull;
+
+@Builder
+final class StateCemeteryTransformer {
+<span class="fc" id="L24">  private static final Pattern ZIP_PATTERN =</span>
+<span class="fc" id="L25">      Pattern.compile(&quot;.*(\\d{5}-\\d{4}$)|.*(\\d{9}$)|.*(\\d{5}$)&quot;);</span>
+
+  @NonNull private final StateCemeteries.StateCemetery xml;
+
+  @NonNull private final Map&lt;String, String&gt; websites;
+
+  static Facility.Address asAddress(String state, String line1, String line2, String line3) {
+    // Zip and city must be parsed out of the last nonblank line
+<span class="fc bfc" id="L33" title="All 2 branches covered.">    if (isNotBlank(line3)) {</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">      if (allBlank(parseZip(line3), parseCity(line3), line1, line2)) {</span>
+<span class="fc" id="L35">        return null;</span>
+      }
+<span class="fc" id="L37">      return Facility.Address.builder()</span>
+<span class="fc" id="L38">          .zip(parseZip(line3))</span>
+<span class="fc" id="L39">          .city(parseCity(line3))</span>
+<span class="fc" id="L40">          .state(state)</span>
+<span class="fc" id="L41">          .address1(line1)</span>
+<span class="fc" id="L42">          .address2(line2)</span>
+<span class="fc" id="L43">          .build();</span>
+    }
+
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    if (isNotBlank(line2)) {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">      if (allBlank(parseZip(line2), parseCity(line2), line1)) {</span>
+<span class="fc" id="L48">        return null;</span>
+      }
+<span class="fc" id="L50">      return Facility.Address.builder()</span>
+<span class="fc" id="L51">          .zip(parseZip(line2))</span>
+<span class="fc" id="L52">          .city(parseCity(line2))</span>
+<span class="fc" id="L53">          .state(state)</span>
+<span class="fc" id="L54">          .address1(line1)</span>
+<span class="fc" id="L55">          .build();</span>
+    }
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    if (isNotBlank(line1)) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">      if (allBlank(parseZip(line1), parseCity(line1))) {</span>
+<span class="fc" id="L60">        return Facility.Address.builder().address1(line1).build();</span>
+      }
+<span class="fc" id="L62">      return Facility.Address.builder()</span>
+<span class="fc" id="L63">          .zip(parseZip(line1))</span>
+<span class="fc" id="L64">          .city(parseCity(line1))</span>
+<span class="fc" id="L65">          .state(state)</span>
+<span class="fc" id="L66">          .build();</span>
+    }
+
+<span class="fc" id="L69">    return null;</span>
+  }
+
+  private static String parseCity(String addressLine) {
+<span class="fc" id="L73">    int comma = indexOf(addressLine, &quot;,&quot;);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">    if (comma &lt;= -1) {</span>
+<span class="fc" id="L75">      return null;</span>
+    }
+<span class="fc" id="L77">    return addressLine.substring(0, comma);</span>
+  }
+
+  private static String parseZip(String addressLine) {
+<span class="fc" id="L81">    Matcher matcher = ZIP_PATTERN.matcher(trimToEmpty(addressLine));</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">    if (!matcher.find()) {</span>
+<span class="fc" id="L83">      return null;</span>
+    }
+<span class="fc" id="L85">    return Stream.of(matcher.group(1), matcher.group(2), matcher.group(3))</span>
+<span class="fc" id="L86">        .filter(Objects::nonNull)</span>
+<span class="fc" id="L87">        .findFirst()</span>
+<span class="fc" id="L88">        .orElse(null);</span>
+  }
+
+  private Facility.Addresses address() {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">    if (allBlank(mailing(), physical())) {</span>
+<span class="fc" id="L93">      return null;</span>
+    }
+<span class="fc" id="L95">    return Facility.Addresses.builder().mailing(mailing()).physical(physical()).build();</span>
+  }
+
+  private Facility.FacilityAttributes attributes() {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    if (allBlank(xml.name(), website(), latitude(), longitude(), address(), phone())) {</span>
+<span class="fc" id="L100">      return null;</span>
+    }
+<span class="fc" id="L102">    return Facility.FacilityAttributes.builder()</span>
+<span class="fc" id="L103">        .name(xml.name())</span>
+<span class="fc" id="L104">        .facilityType(Facility.FacilityType.va_cemetery)</span>
+<span class="fc" id="L105">        .classification(&quot;State Cemetery&quot;)</span>
+<span class="fc" id="L106">        .website(website())</span>
+<span class="fc" id="L107">        .latitude(latitude())</span>
+<span class="fc" id="L108">        .longitude(longitude())</span>
+<span class="fc" id="L109">        .timeZone(CalculateTimeZone.calculateTimeZones(latitude(), longitude()))</span>
+<span class="fc" id="L110">        .address(address())</span>
+<span class="fc" id="L111">        .phone(phone())</span>
+<span class="fc" id="L112">        .hours(defaultHours())</span>
+<span class="fc" id="L113">        .build();</span>
+  }
+
+  private Facility.Hours defaultHours() {
+<span class="fc" id="L117">    String hours = &quot;Sunrise - Sunset&quot;;</span>
+<span class="fc" id="L118">    return Facility.Hours.builder()</span>
+<span class="fc" id="L119">        .monday(hours)</span>
+<span class="fc" id="L120">        .tuesday(hours)</span>
+<span class="fc" id="L121">        .wednesday(hours)</span>
+<span class="fc" id="L122">        .thursday(hours)</span>
+<span class="fc" id="L123">        .friday(hours)</span>
+<span class="fc" id="L124">        .saturday(hours)</span>
+<span class="fc" id="L125">        .sunday(hours)</span>
+<span class="fc" id="L126">        .build();</span>
+  }
+
+  private String id() {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">    if (allBlank(xml.id())) {</span>
+<span class="fc" id="L131">      return null;</span>
+    }
+<span class="fc" id="L133">    return &quot;nca_s&quot; + xml.id();</span>
+  }
+
+  private BigDecimal latitude() {
+<span class="fc bfc" id="L137" title="All 2 branches covered.">    if (allBlank(xml.latitude())) {</span>
+<span class="fc" id="L138">      return null;</span>
+    }
+<span class="fc" id="L140">    return new BigDecimal(xml.latitude());</span>
+  }
+
+  private BigDecimal longitude() {
+<span class="fc bfc" id="L144" title="All 2 branches covered.">    if (allBlank(xml.longitude())) {</span>
+<span class="fc" id="L145">      return null;</span>
+    }
+<span class="fc" id="L147">    return new BigDecimal(xml.longitude());</span>
+  }
+
+  private Facility.Address mailing() {
+<span class="fc" id="L151">    return asAddress(</span>
+<span class="fc" id="L152">        upperCase(xml.stateCode(), Locale.US),</span>
+<span class="fc" id="L153">        checkAngleBracketNull(xml.mailingLine1()),</span>
+<span class="fc" id="L154">        checkAngleBracketNull(xml.mailingLine2()),</span>
+<span class="fc" id="L155">        xml.mailingLine3());</span>
+  }
+
+  private Facility.Phone phone() {
+<span class="fc" id="L159">    String fax = phoneTrim(xml.fax());</span>
+<span class="fc" id="L160">    String main = phoneTrim(xml.phone());</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">    if (allBlank(fax, main)) {</span>
+<span class="fc" id="L162">      return null;</span>
+    }
+<span class="fc" id="L164">    return Facility.Phone.builder().fax(fax).main(main).build();</span>
+  }
+
+  private Facility.Address physical() {
+<span class="fc" id="L168">    return asAddress(</span>
+<span class="fc" id="L169">        upperCase(xml.stateCode(), Locale.US),</span>
+<span class="fc" id="L170">        checkAngleBracketNull(xml.addressLine1()),</span>
+<span class="fc" id="L171">        checkAngleBracketNull(xml.addressLine2()),</span>
+<span class="fc" id="L172">        xml.addressLine3());</span>
+  }
+
+  Facility toFacility() {
+<span class="fc bfc" id="L176" title="All 2 branches covered.">    if (allBlank(id())) {</span>
+<span class="fc" id="L177">      return null;</span>
+    }
+<span class="fc" id="L179">    return Facility.builder()</span>
+<span class="fc" id="L180">        .id(id())</span>
+<span class="fc" id="L181">        .type(Facility.Type.va_facilities)</span>
+<span class="fc" id="L182">        .attributes(attributes())</span>
+<span class="fc" id="L183">        .build();</span>
+  }
+
+  String website() {
+<span class="fc bfc" id="L187" title="All 2 branches covered.">    if (isNotBlank(xml.url())) {</span>
+<span class="fc" id="L188">      return xml.url();</span>
+    }
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">    if (allBlank(id())) {</span>
+<span class="nc" id="L191">      return null;</span>
+    }
+<span class="fc" id="L193">    return websites.get(id());</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

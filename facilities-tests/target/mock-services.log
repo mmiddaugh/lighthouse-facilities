@@ -1,0 +1,31 @@
+====
+
+    Facilities API Mock Services 3.0.6-SNAPSHOT
+
+====
+
+2021-06-14 15:27:32.556  INFO 13132 --- [           main] g.v.a.l.f.MockServicesApplication        : Starting MockServicesApplication v3.0.6-SNAPSHOT using Java 16.0.1 on DESKTOP-A300CFP with PID 13132 (C:\Users\JenniferNguy\Documents\GitHub\Lighthouse\lighthouse-facilities\facilities-tests\target\facilities-mock-services.jar started by JenniferNguy in C:\Users\JenniferNguy\Documents\GitHub\Lighthouse\lighthouse-facilities\facilities-tests\target)
+2021-06-14 15:27:32.559  INFO 13132 --- [           main] g.v.a.l.f.MockServicesApplication        : No active profile set, falling back to default profiles: default
+2021-06-14 15:27:33.862  INFO 13132 --- [           main] g.v.a.l.f.MockServicesApplication        : Started MockServicesApplication in 2.457 seconds (JVM running for 3.612)
+2021-06-14 15:27:33.864  INFO 13132 --- [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
+2021-06-14 15:27:33.868  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Starting mock services on port 8666
+2021-06-14 15:27:35.170  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/Shep/getRawData?location=FL
+2021-06-14 15:27:35.180  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /access-to-care-satisfaction.json
+2021-06-14 15:27:35.967  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/atcapis/v1.1/patientwaittimes
+2021-06-14 15:27:35.968  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /access-to-care-wait-times.json
+2021-06-14 15:27:36.335  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/Shep/getRawData?location=*
+2021-06-14 15:27:36.335  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /access-to-care-satisfaction.json
+2021-06-14 15:27:36.466  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/cems/cems.xml
+2021-06-14 15:27:36.466  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /cems.xml
+2021-06-14 15:27:36.538  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/cems/national.xml
+2021-06-14 15:27:36.539  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /national.xml
+2021-06-14 15:27:36.610  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/arcgis2/rest/services/Portal/MonthlyVAST_TTB/FeatureServer/0/query?f=json&inSR=4326&outSR=4326&orderByFields=Name&outFields=*&returnCountOnly=false&returnDistinctValues=false&returnGeometry=true&where=1=1&resultOffset=0&resultRecordCount=30
+2021-06-14 15:27:36.613  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /pssg-drive-time-bands-0.json
+2021-06-14 15:27:36.729  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/arcgis2/rest/services/Portal/MonthlyVAST_TTB/FeatureServer/0/query?f=json&inSR=4326&outSR=4326&orderByFields=Name&outFields=*&returnCountOnly=false&returnDistinctValues=false&returnGeometry=true&where=1=1&resultOffset=30&resultRecordCount=30
+2021-06-14 15:27:36.730  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /pssg-drive-time-bands-1.json
+2021-06-14 15:27:36.791  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/arcgis2/rest/services/Portal/MonthlyVAST_TTB/FeatureServer/0/query?f=json&inSR=4326&outSR=4326&orderByFields=Name&outFields=*&returnCountOnly=false&returnDistinctValues=false&returnGeometry=true&where=1=1&resultOffset=60&resultRecordCount=30
+2021-06-14 15:27:36.792  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /pssg-drive-time-bands-2.json
+2021-06-14 15:27:36.825  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : http://localhost:8666/REST/v1/Locations
+2021-06-14 15:27:36.826  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : Loading resource /bing.json
+2021-06-14 15:27:36.869  INFO 13132 --- [           main] g.v.a.l.f.MockServices                   : List of supported queries available at http://localhost:8666/help
+2021-06-14 15:27:36.870  INFO 13132 --- [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC

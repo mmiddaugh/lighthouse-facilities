@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DriveTimeBandRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">DriveTimeBandRepository.java</span></div><h1>DriveTimeBandRepository.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import gov.va.api.health.autoconfig.logging.Loggable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Loggable
+@Transactional(isolation = Isolation.READ_UNCOMMITTED)
+public interface DriveTimeBandRepository
+    extends CrudRepository&lt;DriveTimeBandEntity, DriveTimeBandEntity.Pk&gt;,
+        JpaSpecificationExecutor&lt;DriveTimeBandEntity&gt; {
+  @Query(&quot;select e.id from #{#entityName} e&quot;)
+  List&lt;DriveTimeBandEntity.Pk&gt; findAllIds();
+
+  @Query(&quot;select min(e.monthYear) from #{#entityName} e&quot;)
+  String getDefaultBandVersion();
+
+  @Value
+  @Builder
+  class MinMaxSpecification implements Specification&lt;DriveTimeBandEntity&gt; {
+    @NonNull BigDecimal longitude;
+
+    @NonNull BigDecimal latitude;
+
+    Integer maxDriveTime;
+
+    @Override
+    public Predicate toPredicate(
+        Root&lt;DriveTimeBandEntity&gt; root,
+        CriteriaQuery&lt;?&gt; criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
+<span class="fc" id="L46">      List&lt;Predicate&gt; predicates = new ArrayList&lt;&gt;(5);</span>
+
+<span class="fc" id="L48">      predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(&quot;minLongitude&quot;), longitude));</span>
+<span class="fc" id="L49">      predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(&quot;maxLongitude&quot;), longitude));</span>
+<span class="fc" id="L50">      predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(&quot;minLatitude&quot;), latitude));</span>
+<span class="fc" id="L51">      predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(&quot;maxLatitude&quot;), latitude));</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">      if (maxDriveTime != null) {</span>
+<span class="fc" id="L54">        predicates.add(</span>
+<span class="fc" id="L55">            criteriaBuilder.lessThanOrEqualTo(root.get(&quot;id&quot;).get(&quot;toMinutes&quot;), maxDriveTime));</span>
+      }
+
+<span class="fc" id="L58">      return criteriaBuilder.and(predicates.toArray(new Predicate[0]));</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

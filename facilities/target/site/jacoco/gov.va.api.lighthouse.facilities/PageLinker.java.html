@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PageLinker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">PageLinker.java</span></div><h1>PageLinker.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.joining;
+
+import gov.va.api.lighthouse.facilities.api.v0.PageLinks;
+import gov.va.api.lighthouse.facilities.api.v0.Pagination;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+import lombok.Builder;
+import lombok.NonNull;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+final class PageLinker {
+  final String url;
+
+  final MultiValueMap&lt;String, String&gt; params;
+
+  final Integer totalEntries;
+
+  @Builder
+  PageLinker(
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">      @NonNull String url,</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">      @NonNull MultiValueMap&lt;String, String&gt; params,</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">      @NonNull Integer totalEntries) {</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">    checkArgument(Parameters.pageOf(params) &gt;= 1);</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">    checkArgument(Parameters.perPageOf(params) &gt;= 0);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">    checkArgument(totalEntries &gt;= 0);</span>
+<span class="fc" id="L34">    this.url = url;</span>
+<span class="fc" id="L35">    this.params = params;</span>
+<span class="fc" id="L36">    this.totalEntries = totalEntries;</span>
+<span class="fc" id="L37">  }</span>
+
+  private static Stream&lt;String&gt; toKeyValueString(Map.Entry&lt;String, List&lt;String&gt;&gt; entry) {
+<span class="fc" id="L40">    return entry.getValue().stream()</span>
+<span class="fc" id="L41">        .map(</span>
+            value -&gt;
+<span class="fc" id="L43">                URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8)</span>
+                    + '='
+<span class="fc" id="L45">                    + URLEncoder.encode(value, StandardCharsets.UTF_8));</span>
+  }
+
+  private int lastPage() {
+<span class="fc bfc" id="L49" title="All 2 branches covered.">    if (totalEntries == 0) {</span>
+<span class="fc" id="L50">      return 1;</span>
+    }
+<span class="fc" id="L52">    return (int) Math.ceil((double) totalEntries / (double) Parameters.perPageOf(params));</span>
+  }
+
+  PageLinks links() {
+<span class="fc" id="L56">    int page = Parameters.pageOf(params);</span>
+<span class="fc" id="L57">    int perPage = Parameters.perPageOf(params);</span>
+    // If perPage == 0, only return the self link
+<span class="fc bfc" id="L59" title="All 2 branches covered.">    if (perPage == 0) {</span>
+<span class="fc" id="L60">      return PageLinks.builder().self(toUrl(page)).build();</span>
+    }
+<span class="fc" id="L62">    int lastPage = lastPage();</span>
+<span class="fc bfc" id="L63" title="All 4 branches covered.">    boolean hasPrevious = page &gt;= 2 &amp;&amp; page &lt;= lastPage + 1;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">    boolean hasNext = page &lt;= lastPage - 1;</span>
+<span class="fc" id="L65">    return PageLinks.builder()</span>
+<span class="fc" id="L66">        .self(toUrl(page))</span>
+<span class="fc" id="L67">        .first(toUrl(1))</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        .prev(hasPrevious ? toUrl(page - 1) : null)</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        .next(hasNext ? toUrl(page + 1) : null)</span>
+<span class="fc" id="L70">        .last(toUrl(lastPage))</span>
+<span class="fc" id="L71">        .build();</span>
+  }
+
+  Pagination pagination() {
+<span class="fc" id="L75">    int page = Parameters.pageOf(params);</span>
+<span class="fc" id="L76">    int perPage = Parameters.perPageOf(params);</span>
+<span class="fc" id="L77">    return Pagination.builder()</span>
+<span class="fc" id="L78">        .currentPage(page)</span>
+<span class="fc" id="L79">        .entriesPerPage(perPage)</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        .totalPages(perPage == 0 ? 0 : lastPage())</span>
+<span class="fc" id="L81">        .totalEntries(totalEntries)</span>
+<span class="fc" id="L82">        .build();</span>
+  }
+
+  private String toUrl(int currentPage) {
+<span class="fc" id="L86">    MultiValueMap&lt;String, String&gt; mutableParams = new LinkedMultiValueMap&lt;&gt;(params);</span>
+<span class="fc" id="L87">    mutableParams.remove(&quot;page&quot;);</span>
+<span class="fc" id="L88">    mutableParams.remove(&quot;per_page&quot;);</span>
+<span class="fc" id="L89">    StringBuilder sb = new StringBuilder(url).append('?');</span>
+<span class="fc" id="L90">    String joinedParams =</span>
+<span class="fc" id="L91">        mutableParams.entrySet().stream()</span>
+<span class="fc" id="L92">            .sorted(Comparator.comparing(Map.Entry::getKey))</span>
+<span class="fc" id="L93">            .flatMap(PageLinker::toKeyValueString)</span>
+<span class="fc" id="L94">            .collect(joining(&quot;&amp;&quot;));</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">    if (!joinedParams.isEmpty()) {</span>
+<span class="fc" id="L96">      sb.append(joinedParams).append('&amp;');</span>
+    }
+<span class="fc" id="L98">    return sb.append(&quot;page=&quot;)</span>
+<span class="fc" id="L99">        .append(currentPage)</span>
+<span class="fc" id="L100">        .append(&quot;&amp;per_page=&quot;)</span>
+<span class="fc" id="L101">        .append(Parameters.perPageOf(params))</span>
+<span class="fc" id="L102">        .toString();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

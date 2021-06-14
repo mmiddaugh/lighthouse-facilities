@@ -1,0 +1,5 @@
+====
+
+    ${Ansi.BLUE}Facilities API ${Ansi.BOLD}${Ansi.NORMAL}${Ansi.BLUE}${application.version}${Ansi.NORMAL}
+
+====

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HealthsCollector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities.collector</a> &gt; <span class="el_source">HealthsCollector.java</span></div><h1>HealthsCollector.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities.collector;
+
+import static com.google.common.base.Preconditions.checkState;
+import static gov.va.api.health.autoconfig.logging.LogSanitizer.sanitize;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+import static org.apache.commons.lang3.StringUtils.upperCase;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ListMultimap;
+import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+<span class="fc" id="L43">@Slf4j</span>
+@Builder
+final class HealthsCollector {
+  @NonNull final String atcBaseUrl;
+
+  @NonNull final String atpBaseUrl;
+
+  @NonNull final JdbcTemplate jdbcTemplate;
+
+  @NonNull final RestTemplate insecureRestTemplate;
+
+  @NonNull final Collection&lt;VastEntity&gt; vastEntities;
+
+  @NonNull final Map&lt;String, String&gt; websites;
+
+  @NonNull final ArrayList&lt;String&gt; cscFacilities;
+
+<span class="pc" id="L60">  @SneakyThrows</span>
+  static void putMentalHealthContact(ResultSet resultSet, Map&lt;String, String&gt; map) {
+<span class="fc" id="L62">    String stationNumber = resultSet.getString(&quot;StationNumber&quot;);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (isBlank(stationNumber)) {</span>
+<span class="fc" id="L64">      log.warn(&quot;Mental health contact missing station number&quot;);</span>
+<span class="fc" id="L65">      return;</span>
+    }
+<span class="fc" id="L67">    String phone = trimToEmpty(resultSet.getString(&quot;MHPhone&quot;));</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">    if (isBlank(phone)) {</span>
+<span class="fc" id="L69">      log.warn(</span>
+<span class="fc" id="L70">          &quot;Mental health contact for station number {} missing phone&quot;, sanitize(stationNumber));</span>
+<span class="fc" id="L71">      return;</span>
+    }
+<span class="fc" id="L73">    String ext = trimToEmpty(resultSet.getString(&quot;Extension&quot;));</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">    if (ext.indexOf(&quot;.&quot;) &gt;= 0) {</span>
+<span class="fc" id="L75">      ext = ext.substring(0, ext.indexOf(&quot;.&quot;));</span>
+    }
+<span class="pc bpc" id="L77" title="2 of 6 branches missed.">    if (isNotBlank(ext) &amp;&amp; !equalsIgnoreCase(ext, &quot;null&quot;) &amp;&amp; !ext.matches(&quot;^[0]+$&quot;)) {</span>
+<span class="fc" id="L78">      phone = phone + &quot; x &quot; + ext;</span>
+    }
+<span class="fc" id="L80">    String id = &quot;vha_&quot; + stationNumber;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">    if (map.containsKey(id)) {</span>
+<span class="fc" id="L82">      log.warn(&quot;Duplicate mental health contact for station number {}&quot;, sanitize(stationNumber));</span>
+    }
+<span class="fc" id="L84">    map.put(id, phone);</span>
+<span class="fc" id="L85">  }</span>
+
+<span class="pc" id="L87">  @SneakyThrows</span>
+  static void putStopCode(ResultSet resultSet, ListMultimap&lt;String, StopCode&gt; map) {
+<span class="fc" id="L89">    String stationNumber = trimToNull(resultSet.getString(&quot;Sta6a&quot;));</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">    if (stationNumber == null) {</span>
+<span class="fc" id="L91">      log.warn(&quot;Stop code missing station number&quot;);</span>
+<span class="fc" id="L92">      return;</span>
+    }
+<span class="fc" id="L94">    String code = trimToNull(resultSet.getString(&quot;PrimaryStopCode&quot;));</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">    if (code == null) {</span>
+<span class="fc" id="L96">      log.warn(&quot;Stop code for station number {} missing PrimaryStopCode&quot;, sanitize(stationNumber));</span>
+<span class="fc" id="L97">      return;</span>
+    }
+<span class="fc" id="L99">    String name = trimToNull(resultSet.getString(&quot;PrimaryStopCodeName&quot;));</span>
+<span class="fc" id="L100">    String wait = trimToNull(resultSet.getString(&quot;AvgWaitTimeNew&quot;));</span>
+<span class="fc" id="L101">    BigDecimal waitNum = null;</span>
+    try {
+<span class="fc bfc" id="L103" title="All 2 branches covered.">      waitNum = wait == null ? null : new BigDecimal(wait);</span>
+<span class="fc" id="L104">    } catch (NumberFormatException nfe) {</span>
+<span class="fc" id="L105">      log.warn(</span>
+          &quot;Stop code for station number {} has invalid AvgWaitTimeNew '{}'&quot;,
+<span class="fc" id="L107">          sanitize(stationNumber),</span>
+<span class="fc" id="L108">          sanitize(wait));</span>
+<span class="fc" id="L109">      return;</span>
+<span class="fc" id="L110">    }</span>
+<span class="fc" id="L111">    map.put(</span>
+<span class="fc" id="L112">        upperCase(&quot;vha_&quot; + stationNumber, Locale.US),</span>
+<span class="fc" id="L113">        StopCode.builder()</span>
+<span class="fc" id="L114">            .stationNumber(stationNumber)</span>
+<span class="fc" id="L115">            .code(code)</span>
+<span class="fc" id="L116">            .name(name)</span>
+<span class="fc" id="L117">            .waitTimeNew(waitNum)</span>
+<span class="fc" id="L118">            .build());</span>
+<span class="fc" id="L119">  }</span>
+
+  Collection&lt;Facility&gt; collect() {
+    try {
+<span class="fc" id="L123">      ListMultimap&lt;String, AccessToCareEntry&gt; accessToCareEntries = loadAccessToCare();</span>
+<span class="fc" id="L124">      ListMultimap&lt;String, AccessToPwtEntry&gt; accessToPwtEntries = loadAccessToPwt();</span>
+<span class="fc" id="L125">      Map&lt;String, String&gt; mentalHealthPhoneNumbers = loadMentalHealthPhoneNumbers();</span>
+<span class="fc" id="L126">      ListMultimap&lt;String, StopCode&gt; stopCodesMap = loadStopCodes();</span>
+<span class="fc" id="L127">      return vastEntities.stream()</span>
+<span class="fc" id="L128">          .filter(Objects::nonNull)</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">          .filter(v -&gt; !v.isVetCenter())</span>
+<span class="fc" id="L130">          .map(</span>
+              v -&gt;
+<span class="fc" id="L132">                  HealthTransformer.builder()</span>
+<span class="fc" id="L133">                      .vast(v)</span>
+<span class="fc" id="L134">                      .accessToCare(accessToCareEntries)</span>
+<span class="fc" id="L135">                      .accessToPwt(accessToPwtEntries)</span>
+<span class="fc" id="L136">                      .cscFacilities(cscFacilities)</span>
+<span class="fc" id="L137">                      .mentalHealthPhoneNumbers(mentalHealthPhoneNumbers)</span>
+<span class="fc" id="L138">                      .stopCodesMap(stopCodesMap)</span>
+<span class="fc" id="L139">                      .websites(websites)</span>
+<span class="fc" id="L140">                      .build()</span>
+<span class="fc" id="L141">                      .toFacility())</span>
+<span class="fc" id="L142">          .filter(Objects::nonNull)</span>
+<span class="fc" id="L143">          .collect(toList());</span>
+<span class="fc" id="L144">    } catch (Exception e) {</span>
+<span class="fc" id="L145">      throw new CollectorExceptions.HealthsCollectorException(e);</span>
+    }
+  }
+
+<span class="fc" id="L149">  @SneakyThrows</span>
+  private ListMultimap&lt;String, AccessToCareEntry&gt; loadAccessToCare() {
+<span class="fc" id="L151">    final Stopwatch totalWatch = Stopwatch.createStarted();</span>
+<span class="fc" id="L152">    String url =</span>
+<span class="fc" id="L153">        UriComponentsBuilder.fromHttpUrl(atcBaseUrl + &quot;atcapis/v1.1/patientwaittimes&quot;)</span>
+<span class="fc" id="L154">            .build()</span>
+<span class="fc" id="L155">            .toUriString();</span>
+<span class="fc" id="L156">    String response =</span>
+        insecureRestTemplate
+<span class="fc" id="L158">            .exchange(url, HttpMethod.GET, new HttpEntity&lt;&gt;(new HttpHeaders()), String.class)</span>
+<span class="fc" id="L159">            .getBody();</span>
+    List&lt;AccessToCareEntry&gt; entries =
+<span class="fc" id="L161">        JacksonConfig.createMapper()</span>
+<span class="fc" id="L162">            .readValue(response, new TypeReference&lt;List&lt;AccessToCareEntry&gt;&gt;() {});</span>
+<span class="fc" id="L163">    ListMultimap&lt;String, AccessToCareEntry&gt; map = ArrayListMultimap.create();</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">    for (int i = 0; i &lt; entries.size(); i++) {</span>
+<span class="fc" id="L165">      AccessToCareEntry entry = entries.get(i);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">      if (entry.facilityId() == null) {</span>
+<span class="nc" id="L167">        log.warn(&quot;AccessToCare entry has null facility ID&quot;);</span>
+<span class="nc" id="L168">        continue;</span>
+      }
+<span class="fc" id="L170">      map.put(upperCase(&quot;vha_&quot; + entry.facilityId(), Locale.US), entry);</span>
+    }
+<span class="fc" id="L172">    log.info(</span>
+        &quot;Loading patient wait times took {} millis for {} entries&quot;,
+<span class="fc" id="L174">        totalWatch.stop().elapsed(TimeUnit.MILLISECONDS),</span>
+<span class="fc" id="L175">        entries.size());</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">    checkState(!entries.isEmpty(), &quot;No AccessToCare entries&quot;);</span>
+<span class="fc" id="L177">    return ImmutableListMultimap.copyOf(map);</span>
+  }
+
+<span class="nc" id="L180">  @SneakyThrows</span>
+  private ListMultimap&lt;String, AccessToPwtEntry&gt; loadAccessToPwt() {
+<span class="fc" id="L182">    Stopwatch watch = Stopwatch.createStarted();</span>
+<span class="fc" id="L183">    String url =</span>
+<span class="fc" id="L184">        UriComponentsBuilder.fromHttpUrl(atpBaseUrl + &quot;Shep/getRawData&quot;)</span>
+<span class="fc" id="L185">            .queryParam(&quot;location&quot;, &quot;*&quot;)</span>
+<span class="fc" id="L186">            .build()</span>
+<span class="fc" id="L187">            .toUriString();</span>
+<span class="fc" id="L188">    String response =</span>
+        insecureRestTemplate
+<span class="fc" id="L190">            .exchange(url, HttpMethod.GET, new HttpEntity&lt;&gt;(new HttpHeaders()), String.class)</span>
+<span class="fc" id="L191">            .getBody();</span>
+    List&lt;AccessToPwtEntry&gt; entries =
+<span class="fc" id="L193">        JacksonConfig.createMapper()</span>
+<span class="fc" id="L194">            .readValue(response, new TypeReference&lt;List&lt;AccessToPwtEntry&gt;&gt;() {});</span>
+<span class="fc" id="L195">    ListMultimap&lt;String, AccessToPwtEntry&gt; map = ArrayListMultimap.create();</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">    for (AccessToPwtEntry entry : entries) {</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">      if (entry.facilityId() == null) {</span>
+<span class="nc" id="L198">        log.warn(&quot;AccessToPwt entry has null facility ID&quot;);</span>
+<span class="nc" id="L199">        continue;</span>
+      }
+<span class="fc" id="L201">      map.put(upperCase(&quot;vha_&quot; + entry.facilityId(), Locale.US), entry);</span>
+<span class="fc" id="L202">    }</span>
+<span class="fc" id="L203">    log.info(</span>
+        &quot;Loading satisfaction scores took {} millis for {} entries&quot;,
+<span class="fc" id="L205">        watch.stop().elapsed(TimeUnit.MILLISECONDS),</span>
+<span class="fc" id="L206">        entries.size());</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">    checkState(!entries.isEmpty(), &quot;No AccessToPwt entries&quot;);</span>
+<span class="fc" id="L208">    return ImmutableListMultimap.copyOf(map);</span>
+  }
+
+  private Map&lt;String, String&gt; loadMentalHealthPhoneNumbers() {
+<span class="fc" id="L212">    Stopwatch watch = Stopwatch.createStarted();</span>
+<span class="fc" id="L213">    Map&lt;String, String&gt; map = new TreeMap&lt;&gt;(String.CASE_INSENSITIVE_ORDER);</span>
+<span class="fc" id="L214">    jdbcTemplate.query(</span>
+        &quot;SELECT StationNumber, MHPhone, Extension FROM App.VHA_Mental_Health_Contact_Info&quot;,
+<span class="fc" id="L216">        (RowCallbackHandler) (rs) -&gt; putMentalHealthContact(rs, map));</span>
+<span class="fc" id="L217">    log.info(</span>
+        &quot;Loading mental health contacts took {} millis for {} entries&quot;,
+<span class="fc" id="L219">        watch.stop().elapsed(TimeUnit.MILLISECONDS),</span>
+<span class="fc" id="L220">        map.size());</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">    checkState(!map.isEmpty(), &quot;No App.VHA_Mental_Health_Contact_Info entries&quot;);</span>
+<span class="fc" id="L222">    return Collections.unmodifiableMap(map);</span>
+  }
+
+  private ListMultimap&lt;String, StopCode&gt; loadStopCodes() {
+<span class="fc" id="L226">    Stopwatch watch = Stopwatch.createStarted();</span>
+<span class="fc" id="L227">    ListMultimap&lt;String, StopCode&gt; map = ArrayListMultimap.create();</span>
+<span class="fc" id="L228">    jdbcTemplate.query(</span>
+        &quot;SELECT Sta6a, PrimaryStopCode, PrimaryStopCodeName, AvgWaitTimeNew&quot;
+            + &quot; FROM App.VSSC_ClinicalServices&quot;,
+<span class="fc" id="L231">        (RowCallbackHandler) (rs) -&gt; putStopCode(rs, map));</span>
+<span class="fc" id="L232">    log.info(</span>
+        &quot;Loading stop codes took {} millis for {} entries&quot;,
+<span class="fc" id="L234">        watch.stop().elapsed(TimeUnit.MILLISECONDS),</span>
+<span class="fc" id="L235">        map.values().size());</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">    checkState(!map.isEmpty(), &quot;No App.VSSC_ClinicalServices entries&quot;);</span>
+<span class="fc" id="L237">    return ImmutableListMultimap.copyOf(map);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

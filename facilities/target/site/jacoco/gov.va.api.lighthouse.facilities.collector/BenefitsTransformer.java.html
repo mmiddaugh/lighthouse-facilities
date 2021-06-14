@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BenefitsTransformer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities.collector</a> &gt; <span class="el_source">BenefitsTransformer.java</span></div><h1>BenefitsTransformer.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities.collector;
+
+import static gov.va.api.lighthouse.facilities.collector.Transformers.allBlank;
+import static gov.va.api.lighthouse.facilities.collector.Transformers.checkAngleBracketNull;
+import static gov.va.api.lighthouse.facilities.collector.Transformers.phoneTrim;
+import static org.apache.commons.lang3.StringUtils.upperCase;
+
+import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import lombok.Builder;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
+
+@Builder
+final class BenefitsTransformer {
+  @NonNull CdwBenefits cdwFacility;
+
+  String csvWebsite;
+
+  private Facility.FacilityAttributes attributes() {
+<span class="fc" id="L23">    return Facility.FacilityAttributes.builder()</span>
+<span class="fc" id="L24">        .name(cdwFacility.facilityName())</span>
+<span class="fc" id="L25">        .facilityType(Facility.FacilityType.va_benefits_facility)</span>
+<span class="fc" id="L26">        .classification(cdwFacility.facilityType())</span>
+<span class="fc" id="L27">        .latitude(cdwFacility.latitude())</span>
+<span class="fc" id="L28">        .longitude(cdwFacility.longitude())</span>
+<span class="fc" id="L29">        .timeZone(</span>
+<span class="fc" id="L30">            CalculateTimeZone.calculateTimeZones(cdwFacility.latitude(), cdwFacility.longitude()))</span>
+<span class="fc" id="L31">        .website(website(cdwFacility.websiteUrl()))</span>
+<span class="fc" id="L32">        .address(</span>
+<span class="fc" id="L33">            Facility.Addresses.builder()</span>
+<span class="fc" id="L34">                .physical(</span>
+<span class="fc" id="L35">                    Facility.Address.builder()</span>
+<span class="fc" id="L36">                        .address1(checkAngleBracketNull(cdwFacility.address1()))</span>
+<span class="fc" id="L37">                        .address2(checkAngleBracketNull(cdwFacility.address2()))</span>
+<span class="fc" id="L38">                        .city(cdwFacility.city())</span>
+<span class="fc" id="L39">                        .state(upperCase(cdwFacility.state(), Locale.US))</span>
+<span class="fc" id="L40">                        .zip(cdwFacility.zip())</span>
+<span class="fc" id="L41">                        .build())</span>
+<span class="fc" id="L42">                .build())</span>
+<span class="fc" id="L43">        .phone(phone())</span>
+<span class="fc" id="L44">        .hours(</span>
+<span class="fc" id="L45">            Facility.Hours.builder()</span>
+<span class="fc" id="L46">                .monday(cdwFacility.monday())</span>
+<span class="fc" id="L47">                .tuesday(cdwFacility.tuesday())</span>
+<span class="fc" id="L48">                .wednesday(cdwFacility.wednesday())</span>
+<span class="fc" id="L49">                .thursday(cdwFacility.thursday())</span>
+<span class="fc" id="L50">                .friday(cdwFacility.friday())</span>
+<span class="fc" id="L51">                .saturday(cdwFacility.saturday())</span>
+<span class="fc" id="L52">                .sunday(cdwFacility.sunday())</span>
+<span class="fc" id="L53">                .build())</span>
+<span class="fc" id="L54">        .services(services())</span>
+<span class="fc" id="L55">        .build();</span>
+  }
+
+  private Facility.Phone phone() {
+
+<span class="fc" id="L60">    String main = phoneTrim(cdwFacility.phone());</span>
+<span class="fc" id="L61">    String fax = phoneTrim(cdwFacility.fax());</span>
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (allBlank(main, fax)) {</span>
+<span class="fc" id="L64">      return null;</span>
+    } else {
+<span class="fc" id="L66">      return Facility.Phone.builder().main(main).fax(fax).build();</span>
+    }
+  }
+
+  Facility.Services services() {
+<span class="fc" id="L71">    List&lt;Facility.BenefitsService&gt; benefitsServices = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.applyingForBenefits())) {</span>
+<span class="fc" id="L73">      benefitsServices.add(Facility.BenefitsService.ApplyingForBenefits);</span>
+    }
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.burialClaimAssistance())) {</span>
+<span class="fc" id="L76">      benefitsServices.add(Facility.BenefitsService.BurialClaimAssistance);</span>
+    }
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.disabilityClaimAssistance())) {</span>
+<span class="fc" id="L79">      benefitsServices.add(Facility.BenefitsService.DisabilityClaimAssistance);</span>
+    }
+<span class="fc bfc" id="L81" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.ebenefitsRegistration())) {</span>
+<span class="fc" id="L82">      benefitsServices.add(Facility.BenefitsService.eBenefitsRegistrationAssistance);</span>
+    }
+<span class="fc bfc" id="L84" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.educationAndCareerCounseling())) {</span>
+<span class="fc" id="L85">      benefitsServices.add(Facility.BenefitsService.EducationAndCareerCounseling);</span>
+    }
+<span class="fc bfc" id="L87" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.educationClaimAssistance())) {</span>
+<span class="fc" id="L88">      benefitsServices.add(Facility.BenefitsService.EducationClaimAssistance);</span>
+    }
+<span class="fc bfc" id="L90" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.familyMemberClaimAssistance())) {</span>
+<span class="fc" id="L91">      benefitsServices.add(Facility.BenefitsService.FamilyMemberClaimAssistance);</span>
+    }
+<span class="fc bfc" id="L93" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.homelessAssistance())) {</span>
+<span class="fc" id="L94">      benefitsServices.add(Facility.BenefitsService.HomelessAssistance);</span>
+    }
+<span class="fc bfc" id="L96" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.vaHomeLoanAssistance())) {</span>
+<span class="fc" id="L97">      benefitsServices.add(Facility.BenefitsService.VAHomeLoanAssistance);</span>
+    }
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.insuranceClaimAssistance())) {</span>
+<span class="fc" id="L100">      benefitsServices.add(Facility.BenefitsService.InsuranceClaimAssistanceAndFinancialCounseling);</span>
+    }
+<span class="fc bfc" id="L102" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.integratedDisabilityEvaluationSystem())) {</span>
+<span class="fc" id="L103">      benefitsServices.add(Facility.BenefitsService.IntegratedDisabilityEvaluationSystemAssistance);</span>
+    }
+<span class="fc bfc" id="L105" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.preDischargeClaimAssistance())) {</span>
+<span class="fc" id="L106">      benefitsServices.add(Facility.BenefitsService.PreDischargeClaimAssistance);</span>
+    }
+<span class="fc bfc" id="L108" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.transitionAssistance())) {</span>
+<span class="fc" id="L109">      benefitsServices.add(Facility.BenefitsService.TransitionAssistance);</span>
+    }
+<span class="fc bfc" id="L111" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.updatingDirectDepositInformation())) {</span>
+<span class="fc" id="L112">      benefitsServices.add(Facility.BenefitsService.UpdatingDirectDepositInformation);</span>
+    }
+<span class="fc bfc" id="L114" title="All 2 branches covered.">    if (yesNoToBoolean(cdwFacility.vocationalRehabilitationEmplo())) {</span>
+<span class="fc" id="L115">      benefitsServices.add(</span>
+          Facility.BenefitsService.VocationalRehabilitationAndEmploymentAssistance);
+    }
+<span class="fc bfc" id="L118" title="All 2 branches covered.">    if (StringUtils.containsIgnoreCase(cdwFacility.otherServices(), &quot;PENSION&quot;)) {</span>
+<span class="fc" id="L119">      benefitsServices.add(Facility.BenefitsService.Pensions);</span>
+    }
+<span class="fc" id="L121">    return Facility.Services.builder().benefits(benefitsServices).build();</span>
+  }
+
+  Facility toFacility() {
+<span class="fc" id="L125">    return Facility.builder()</span>
+<span class="fc" id="L126">        .id(&quot;vba_&quot; + cdwFacility.facilityNumber())</span>
+<span class="fc" id="L127">        .type(Facility.Type.va_facilities)</span>
+<span class="fc" id="L128">        .attributes(attributes())</span>
+<span class="fc" id="L129">        .build();</span>
+  }
+
+  String website(String website) {
+    /* CDW returns a string NULL... We don't want to return that.*/
+<span class="fc bfc" id="L134" title="All 4 branches covered.">    return website == null || website.equalsIgnoreCase(&quot;NULL&quot;) ? csvWebsite : website;</span>
+  }
+
+  private boolean yesNoToBoolean(String yesNo) {
+    /* Assume no if the answer is not an emphatic yes or the string is null. */
+<span class="fc" id="L139">    return &quot;YES&quot;.equalsIgnoreCase(yesNo);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

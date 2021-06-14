@@ -1,0 +1,8 @@
+gov\va\api\lighthouse\facilities\api\v0\SearchByZipJsonTest.class
+gov\va\api\lighthouse\facilities\api\v0\NearbyResponseTest.class
+gov\va\api\lighthouse\facilities\api\v0\ModelTest.class
+gov\va\api\lighthouse\facilities\api\v0\ReloadResponseTest.class
+gov\va\api\lighthouse\facilities\api\v0\SearchByZipGeoJsonTest.class
+gov\va\api\lighthouse\facilities\api\pssg\PathEncoderTest.class
+gov\va\api\lighthouse\facilities\api\v0\ReadHealthByIdGeoJsonTest.class
+gov\va\api\lighthouse\facilities\api\v0\ReadHealthByIdJsonTest.class

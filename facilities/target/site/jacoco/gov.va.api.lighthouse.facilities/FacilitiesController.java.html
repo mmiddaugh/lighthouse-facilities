@@ -1,0 +1,685 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FacilitiesController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">FacilitiesController.java</span></div><h1>FacilitiesController.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static gov.va.api.lighthouse.facilities.Controllers.page;
+import static gov.va.api.lighthouse.facilities.Controllers.validateFacilityType;
+import static gov.va.api.lighthouse.facilities.Controllers.validateServices;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Splitter;
+import gov.va.api.lighthouse.facilities.api.v0.FacilitiesIdsResponse;
+import gov.va.api.lighthouse.facilities.api.v0.FacilitiesResponse;
+import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.api.v0.FacilityReadResponse;
+import gov.va.api.lighthouse.facilities.api.v0.GeoFacilitiesResponse;
+import gov.va.api.lighthouse.facilities.api.v0.GeoFacility;
+import gov.va.api.lighthouse.facilities.api.v0.GeoFacilityReadResponse;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import javax.validation.constraints.Min;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@Validated
+@RestController
+@RequestMapping(value = &quot;/v0&quot;)
+public class FacilitiesController {
+<span class="fc" id="L52">  private static final ObjectMapper MAPPER = FacilitiesJacksonConfig.createMapper();</span>
+
+<span class="fc" id="L54">  private static final FacilityOverlay FACILITY_OVERLAY =</span>
+<span class="fc" id="L55">      FacilityOverlay.builder().mapper(MAPPER).build();</span>
+
+  private final FacilityRepository facilityRepository;
+
+  private final String linkerUrl;
+
+  @Builder
+  FacilitiesController(
+      @Autowired FacilityRepository facilityRepository,
+      @Value(&quot;${facilities.url}&quot;) String baseUrl,
+<span class="fc" id="L65">      @Value(&quot;${facilities.base-path}&quot;) String basePath) {</span>
+<span class="fc" id="L66">    this.facilityRepository = facilityRepository;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    String url = baseUrl.endsWith(&quot;/&quot;) ? baseUrl : baseUrl + &quot;/&quot;;</span>
+<span class="fc" id="L68">    String path = basePath.replaceAll(&quot;/$&quot;, &quot;&quot;);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">    path = path.isEmpty() ? path : path + &quot;/&quot;;</span>
+<span class="fc" id="L70">    linkerUrl = url + path + &quot;v0/&quot;;</span>
+<span class="fc" id="L71">  }</span>
+
+  /** Unitless distance approximation based on geometric distance formula. For sorting only. */
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">  private static double distance(@NonNull FacilityEntity entity, double lng, double lat) {</span>
+<span class="fc" id="L75">    double lngDiff = entity.longitude() - lng;</span>
+<span class="fc" id="L76">    double latDiff = entity.latitude() - lat;</span>
+<span class="fc" id="L77">    return Math.sqrt(lngDiff * lngDiff + latDiff * latDiff);</span>
+  }
+
+  private static List&lt;FacilityEntity.Pk&gt; entityIds(String ids) {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">    if (ids == null) {</span>
+<span class="fc" id="L82">      return emptyList();</span>
+    }
+<span class="fc" id="L84">    return Splitter.on(&quot;,&quot;)</span>
+<span class="fc" id="L85">        .splitToStream(ids)</span>
+<span class="fc" id="L86">        .map(id -&gt; trimToNull(id))</span>
+<span class="fc" id="L87">        .filter(Objects::nonNull)</span>
+<span class="fc" id="L88">        .distinct()</span>
+<span class="fc" id="L89">        .map(id -&gt; FacilityEntity.Pk.optionalFromIdString(id).orElse(null))</span>
+<span class="fc" id="L90">        .filter(Objects::nonNull)</span>
+<span class="fc" id="L91">        .collect(toList());</span>
+  }
+
+<span class="nc" id="L94">  @SneakyThrows</span>
+  private static Facility facility(HasFacilityPayload entity) {
+<span class="fc" id="L96">    return FACILITY_OVERLAY.apply(entity);</span>
+  }
+
+  private static GeoFacility geoFacility(Facility facility) {
+<span class="fc" id="L100">    return GeoFacilityTransformer.builder().facility(facility).build().toGeoFacility();</span>
+  }
+
+  /** Distance in miles using Haversine algorithm. */
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">  private static double haversine(@NonNull FacilityEntity entity, double lng, double lat) {</span>
+<span class="fc" id="L105">    double lon1 = Math.toRadians(entity.longitude());</span>
+<span class="fc" id="L106">    double lat1 = Math.toRadians(entity.latitude());</span>
+<span class="fc" id="L107">    double lon2 = Math.toRadians(lng);</span>
+<span class="fc" id="L108">    double lat2 = Math.toRadians(lat);</span>
+<span class="fc" id="L109">    double lonDiff = lon2 - lon1;</span>
+<span class="fc" id="L110">    double latDiff = lat2 - lat1;</span>
+<span class="fc" id="L111">    double x = Math.sin(latDiff / 2);</span>
+<span class="fc" id="L112">    double y = Math.sin(lonDiff / 2);</span>
+<span class="fc" id="L113">    double coeff = Math.cos(lat1) * Math.cos(lat2);</span>
+    // 3958.8 is Earth radius in miles
+<span class="fc" id="L115">    return 3958.8 * 2 * Math.asin(Math.sqrt(x * x + coeff * y * y));</span>
+  }
+
+  /** Get all facilities. */
+<span class="nc" id="L119">  @SneakyThrows</span>
+  @GetMapping(
+      value = &quot;/facilities/all&quot;,
+      produces = {&quot;application/json&quot;, &quot;application/geo+json&quot;, &quot;application/vnd.geo+json&quot;})
+  String all() {
+<span class="fc" id="L124">    StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L125">    sb.append(&quot;{\&quot;type\&quot;:\&quot;FeatureCollection\&quot;,\&quot;features\&quot;:[&quot;);</span>
+<span class="fc" id="L126">    List&lt;HasFacilityPayload&gt; all = facilityRepository.findAllProjectedBy();</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">    if (!all.isEmpty()) {</span>
+<span class="fc" id="L128">      all.parallelStream()</span>
+<span class="fc" id="L129">          .map(</span>
+              e -&gt;
+<span class="fc" id="L131">                  FacilitiesJacksonConfig.quietlyWriteValueAsString(</span>
+<span class="fc" id="L132">                      MAPPER, geoFacility(facility(e))))</span>
+<span class="fc" id="L133">          .forEachOrdered(g -&gt; sb.append(g).append(&quot;,&quot;));</span>
+<span class="fc" id="L134">      sb.deleteCharAt(sb.length() - 1);</span>
+    }
+<span class="fc" id="L136">    sb.append(&quot;]}&quot;);</span>
+<span class="fc" id="L137">    return sb.toString();</span>
+  }
+
+  /** Get all facilities as CSV. */
+<span class="nc" id="L141">  @SneakyThrows</span>
+  @GetMapping(value = &quot;/facilities/all&quot;, produces = &quot;text/csv&quot;)
+  String allCsv() {
+<span class="fc" id="L144">    List&lt;List&lt;String&gt;&gt; rows =</span>
+<span class="fc" id="L145">        facilityRepository.findAllProjectedBy().stream()</span>
+<span class="fc" id="L146">            .parallel()</span>
+<span class="fc" id="L147">            .map(e -&gt; CsvTransformer.builder().facility(facility(e)).build().toRow())</span>
+<span class="fc" id="L148">            .collect(toList());</span>
+<span class="fc" id="L149">    StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L150">    try (CSVPrinter printer =</span>
+        CSVFormat.DEFAULT
+<span class="fc" id="L152">            .withHeader(CsvTransformer.HEADERS.stream().toArray(String[]::new))</span>
+<span class="fc" id="L153">            .print(sb)) {</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">      for (List&lt;String&gt; row : rows) {</span>
+<span class="fc" id="L155">        printer.printRecord(row);</span>
+<span class="fc" id="L156">      }</span>
+<span class="fc" id="L157">      return sb.toString();</span>
+    }
+  }
+
+  private List&lt;FacilityEntity&gt; entitiesByBoundingBox(
+      List&lt;BigDecimal&gt; bbox, String rawType, List&lt;String&gt; rawServices, Boolean rawMobile) {
+<span class="fc bfc" id="L163" title="All 2 branches covered.">    if (bbox.size() != 4) {</span>
+<span class="fc" id="L164">      throw new ExceptionsV0.InvalidParameter(&quot;bbox&quot;, bbox);</span>
+    }
+<span class="fc" id="L166">    FacilityEntity.Type facilityType = validateFacilityType(rawType);</span>
+<span class="fc" id="L167">    Set&lt;Facility.ServiceType&gt; services = validateServices(rawServices);</span>
+
+    // lng lat lng lat
+<span class="fc" id="L170">    List&lt;FacilityEntity&gt; allEntities =</span>
+<span class="fc" id="L171">        facilityRepository.findAll(</span>
+<span class="fc" id="L172">            FacilityRepository.BoundingBoxSpecification.builder()</span>
+<span class="fc" id="L173">                .minLongitude(bbox.get(0).min(bbox.get(2)))</span>
+<span class="fc" id="L174">                .maxLongitude(bbox.get(0).max(bbox.get(2)))</span>
+<span class="fc" id="L175">                .minLatitude(bbox.get(1).min(bbox.get(3)))</span>
+<span class="fc" id="L176">                .maxLatitude(bbox.get(1).max(bbox.get(3)))</span>
+<span class="fc" id="L177">                .facilityType(facilityType)</span>
+<span class="fc" id="L178">                .services(services)</span>
+<span class="fc" id="L179">                .mobile(rawMobile)</span>
+<span class="fc" id="L180">                .build());</span>
+<span class="fc" id="L181">    double centerLng = (bbox.get(0).doubleValue() + bbox.get(2).doubleValue()) / 2;</span>
+<span class="fc" id="L182">    double centerLat = (bbox.get(1).doubleValue() + bbox.get(3).doubleValue()) / 2;</span>
+<span class="fc" id="L183">    return allEntities.stream()</span>
+<span class="fc" id="L184">        .sorted(</span>
+            (left, right) -&gt;
+<span class="fc" id="L186">                Double.compare(</span>
+<span class="fc" id="L187">                    distance(left, centerLng, centerLat), distance(right, centerLng, centerLat)))</span>
+<span class="fc" id="L188">        .collect(toList());</span>
+  }
+
+  private List&lt;FacilityEntity&gt; entitiesByIds(String ids) {
+<span class="fc" id="L192">    List&lt;FacilityEntity.Pk&gt; pks = entityIds(ids);</span>
+<span class="fc" id="L193">    Map&lt;FacilityEntity.Pk, FacilityEntity&gt; entities =</span>
+<span class="fc" id="L194">        facilityRepository.findByIdIn(pks).stream()</span>
+<span class="fc" id="L195">            .collect(toMap(e -&gt; e.id(), Function.identity()));</span>
+<span class="fc" id="L196">    return pks.stream().map(pk -&gt; entities.get(pk)).filter(Objects::nonNull).collect(toList());</span>
+  }
+
+<span class="fc" id="L199">  @SneakyThrows</span>
+  private List&lt;DistanceEntity&gt; entitiesByLatLong(
+      BigDecimal longitude,
+      BigDecimal latitude,
+      String ids,
+      String rawType,
+      List&lt;String&gt; rawServices,
+      Boolean rawMobile) {
+<span class="fc" id="L207">    FacilityEntity.Type facilityType = validateFacilityType(rawType);</span>
+<span class="fc" id="L208">    Set&lt;Facility.ServiceType&gt; services = validateServices(rawServices);</span>
+<span class="fc" id="L209">    List&lt;FacilityEntity&gt; entities =</span>
+<span class="fc" id="L210">        facilityRepository.findAll(</span>
+<span class="fc" id="L211">            FacilityRepository.TypeServicesIdsSpecification.builder()</span>
+<span class="fc" id="L212">                .ids(entityIds(ids))</span>
+<span class="fc" id="L213">                .facilityType(facilityType)</span>
+<span class="fc" id="L214">                .services(services)</span>
+<span class="fc" id="L215">                .mobile(rawMobile)</span>
+<span class="fc" id="L216">                .build());</span>
+<span class="fc" id="L217">    double lng = longitude.doubleValue();</span>
+<span class="fc" id="L218">    double lat = latitude.doubleValue();</span>
+<span class="fc" id="L219">    return entities.stream()</span>
+<span class="fc" id="L220">        .map(</span>
+            e -&gt;
+<span class="fc" id="L222">                DistanceEntity.builder()</span>
+<span class="fc" id="L223">                    .entity(e)</span>
+<span class="fc" id="L224">                    .distance(new BigDecimal(haversine(e, lng, lat)))</span>
+<span class="fc" id="L225">                    .build())</span>
+<span class="fc" id="L226">        .sorted((left, right) -&gt; left.distance().compareTo(right.distance()))</span>
+<span class="fc" id="L227">        .collect(toList());</span>
+  }
+
+  private Page&lt;FacilityEntity&gt; entitiesPageByState(
+      String rawState,
+      String rawType,
+      List&lt;String&gt; rawServices,
+      Boolean rawMobile,
+      int page,
+      int perPage) {
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">    checkArgument(page &gt;= 1);</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">    checkArgument(perPage &gt;= 1);</span>
+<span class="fc" id="L239">    String state = rawState.trim().toUpperCase(Locale.US);</span>
+<span class="fc" id="L240">    FacilityEntity.Type facilityType = validateFacilityType(rawType);</span>
+<span class="fc" id="L241">    Set&lt;Facility.ServiceType&gt; services = validateServices(rawServices);</span>
+<span class="fc" id="L242">    return facilityRepository.findAll(</span>
+<span class="fc" id="L243">        FacilityRepository.StateSpecification.builder()</span>
+<span class="fc" id="L244">            .state(state)</span>
+<span class="fc" id="L245">            .facilityType(facilityType)</span>
+<span class="fc" id="L246">            .services(services)</span>
+<span class="fc" id="L247">            .mobile(rawMobile)</span>
+<span class="fc" id="L248">            .build(),</span>
+<span class="fc" id="L249">        PageRequest.of(page - 1, perPage, FacilityEntity.naturalOrder()));</span>
+  }
+
+  private Page&lt;FacilityEntity&gt; entitiesPageByZip(
+      String rawZip,
+      String rawType,
+      List&lt;String&gt; rawServices,
+      Boolean rawMobile,
+      int page,
+      int perPage) {
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">    checkArgument(page &gt;= 1);</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">    checkArgument(perPage &gt;= 1);</span>
+<span class="fc" id="L261">    FacilityEntity.Type facilityType = validateFacilityType(rawType);</span>
+<span class="fc" id="L262">    Set&lt;Facility.ServiceType&gt; services = validateServices(rawServices);</span>
+<span class="fc" id="L263">    String zip = rawZip.substring(0, Math.min(rawZip.length(), 5));</span>
+<span class="fc" id="L264">    return facilityRepository.findAll(</span>
+<span class="fc" id="L265">        FacilityRepository.ZipSpecification.builder()</span>
+<span class="fc" id="L266">            .zip(zip)</span>
+<span class="fc" id="L267">            .facilityType(facilityType)</span>
+<span class="fc" id="L268">            .services(services)</span>
+<span class="fc" id="L269">            .mobile(rawMobile)</span>
+<span class="fc" id="L270">            .build(),</span>
+<span class="fc" id="L271">        PageRequest.of(page - 1, perPage, FacilityEntity.naturalOrder()));</span>
+  }
+
+  private FacilityEntity entityById(String id) {
+<span class="fc" id="L275">    FacilityEntity.Pk pk = null;</span>
+    try {
+<span class="fc" id="L277">      pk = FacilityEntity.Pk.fromIdString(id);</span>
+<span class="fc" id="L278">    } catch (IllegalArgumentException ex) {</span>
+<span class="fc" id="L279">      throw new ExceptionsV0.NotFound(id, ex);</span>
+<span class="fc" id="L280">    }</span>
+<span class="fc" id="L281">    Optional&lt;FacilityEntity&gt; opt = facilityRepository.findById(pk);</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">    if (opt.isEmpty()) {</span>
+<span class="fc" id="L283">      throw new ExceptionsV0.NotFound(id);</span>
+    }
+<span class="fc" id="L285">    return opt.get();</span>
+  }
+
+  /** Get all facility IDs as a list by Type. */
+  @GetMapping(
+      value = &quot;/ids&quot;,
+      produces = {&quot;application/json&quot;})
+  FacilitiesIdsResponse facilityIdsByType(
+      @RequestParam(value = &quot;type&quot;, required = false) String type) {
+<span class="fc" id="L294">    FacilityEntity.Type facilityType = validateFacilityType(type);</span>
+<span class="fc" id="L295">    return FacilitiesIdsResponse.builder()</span>
+<span class="fc" id="L296">        .data(</span>
+<span class="fc" id="L297">            facilityRepository.findAllIds().stream()</span>
+<span class="fc bfc" id="L298" title="All 4 branches covered.">                .filter(id -&gt; facilityType == null || id.type() == facilityType)</span>
+<span class="fc" id="L299">                .map(id -&gt; id.toIdString())</span>
+<span class="fc" id="L300">                .collect(toList()))</span>
+<span class="fc" id="L301">        .build();</span>
+  }
+
+  /** Get facilities by bounding box. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = {&quot;application/geo+json&quot;, &quot;application/vnd.geo+json&quot;},
+      params = {&quot;bbox[]&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;!state&quot;, &quot;!visn&quot;, &quot;!zip&quot;})
+  GeoFacilitiesResponse geoFacilitiesByBoundingBox(
+      @RequestParam(value = &quot;bbox[]&quot;) List&lt;BigDecimal&gt; bbox,
+      @RequestParam(value = &quot;type&quot;, required = false) String type,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;mobile&quot;, required = false) Boolean mobile,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L316">    return GeoFacilitiesResponse.builder()</span>
+<span class="fc" id="L317">        .type(GeoFacilitiesResponse.Type.FeatureCollection)</span>
+<span class="fc" id="L318">        .features(</span>
+<span class="fc" id="L319">            page(entitiesByBoundingBox(bbox, type, services, mobile), page, perPage).stream()</span>
+<span class="fc" id="L320">                .map(e -&gt; geoFacility(facility(e)))</span>
+<span class="fc" id="L321">                .collect(toList()))</span>
+<span class="fc" id="L322">        .build();</span>
+  }
+
+  /** Get facilities by IDs. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = {&quot;application/geo+json&quot;, &quot;application/vnd.geo+json&quot;},
+      params = {&quot;!bbox[]&quot;, &quot;ids&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;!state&quot;, &quot;!visn&quot;, &quot;!zip&quot;})
+  GeoFacilitiesResponse geoFacilitiesByIds(
+      @RequestParam(value = &quot;ids&quot;) String ids,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L334">    return GeoFacilitiesResponse.builder()</span>
+<span class="fc" id="L335">        .type(GeoFacilitiesResponse.Type.FeatureCollection)</span>
+<span class="fc" id="L336">        .features(</span>
+<span class="fc" id="L337">            page(entitiesByIds(ids), page, perPage).stream()</span>
+<span class="fc" id="L338">                .map(e -&gt; geoFacility(facility(e)))</span>
+<span class="fc" id="L339">                .collect(toList()))</span>
+<span class="fc" id="L340">        .build();</span>
+  }
+
+  /** Get facilities by coordinates. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = {&quot;application/geo+json&quot;, &quot;application/vnd.geo+json&quot;},
+      params = {&quot;!bbox[]&quot;, &quot;lat&quot;, &quot;long&quot;, &quot;!state&quot;, &quot;!visn&quot;, &quot;!zip&quot;})
+  GeoFacilitiesResponse geoFacilitiesByLatLong(
+      @RequestParam(value = &quot;lat&quot;) BigDecimal latitude,
+      @RequestParam(value = &quot;long&quot;) BigDecimal longitude,
+      @RequestParam(value = &quot;ids&quot;, required = false) String ids,
+      @RequestParam(value = &quot;type&quot;, required = false) String type,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;mobile&quot;, required = false) Boolean mobile,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L357">    return GeoFacilitiesResponse.builder()</span>
+<span class="fc" id="L358">        .type(GeoFacilitiesResponse.Type.FeatureCollection)</span>
+<span class="fc" id="L359">        .features(</span>
+<span class="fc" id="L360">            page(entitiesByLatLong(longitude, latitude, ids, type, services, mobile), page, perPage)</span>
+<span class="fc" id="L361">                .stream()</span>
+<span class="fc" id="L362">                .map(e -&gt; geoFacility(e.facility()))</span>
+<span class="fc" id="L363">                .collect(toList()))</span>
+<span class="fc" id="L364">        .build();</span>
+  }
+
+  /** Get facilities by state. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = {&quot;application/geo+json&quot;, &quot;application/vnd.geo+json&quot;},
+      params = {&quot;!bbox[]&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;state&quot;, &quot;!visn&quot;, &quot;!zip&quot;})
+  GeoFacilitiesResponse geoFacilitiesByState(
+      @RequestParam(value = &quot;state&quot;) String state,
+      @RequestParam(value = &quot;type&quot;, required = false) String type,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;mobile&quot;, required = false) Boolean mobile,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L379">    return GeoFacilitiesResponse.builder()</span>
+<span class="fc" id="L380">        .type(GeoFacilitiesResponse.Type.FeatureCollection)</span>
+<span class="fc" id="L381">        .features(</span>
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">            perPage == 0</span>
+<span class="nc" id="L383">                ? emptyList()</span>
+<span class="fc" id="L384">                : entitiesPageByState(state, type, services, mobile, page, perPage).stream()</span>
+<span class="fc" id="L385">                    .map(e -&gt; geoFacility(facility(e)))</span>
+<span class="fc" id="L386">                    .collect(toList()))</span>
+<span class="fc" id="L387">        .build();</span>
+  }
+
+  /** Get facilities by VISN. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = {&quot;application/geo+json&quot;, &quot;application/vnd.geo+json&quot;},
+      params = {&quot;!bbox[]&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;!state&quot;, &quot;!type&quot;, &quot;visn&quot;, &quot;!zip&quot;})
+  GeoFacilitiesResponse geoFacilitiesByVisn(
+      @RequestParam(value = &quot;visn&quot;) String visn,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L399">    return GeoFacilitiesResponse.builder()</span>
+<span class="fc" id="L400">        .type(GeoFacilitiesResponse.Type.FeatureCollection)</span>
+<span class="fc" id="L401">        .features(</span>
+<span class="fc" id="L402">            page(facilityRepository.findByVisn(visn), page, perPage).stream()</span>
+<span class="fc" id="L403">                .map(e -&gt; geoFacility(facility(e)))</span>
+<span class="fc" id="L404">                .collect(toList()))</span>
+<span class="fc" id="L405">        .build();</span>
+  }
+
+  /** Get facilities by zip. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = {&quot;application/geo+json&quot;, &quot;application/vnd.geo+json&quot;},
+      params = {&quot;!bbox[]&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;!state&quot;, &quot;!visn&quot;, &quot;zip&quot;})
+  GeoFacilitiesResponse geoFacilitiesByZip(
+      @RequestParam(value = &quot;zip&quot;) String zip,
+      @RequestParam(value = &quot;type&quot;, required = false) String type,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;mobile&quot;, required = false) Boolean mobile,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L420">    return GeoFacilitiesResponse.builder()</span>
+<span class="fc" id="L421">        .type(GeoFacilitiesResponse.Type.FeatureCollection)</span>
+<span class="fc" id="L422">        .features(</span>
+<span class="pc bpc" id="L423" title="1 of 2 branches missed.">            perPage == 0</span>
+<span class="nc" id="L424">                ? emptyList()</span>
+<span class="fc" id="L425">                : entitiesPageByZip(zip, type, services, mobile, page, perPage).stream()</span>
+<span class="fc" id="L426">                    .map(e -&gt; geoFacility(facility(e)))</span>
+<span class="fc" id="L427">                    .collect(toList()))</span>
+<span class="fc" id="L428">        .build();</span>
+  }
+
+  /** Get facilities by bounding box. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = &quot;application/json&quot;,
+      params = {&quot;bbox[]&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;!state&quot;, &quot;!visn&quot;, &quot;!zip&quot;})
+  FacilitiesResponse jsonFacilitiesByBoundingBox(
+      @RequestParam(value = &quot;bbox[]&quot;) List&lt;BigDecimal&gt; bbox,
+      @RequestParam(value = &quot;type&quot;, required = false) String type,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;mobile&quot;, required = false) Boolean mobile,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L443">    List&lt;FacilityEntity&gt; entities = entitiesByBoundingBox(bbox, type, services, mobile);</span>
+    PageLinker linker =
+<span class="fc" id="L445">        PageLinker.builder()</span>
+<span class="fc" id="L446">            .url(linkerUrl + &quot;facilities&quot;)</span>
+<span class="fc" id="L447">            .params(</span>
+<span class="fc" id="L448">                Parameters.builder()</span>
+<span class="fc" id="L449">                    .addAll(&quot;bbox[]&quot;, bbox)</span>
+<span class="fc" id="L450">                    .addIgnoreNull(&quot;type&quot;, type)</span>
+<span class="fc" id="L451">                    .addAll(&quot;services[]&quot;, services)</span>
+<span class="fc" id="L452">                    .addIgnoreNull(&quot;mobile&quot;, mobile)</span>
+<span class="fc" id="L453">                    .add(&quot;page&quot;, page)</span>
+<span class="fc" id="L454">                    .add(&quot;per_page&quot;, perPage)</span>
+<span class="fc" id="L455">                    .build())</span>
+<span class="fc" id="L456">            .totalEntries(entities.size())</span>
+<span class="fc" id="L457">            .build();</span>
+<span class="fc" id="L458">    return FacilitiesResponse.builder()</span>
+<span class="fc" id="L459">        .data(page(entities, page, perPage).stream().map(e -&gt; facility(e)).collect(toList()))</span>
+<span class="fc" id="L460">        .links(linker.links())</span>
+<span class="fc" id="L461">        .meta(</span>
+<span class="fc" id="L462">            FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())</span>
+<span class="fc" id="L463">        .build();</span>
+  }
+
+  /** Get facilities by IDs. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = &quot;application/json&quot;,
+      params = {&quot;!bbox[]&quot;, &quot;ids&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;!state&quot;, &quot;!visn&quot;, &quot;!zip&quot;})
+  FacilitiesResponse jsonFacilitiesByIds(
+      @RequestParam(value = &quot;ids&quot;) String ids,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L475">    List&lt;FacilityEntity&gt; entities = entitiesByIds(ids);</span>
+    PageLinker linker =
+<span class="fc" id="L477">        PageLinker.builder()</span>
+<span class="fc" id="L478">            .url(linkerUrl + &quot;facilities&quot;)</span>
+<span class="fc" id="L479">            .params(</span>
+<span class="fc" id="L480">                Parameters.builder()</span>
+<span class="fc" id="L481">                    .add(&quot;ids&quot;, ids)</span>
+<span class="fc" id="L482">                    .add(&quot;page&quot;, page)</span>
+<span class="fc" id="L483">                    .add(&quot;per_page&quot;, perPage)</span>
+<span class="fc" id="L484">                    .build())</span>
+<span class="fc" id="L485">            .totalEntries(entities.size())</span>
+<span class="fc" id="L486">            .build();</span>
+<span class="fc" id="L487">    return FacilitiesResponse.builder()</span>
+<span class="fc" id="L488">        .data(page(entities, page, perPage).stream().map(e -&gt; facility(e)).collect(toList()))</span>
+<span class="fc" id="L489">        .links(linker.links())</span>
+<span class="fc" id="L490">        .meta(</span>
+<span class="fc" id="L491">            FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())</span>
+<span class="fc" id="L492">        .build();</span>
+  }
+
+  /** Get facilities by coordinates. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = &quot;application/json&quot;,
+      params = {&quot;!bbox[]&quot;, &quot;lat&quot;, &quot;long&quot;, &quot;!state&quot;, &quot;!visn&quot;, &quot;!zip&quot;})
+  FacilitiesResponse jsonFacilitiesByLatLong(
+      @RequestParam(value = &quot;lat&quot;) BigDecimal latitude,
+      @RequestParam(value = &quot;long&quot;) BigDecimal longitude,
+      @RequestParam(value = &quot;ids&quot;, required = false) String ids,
+      @RequestParam(value = &quot;type&quot;, required = false) String type,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;mobile&quot;, required = false) Boolean mobile,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L509">    List&lt;DistanceEntity&gt; entities =</span>
+<span class="fc" id="L510">        entitiesByLatLong(longitude, latitude, ids, type, services, mobile);</span>
+    PageLinker linker =
+<span class="fc" id="L512">        PageLinker.builder()</span>
+<span class="fc" id="L513">            .url(linkerUrl + &quot;facilities&quot;)</span>
+<span class="fc" id="L514">            .params(</span>
+<span class="fc" id="L515">                Parameters.builder()</span>
+<span class="fc" id="L516">                    .add(&quot;lat&quot;, latitude)</span>
+<span class="fc" id="L517">                    .add(&quot;long&quot;, longitude)</span>
+<span class="fc" id="L518">                    .addIgnoreNull(&quot;type&quot;, type)</span>
+<span class="fc" id="L519">                    .addAll(&quot;services[]&quot;, services)</span>
+<span class="fc" id="L520">                    .addIgnoreNull(&quot;mobile&quot;, mobile)</span>
+<span class="fc" id="L521">                    .add(&quot;page&quot;, page)</span>
+<span class="fc" id="L522">                    .add(&quot;per_page&quot;, perPage)</span>
+<span class="fc" id="L523">                    .build())</span>
+<span class="fc" id="L524">            .totalEntries(entities.size())</span>
+<span class="fc" id="L525">            .build();</span>
+<span class="fc" id="L526">    List&lt;DistanceEntity&gt; entitiesPage = page(entities, page, perPage);</span>
+<span class="fc" id="L527">    List&lt;FacilitiesResponse.Distance&gt; distances =</span>
+<span class="fc" id="L528">        entitiesPage.stream()</span>
+<span class="fc" id="L529">            .map(</span>
+                e -&gt;
+<span class="fc" id="L531">                    FacilitiesResponse.Distance.builder()</span>
+<span class="fc" id="L532">                        .id(e.facility().id())</span>
+<span class="fc" id="L533">                        .distance(e.distance().setScale(2, RoundingMode.HALF_EVEN))</span>
+<span class="fc" id="L534">                        .build())</span>
+<span class="fc" id="L535">            .collect(toList());</span>
+<span class="fc" id="L536">    return FacilitiesResponse.builder()</span>
+<span class="fc" id="L537">        .data(entitiesPage.stream().map(e -&gt; e.facility()).collect(toList()))</span>
+<span class="fc" id="L538">        .links(linker.links())</span>
+<span class="fc" id="L539">        .meta(</span>
+<span class="fc" id="L540">            FacilitiesResponse.FacilitiesMetadata.builder()</span>
+<span class="fc" id="L541">                .pagination(linker.pagination())</span>
+<span class="fc" id="L542">                .distances(distances)</span>
+<span class="fc" id="L543">                .build())</span>
+<span class="fc" id="L544">        .build();</span>
+  }
+
+  /** Get facilities by state. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = &quot;application/json&quot;,
+      params = {&quot;!bbox[]&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;state&quot;, &quot;!visn&quot;, &quot;!zip&quot;})
+  FacilitiesResponse jsonFacilitiesByState(
+      @RequestParam(value = &quot;state&quot;) String state,
+      @RequestParam(value = &quot;type&quot;, required = false) String type,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;mobile&quot;, required = false) Boolean mobile,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L559">    Page&lt;FacilityEntity&gt; entitiesPage =</span>
+<span class="fc" id="L560">        entitiesPageByState(state, type, services, mobile, page, Math.max(perPage, 1));</span>
+    PageLinker linker =
+<span class="fc" id="L562">        PageLinker.builder()</span>
+<span class="fc" id="L563">            .url(linkerUrl + &quot;facilities&quot;)</span>
+<span class="fc" id="L564">            .params(</span>
+<span class="fc" id="L565">                Parameters.builder()</span>
+<span class="fc" id="L566">                    .add(&quot;state&quot;, state)</span>
+<span class="fc" id="L567">                    .addIgnoreNull(&quot;type&quot;, type)</span>
+<span class="fc" id="L568">                    .addAll(&quot;services[]&quot;, services)</span>
+<span class="fc" id="L569">                    .addIgnoreNull(&quot;mobile&quot;, mobile)</span>
+<span class="fc" id="L570">                    .add(&quot;page&quot;, page)</span>
+<span class="fc" id="L571">                    .add(&quot;per_page&quot;, perPage)</span>
+<span class="fc" id="L572">                    .build())</span>
+<span class="fc" id="L573">            .totalEntries((int) entitiesPage.getTotalElements())</span>
+<span class="fc" id="L574">            .build();</span>
+<span class="fc" id="L575">    return FacilitiesResponse.builder()</span>
+<span class="fc" id="L576">        .data(</span>
+<span class="fc bfc" id="L577" title="All 2 branches covered.">            perPage == 0</span>
+<span class="fc" id="L578">                ? emptyList()</span>
+<span class="fc" id="L579">                : entitiesPage.stream().map(e -&gt; facility(e)).collect(toList()))</span>
+<span class="fc" id="L580">        .links(linker.links())</span>
+<span class="fc" id="L581">        .meta(</span>
+<span class="fc" id="L582">            FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())</span>
+<span class="fc" id="L583">        .build();</span>
+  }
+
+  /** Get facilities by VISN. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = &quot;application/json&quot;,
+      params = {&quot;!bbox[]&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;!state&quot;, &quot;!type&quot;, &quot;visn&quot;, &quot;!zip&quot;})
+  FacilitiesResponse jsonFacilitiesByVisn(
+      @RequestParam(value = &quot;visn&quot;) String visn,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L595">    List&lt;FacilityEntity&gt; entities = facilityRepository.findByVisn(visn);</span>
+    PageLinker linker =
+<span class="fc" id="L597">        PageLinker.builder()</span>
+<span class="fc" id="L598">            .url(linkerUrl + &quot;facilities&quot;)</span>
+<span class="fc" id="L599">            .params(</span>
+<span class="fc" id="L600">                Parameters.builder()</span>
+<span class="fc" id="L601">                    .add(&quot;visn&quot;, visn)</span>
+<span class="fc" id="L602">                    .add(&quot;page&quot;, page)</span>
+<span class="fc" id="L603">                    .add(&quot;per_page&quot;, perPage)</span>
+<span class="fc" id="L604">                    .build())</span>
+<span class="fc" id="L605">            .totalEntries(entities.size())</span>
+<span class="fc" id="L606">            .build();</span>
+<span class="fc" id="L607">    return FacilitiesResponse.builder()</span>
+<span class="fc" id="L608">        .data(page(entities, page, perPage).stream().map(e -&gt; facility(e)).collect(toList()))</span>
+<span class="fc" id="L609">        .links(linker.links())</span>
+<span class="fc" id="L610">        .meta(</span>
+<span class="fc" id="L611">            FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())</span>
+<span class="fc" id="L612">        .build();</span>
+  }
+
+  /** Get facilities by zip. */
+  @GetMapping(
+      value = &quot;/facilities&quot;,
+      produces = &quot;application/json&quot;,
+      params = {&quot;!bbox[]&quot;, &quot;!lat&quot;, &quot;!long&quot;, &quot;!state&quot;, &quot;!visn&quot;, &quot;zip&quot;})
+  FacilitiesResponse jsonFacilitiesByZip(
+      @RequestParam(value = &quot;zip&quot;) String zip,
+      @RequestParam(value = &quot;type&quot;, required = false) String type,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;mobile&quot;, required = false) Boolean mobile,
+      @RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;) @Min(1) int page,
+      @RequestParam(value = &quot;per_page&quot;, defaultValue = &quot;10&quot;) @Min(0) int perPage) {
+<span class="fc" id="L627">    Page&lt;FacilityEntity&gt; entitiesPage =</span>
+<span class="fc" id="L628">        entitiesPageByZip(zip, type, services, mobile, page, Math.max(perPage, 1));</span>
+    PageLinker linker =
+<span class="fc" id="L630">        PageLinker.builder()</span>
+<span class="fc" id="L631">            .url(linkerUrl + &quot;facilities&quot;)</span>
+<span class="fc" id="L632">            .params(</span>
+<span class="fc" id="L633">                Parameters.builder()</span>
+<span class="fc" id="L634">                    .add(&quot;zip&quot;, zip)</span>
+<span class="fc" id="L635">                    .addIgnoreNull(&quot;type&quot;, type)</span>
+<span class="fc" id="L636">                    .addAll(&quot;services[]&quot;, services)</span>
+<span class="fc" id="L637">                    .addIgnoreNull(&quot;mobile&quot;, mobile)</span>
+<span class="fc" id="L638">                    .add(&quot;page&quot;, page)</span>
+<span class="fc" id="L639">                    .add(&quot;per_page&quot;, perPage)</span>
+<span class="fc" id="L640">                    .build())</span>
+<span class="fc" id="L641">            .totalEntries((int) entitiesPage.getTotalElements())</span>
+<span class="fc" id="L642">            .build();</span>
+<span class="fc" id="L643">    return FacilitiesResponse.builder()</span>
+<span class="fc" id="L644">        .data(</span>
+<span class="fc bfc" id="L645" title="All 2 branches covered.">            perPage == 0</span>
+<span class="fc" id="L646">                ? emptyList()</span>
+<span class="fc" id="L647">                : entitiesPage.stream().map(e -&gt; facility(e)).collect(toList()))</span>
+<span class="fc" id="L648">        .links(linker.links())</span>
+<span class="fc" id="L649">        .meta(</span>
+<span class="fc" id="L650">            FacilitiesResponse.FacilitiesMetadata.builder().pagination(linker.pagination()).build())</span>
+<span class="fc" id="L651">        .build();</span>
+  }
+
+  /** Read geo facility. */
+  @GetMapping(
+      value = &quot;/facilities/{id}&quot;,
+      produces = {&quot;application/geo+json&quot;, &quot;application/vnd.geo+json&quot;})
+  GeoFacilityReadResponse readGeoJson(@PathVariable(&quot;id&quot;) String id) {
+<span class="fc" id="L659">    return GeoFacilityReadResponse.of(geoFacility(facility(entityById(id))));</span>
+  }
+
+  /** Read facility. */
+  @GetMapping(value = &quot;/facilities/{id}&quot;, produces = &quot;application/json&quot;)
+  FacilityReadResponse readJson(@PathVariable(&quot;id&quot;) String id) {
+<span class="fc" id="L665">    return FacilityReadResponse.builder().facility(facility(entityById(id))).build();</span>
+  }
+
+  @Data
+  @Builder
+  private static final class DistanceEntity {
+    final FacilityEntity entity;
+
+    final BigDecimal distance;
+
+    Facility facility;
+
+    Facility facility() {
+<span class="fc bfc" id="L678" title="All 2 branches covered.">      if (facility == null) {</span>
+<span class="fc" id="L679">        facility = FacilitiesController.facility(entity);</span>
+      }
+<span class="fc" id="L681">      return facility;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

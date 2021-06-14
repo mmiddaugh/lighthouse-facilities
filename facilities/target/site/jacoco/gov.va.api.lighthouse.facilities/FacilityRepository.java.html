@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FacilityRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">FacilityRepository.java</span></div><h1>FacilityRepository.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import static java.util.Collections.emptySet;
+import static org.springframework.util.CollectionUtils.isEmpty;
+
+import gov.va.api.health.autoconfig.logging.Loggable;
+import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Loggable
+@Transactional(isolation = Isolation.READ_UNCOMMITTED)
+public interface FacilityRepository
+    extends CrudRepository&lt;FacilityEntity, FacilityEntity.Pk&gt;,
+        JpaSpecificationExecutor&lt;FacilityEntity&gt; {
+  @Query(&quot;select e.id from #{#entityName} e&quot;)
+  List&lt;FacilityEntity.Pk&gt; findAllIds();
+
+  List&lt;HasFacilityPayload&gt; findAllProjectedBy();
+
+  List&lt;FacilityEntity&gt; findByIdIn(Collection&lt;FacilityEntity.Pk&gt; ids);
+
+  List&lt;FacilityEntity&gt; findByVisn(String visn);
+
+  @Query(&quot;select max(e.lastUpdated) from #{#entityName} e&quot;)
+  Instant findLastUpdated();
+
+  @Value
+  @Builder
+  final class BoundingBoxSpecification implements Specification&lt;FacilityEntity&gt; {
+    @NonNull BigDecimal minLongitude;
+
+    @NonNull BigDecimal maxLongitude;
+
+    @NonNull BigDecimal minLatitude;
+
+    @NonNull BigDecimal maxLatitude;
+
+    FacilityEntity.Type facilityType;
+
+    @Builder.Default Set&lt;Facility.ServiceType&gt; services = emptySet();
+
+    Boolean mobile;
+
+    @Override
+    public Predicate toPredicate(
+        Root&lt;FacilityEntity&gt; root,
+        CriteriaQuery&lt;?&gt; criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
+<span class="fc" id="L67">      List&lt;Predicate&gt; basePredicates = new ArrayList&lt;&gt;(5);</span>
+<span class="fc" id="L68">      basePredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(&quot;longitude&quot;), minLongitude));</span>
+<span class="fc" id="L69">      basePredicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(&quot;longitude&quot;), maxLongitude));</span>
+<span class="fc" id="L70">      basePredicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(&quot;latitude&quot;), minLatitude));</span>
+<span class="fc" id="L71">      basePredicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(&quot;latitude&quot;), maxLatitude));</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">      if (facilityType != null) {</span>
+<span class="fc" id="L73">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;id&quot;).get(&quot;type&quot;), facilityType));</span>
+      }
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">      if (mobile != null) {</span>
+<span class="fc" id="L77">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;mobile&quot;), mobile));</span>
+      }
+
+<span class="fc" id="L80">      Predicate combinedBase = criteriaBuilder.and(basePredicates.toArray(new Predicate[0]));</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">      if (isEmpty(services)) {</span>
+<span class="fc" id="L82">        return combinedBase;</span>
+      }
+<span class="fc" id="L84">      Predicate[] servicePredicates =</span>
+<span class="fc" id="L85">          services.stream()</span>
+<span class="fc" id="L86">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;services&quot;)))</span>
+<span class="fc" id="L87">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L88">      Predicate anyFacilityService = criteriaBuilder.or(servicePredicates);</span>
+
+<span class="fc" id="L90">      Predicate[] overlayServicePredicates =</span>
+<span class="fc" id="L91">          services.stream()</span>
+<span class="fc" id="L92">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;overlayServices&quot;)))</span>
+<span class="fc" id="L93">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L94">      Predicate anyOverlayService = criteriaBuilder.or(overlayServicePredicates);</span>
+
+<span class="fc" id="L96">      Predicate combinedServices = criteriaBuilder.or(anyFacilityService, anyOverlayService);</span>
+
+<span class="fc" id="L98">      return criteriaBuilder.and(combinedBase, combinedServices);</span>
+    }
+  }
+
+  @Value
+  @Builder
+  final class StateSpecification implements Specification&lt;FacilityEntity&gt; {
+    @NonNull String state;
+
+    FacilityEntity.Type facilityType;
+
+    @Builder.Default Set&lt;Facility.ServiceType&gt; services = emptySet();
+
+    Boolean mobile;
+
+    @Override
+    public Predicate toPredicate(
+        Root&lt;FacilityEntity&gt; root,
+        CriteriaQuery&lt;?&gt; criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
+<span class="fc" id="L118">      List&lt;Predicate&gt; basePredicates = new ArrayList&lt;&gt;(2);</span>
+<span class="fc" id="L119">      basePredicates.add(criteriaBuilder.equal(root.get(&quot;state&quot;), state));</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">      if (facilityType != null) {</span>
+<span class="fc" id="L121">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;id&quot;).get(&quot;type&quot;), facilityType));</span>
+      }
+
+<span class="fc bfc" id="L124" title="All 2 branches covered.">      if (mobile != null) {</span>
+<span class="fc" id="L125">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;mobile&quot;), mobile));</span>
+      }
+
+<span class="fc" id="L128">      Predicate combinedBase = criteriaBuilder.and(basePredicates.toArray(new Predicate[0]));</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">      if (isEmpty(services)) {</span>
+<span class="fc" id="L130">        return combinedBase;</span>
+      }
+<span class="fc" id="L132">      Predicate[] servicePredicates =</span>
+<span class="fc" id="L133">          services.stream()</span>
+<span class="fc" id="L134">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;services&quot;)))</span>
+<span class="fc" id="L135">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L136">      Predicate anyFacilityService = criteriaBuilder.or(servicePredicates);</span>
+
+<span class="fc" id="L138">      Predicate[] overlayServicePredicates =</span>
+<span class="fc" id="L139">          services.stream()</span>
+<span class="fc" id="L140">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;overlayServices&quot;)))</span>
+<span class="fc" id="L141">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L142">      Predicate anyOverlayService = criteriaBuilder.or(overlayServicePredicates);</span>
+
+<span class="fc" id="L144">      Predicate combinedServices = criteriaBuilder.or(anyFacilityService, anyOverlayService);</span>
+
+<span class="fc" id="L146">      return criteriaBuilder.and(combinedBase, combinedServices);</span>
+    }
+  }
+
+  @Value
+  @Builder
+  final class StationNumbersSpecification implements Specification&lt;FacilityEntity&gt; {
+    @Builder.Default Set&lt;String&gt; stationNumbers = emptySet();
+
+    FacilityEntity.Type facilityType;
+
+    @Builder.Default Set&lt;Facility.ServiceType&gt; services = emptySet();
+
+    @Override
+    public Predicate toPredicate(
+        Root&lt;FacilityEntity&gt; root,
+        CriteriaQuery&lt;?&gt; criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">      if (isEmpty(stationNumbers)) {</span>
+<span class="fc" id="L165">        return criteriaBuilder.isTrue(criteriaBuilder.literal(false));</span>
+      }
+
+<span class="fc" id="L168">      List&lt;Predicate&gt; basePredicates = new ArrayList&lt;&gt;(2);</span>
+
+<span class="fc" id="L170">      CriteriaBuilder.In&lt;String&gt; stationsInClause =</span>
+<span class="fc" id="L171">          criteriaBuilder.in(root.get(&quot;id&quot;).get(&quot;stationNumber&quot;));</span>
+<span class="fc" id="L172">      stationNumbers.forEach(stationsInClause::value);</span>
+<span class="fc" id="L173">      basePredicates.add(stationsInClause);</span>
+
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">      if (facilityType != null) {</span>
+<span class="fc" id="L176">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;id&quot;).get(&quot;type&quot;), facilityType));</span>
+      }
+<span class="fc" id="L178">      Predicate combinedBase = criteriaBuilder.and(basePredicates.toArray(new Predicate[0]));</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">      if (isEmpty(services)) {</span>
+<span class="fc" id="L180">        return combinedBase;</span>
+      }
+<span class="fc" id="L182">      Predicate[] servicePredicates =</span>
+<span class="fc" id="L183">          services.stream()</span>
+<span class="fc" id="L184">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;services&quot;)))</span>
+<span class="fc" id="L185">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L186">      Predicate anyFacilityService = criteriaBuilder.or(servicePredicates);</span>
+
+<span class="fc" id="L188">      Predicate[] overlayServicePredicates =</span>
+<span class="fc" id="L189">          services.stream()</span>
+<span class="fc" id="L190">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;overlayServices&quot;)))</span>
+<span class="fc" id="L191">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L192">      Predicate anyOverlayService = criteriaBuilder.or(overlayServicePredicates);</span>
+
+<span class="fc" id="L194">      Predicate combinedServices = criteriaBuilder.or(anyFacilityService, anyOverlayService);</span>
+
+<span class="fc" id="L196">      return criteriaBuilder.and(combinedBase, combinedServices);</span>
+    }
+  }
+
+  @Value
+  @Builder
+  final class TypeServicesIdsSpecification implements Specification&lt;FacilityEntity&gt; {
+    @Builder.Default Collection&lt;FacilityEntity.Pk&gt; ids = emptySet();
+
+    FacilityEntity.Type facilityType;
+
+    @Builder.Default Set&lt;Facility.ServiceType&gt; services = emptySet();
+
+    Boolean mobile;
+
+    @Override
+    public Predicate toPredicate(
+        Root&lt;FacilityEntity&gt; root,
+        CriteriaQuery&lt;?&gt; criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
+<span class="fc" id="L216">      List&lt;Predicate&gt; basePredicates = new ArrayList&lt;&gt;(2);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">      if (!isEmpty(ids)) {</span>
+<span class="fc" id="L218">        CriteriaBuilder.In&lt;FacilityEntity.Pk&gt; idsInClause = criteriaBuilder.in(root.get(&quot;id&quot;));</span>
+<span class="fc" id="L219">        ids.forEach(idsInClause::value);</span>
+<span class="fc" id="L220">        basePredicates.add(idsInClause);</span>
+      }
+<span class="fc bfc" id="L222" title="All 2 branches covered.">      if (facilityType != null) {</span>
+<span class="fc" id="L223">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;id&quot;).get(&quot;type&quot;), facilityType));</span>
+      }
+
+<span class="fc bfc" id="L226" title="All 2 branches covered.">      if (mobile != null) {</span>
+<span class="fc" id="L227">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;mobile&quot;), mobile));</span>
+      }
+
+<span class="fc" id="L230">      Predicate combinedBase = criteriaBuilder.and(basePredicates.toArray(new Predicate[0]));</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">      if (isEmpty(services)) {</span>
+<span class="fc" id="L232">        return combinedBase;</span>
+      }
+<span class="fc" id="L234">      Predicate[] servicePredicates =</span>
+<span class="fc" id="L235">          services.stream()</span>
+<span class="fc" id="L236">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;services&quot;)))</span>
+<span class="fc" id="L237">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L238">      Predicate anyFacilityService = criteriaBuilder.or(servicePredicates);</span>
+
+<span class="fc" id="L240">      Predicate[] overlayServicePredicates =</span>
+<span class="fc" id="L241">          services.stream()</span>
+<span class="fc" id="L242">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;overlayServices&quot;)))</span>
+<span class="fc" id="L243">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L244">      Predicate anyOverlayService = criteriaBuilder.or(overlayServicePredicates);</span>
+
+<span class="fc" id="L246">      Predicate combinedServices = criteriaBuilder.or(anyFacilityService, anyOverlayService);</span>
+
+<span class="fc" id="L248">      return criteriaBuilder.and(combinedBase, combinedServices);</span>
+    }
+  }
+
+  @Value
+  @Builder
+  final class ZipSpecification implements Specification&lt;FacilityEntity&gt; {
+    @NonNull String zip;
+
+    FacilityEntity.Type facilityType;
+
+    @Builder.Default Set&lt;Facility.ServiceType&gt; services = emptySet();
+
+    Boolean mobile;
+
+    @Override
+    public Predicate toPredicate(
+        Root&lt;FacilityEntity&gt; root,
+        CriteriaQuery&lt;?&gt; criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
+<span class="fc" id="L268">      List&lt;Predicate&gt; basePredicates = new ArrayList&lt;&gt;(2);</span>
+<span class="fc" id="L269">      basePredicates.add(criteriaBuilder.equal(root.get(&quot;zip&quot;), zip));</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">      if (facilityType != null) {</span>
+<span class="fc" id="L271">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;id&quot;).get(&quot;type&quot;), facilityType));</span>
+      }
+
+<span class="fc bfc" id="L274" title="All 2 branches covered.">      if (mobile != null) {</span>
+<span class="fc" id="L275">        basePredicates.add(criteriaBuilder.equal(root.get(&quot;mobile&quot;), mobile));</span>
+      }
+
+<span class="fc" id="L278">      Predicate combinedBase = criteriaBuilder.and(basePredicates.toArray(new Predicate[0]));</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">      if (isEmpty(services)) {</span>
+<span class="fc" id="L280">        return combinedBase;</span>
+      }
+<span class="fc" id="L282">      Predicate[] servicePredicates =</span>
+<span class="fc" id="L283">          services.stream()</span>
+<span class="fc" id="L284">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;services&quot;)))</span>
+<span class="fc" id="L285">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L286">      Predicate anyFacilityService = criteriaBuilder.or(servicePredicates);</span>
+
+<span class="fc" id="L288">      Predicate[] overlayServicePredicates =</span>
+<span class="fc" id="L289">          services.stream()</span>
+<span class="fc" id="L290">              .map(svc -&gt; criteriaBuilder.isMember(svc.toString(), root.get(&quot;overlayServices&quot;)))</span>
+<span class="fc" id="L291">              .toArray(Predicate[]::new);</span>
+<span class="fc" id="L292">      Predicate anyOverlayService = criteriaBuilder.or(overlayServicePredicates);</span>
+
+<span class="fc" id="L294">      Predicate combinedServices = criteriaBuilder.or(anyFacilityService, anyOverlayService);</span>
+
+<span class="fc" id="L296">      return criteriaBuilder.and(combinedBase, combinedServices);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

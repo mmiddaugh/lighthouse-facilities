@@ -106,6 +106,7 @@ final class StateCemeteryTransformer {
         .website(website())
         .latitude(latitude())
         .longitude(longitude())
+        .timeZone(CalculateTimeZone.calculateTimeZones(latitude(), longitude()))
         .address(address())
         .phone(phone())
         .hours(defaultHours())

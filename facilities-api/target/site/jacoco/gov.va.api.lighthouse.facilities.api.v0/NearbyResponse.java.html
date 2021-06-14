@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NearbyResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities-api</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities.api.v0</a> &gt; <span class="el_source">NearbyResponse.java</span></div><h1>NearbyResponse.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities.api.v0;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonPropertyOrder({&quot;data&quot;, &quot;meta&quot;})
+public final class NearbyResponse {
+  @Valid @NotNull List&lt;Nearby&gt; data;
+
+  @Schema(nullable = true)
+  Meta meta;
+
+<span class="fc" id="L23">  public enum Type {</span>
+<span class="fc" id="L24">    @JsonProperty(&quot;nearby_facility&quot;)</span>
+    NearbyFacility
+  }
+
+  @Value
+  @Builder
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @Schema(nullable = true)
+  public static final class NearbyAttributes {
+    @NotNull
+    @Schema(example = &quot;10&quot;)
+    @JsonProperty(&quot;min_time&quot;)
+    Integer minTime;
+
+    @NotNull
+    @Schema(example = &quot;20&quot;)
+    @JsonProperty(&quot;max_time&quot;)
+    Integer maxTime;
+  }
+
+  @Value
+  @Builder
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @Schema(
+      description = &quot;JSON API-compliant object containing metadata about this response&quot;,
+      nullable = true)
+  public static final class Meta {
+    @Schema(example = &quot;APR2021&quot;, nullable = true)
+    @JsonProperty(&quot;band_version&quot;)
+    String bandVersion;
+  }
+
+  @Value
+  @Builder
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @Schema(
+      description = &quot;JSON API-compliant object describing a nearby VA facility&quot;,
+      nullable = true)
+  public static final class Nearby {
+    @Schema(example = &quot;vha_688&quot;)
+    @NotNull
+    String id;
+
+    @Schema(example = &quot;va_health_facility&quot;)
+    @NotNull
+    Type type;
+
+    @Valid @NotNull NearbyAttributes attributes;
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

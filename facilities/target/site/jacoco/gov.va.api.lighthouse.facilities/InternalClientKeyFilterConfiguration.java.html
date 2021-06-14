@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InternalClientKeyFilterConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">InternalClientKeyFilterConfiguration.java</span></div><h1>InternalClientKeyFilterConfiguration.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import static com.google.common.base.Preconditions.checkState;
+
+import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import gov.va.api.lighthouse.facilities.api.v0.ApiError;
+import java.util.List;
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+@Configuration
+<span class="nc" id="L21">class InternalClientKeyFilterConfiguration {</span>
+  @Bean
+  public FilterRegistrationBean&lt;ClientKeyFilter&gt; filterRegistration(
+      @Value(&quot;${internal.client-key}&quot;) String clientKey) {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">    checkState(!&quot;unset&quot;.equals(clientKey), &quot;internal.client-key is unset&quot;);</span>
+<span class="nc" id="L26">    FilterRegistrationBean&lt;ClientKeyFilter&gt; registrationBean = new FilterRegistrationBean&lt;&gt;();</span>
+<span class="nc" id="L27">    registrationBean.setFilter(ClientKeyFilter.builder().clientKey(clientKey).build());</span>
+<span class="nc" id="L28">    registrationBean.addUrlPatterns(&quot;/internal/*&quot;);</span>
+<span class="nc" id="L29">    return registrationBean;</span>
+  }
+
+  @Builder
+  static final class ClientKeyFilter extends OncePerRequestFilter {
+    @NonNull private final String clientKey;
+
+    @Override
+<span class="pc" id="L37">    @SneakyThrows</span>
+    protected void doFilterInternal(
+        HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+<span class="fc" id="L40">      String requestKey = request.getHeader(&quot;client-key&quot;);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">      if (clientKey.equals(requestKey)) {</span>
+<span class="fc" id="L42">        filterChain.doFilter(request, response);</span>
+<span class="fc" id="L43">        return;</span>
+      }
+
+<span class="fc" id="L46">      response.setStatus(401);</span>
+<span class="fc" id="L47">      response.setHeader(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+
+      String body =
+<span class="fc" id="L50">          JacksonConfig.createMapper()</span>
+<span class="fc" id="L51">              .writeValueAsString(</span>
+<span class="fc" id="L52">                  ApiError.builder()</span>
+<span class="fc" id="L53">                      .errors(</span>
+<span class="fc" id="L54">                          List.of(</span>
+<span class="fc" id="L55">                              ApiError.ErrorMessage.builder()</span>
+<span class="fc" id="L56">                                  .title(&quot;Invalid token&quot;)</span>
+<span class="fc" id="L57">                                  .detail(&quot;Invalid token for request header: client-key&quot;)</span>
+<span class="fc" id="L58">                                  .code(&quot;401&quot;)</span>
+<span class="fc" id="L59">                                  .status(&quot;401&quot;)</span>
+<span class="fc" id="L60">                                  .build()))</span>
+<span class="fc" id="L61">                      .build());</span>
+<span class="fc" id="L62">      response.getOutputStream().write(body.getBytes(&quot;UTF-8&quot;));</span>
+<span class="fc" id="L63">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

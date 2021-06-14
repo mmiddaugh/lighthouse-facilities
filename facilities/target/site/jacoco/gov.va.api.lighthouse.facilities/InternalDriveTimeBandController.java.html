@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InternalDriveTimeBandController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">InternalDriveTimeBandController.java</span></div><h1>InternalDriveTimeBandController.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+
+import gov.va.api.health.autoconfig.logging.Loggable;
+import gov.va.api.lighthouse.facilities.api.pssg.BandResult;
+import gov.va.api.lighthouse.facilities.api.pssg.BandUpdateResponse;
+import gov.va.api.lighthouse.facilities.api.pssg.PathEncoder;
+import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand;
+import gov.va.api.lighthouse.facilities.api.pssg.PssgResponse;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+<span class="fc" id="L31">@Slf4j</span>
+@Builder
+@Validated
+@RestController
+@RequestMapping(value = &quot;/internal/management/bands&quot;, produces = &quot;application/json&quot;)
+@AllArgsConstructor(onConstructor = @__(@Autowired))
+public class InternalDriveTimeBandController {
+  private final DriveTimeBandRepository repository;
+
+  @GetMapping(&quot;/{name}&quot;)
+  BandResult band(@PathVariable(&quot;name&quot;) String name) {
+<span class="fc" id="L42">    return repository</span>
+<span class="fc" id="L43">        .findById(DriveTimeBandEntity.Pk.fromName(name))</span>
+<span class="fc" id="L44">        .map(</span>
+            result -&gt;
+<span class="fc" id="L46">                BandResult.builder()</span>
+<span class="fc" id="L47">                    .stationNumber(result.id().stationNumber())</span>
+<span class="fc" id="L48">                    .fromMinutes(result.id().fromMinutes())</span>
+<span class="fc" id="L49">                    .toMinutes(result.id().toMinutes())</span>
+<span class="fc" id="L50">                    .minLatitude(result.minLatitude())</span>
+<span class="fc" id="L51">                    .minLongitude(result.minLongitude())</span>
+<span class="fc" id="L52">                    .maxLatitude(result.maxLatitude())</span>
+<span class="fc" id="L53">                    .maxLongitude(result.maxLongitude())</span>
+<span class="fc" id="L54">                    .monthYear(result.monthYear())</span>
+<span class="fc" id="L55">                    .band(result.band())</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">                    .version(result.version() == null ? 0 : result.version())</span>
+<span class="fc" id="L57">                    .build())</span>
+<span class="fc" id="L58">        .orElseThrow(() -&gt; new ExceptionsV0.NotFound(name));</span>
+  }
+
+  private Rectangle2D boundsOf(PssgDriveTimeBand band) {
+<span class="fc" id="L62">    var rect = new AtomicReference&lt;Rectangle2D&gt;();</span>
+<span class="fc" id="L63">    band.geometry().rings().stream()</span>
+<span class="fc" id="L64">        .flatMap(r -&gt; r.stream())</span>
+<span class="fc" id="L65">        .forEach(</span>
+            coord -&gt; {
+<span class="fc" id="L67">              double x = coord.get(PssgDriveTimeBand.INDEX_LONGITUDE);</span>
+<span class="fc" id="L68">              double y = coord.get(PssgDriveTimeBand.INDEX_LATITUDE);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">              if (rect.get() == null) {</span>
+<span class="fc" id="L70">                rect.set(new Rectangle2D.Double(x, y, x, y));</span>
+              } else {
+<span class="fc" id="L72">                rect.get().add(x, y);</span>
+              }
+<span class="fc" id="L74">            });</span>
+    /* If there now rings for some reason, bounds are a point. */
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">    if (rect.get() == null) {</span>
+<span class="nc" id="L77">      return new Rectangle2D.Double();</span>
+    }
+<span class="fc" id="L79">    return rect.get();</span>
+  }
+
+  @GetMapping
+  List&lt;String&gt; driveTimeBandIds() {
+<span class="fc" id="L84">    return repository.findAllIds().stream().map(DriveTimeBandEntity.Pk::name).collect(toList());</span>
+  }
+
+  @Loggable(arguments = false)
+  @PostMapping(consumes = &quot;application/json&quot;)
+  BandUpdateResponse update(@RequestBody PssgResponse pssg) {
+<span class="fc" id="L90">    List&lt;PssgDriveTimeBand&gt; bands = Optional.ofNullable(pssg.features()).orElse(emptyList());</span>
+<span class="fc" id="L91">    log.info(&quot;Updating {} bands&quot;, bands.size());</span>
+    BandUpdateResponse response =
+<span class="fc" id="L93">        BandUpdateResponse.builder()</span>
+<span class="fc" id="L94">            .bandsCreated(new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L95">            .bandsUpdated(new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L96">            .build();</span>
+<span class="fc" id="L97">    bands.stream().forEach(f -&gt; updateBand(f, response));</span>
+<span class="fc" id="L98">    return response;</span>
+  }
+
+<span class="pc" id="L101">  @SneakyThrows</span>
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">  private void updateBand(@NonNull PssgDriveTimeBand band, @NonNull BandUpdateResponse response) {</span>
+<span class="fc" id="L103">    var pk =</span>
+<span class="fc" id="L104">        DriveTimeBandEntity.Pk.of(</span>
+<span class="fc" id="L105">            band.attributes().stationNumber(),</span>
+<span class="fc" id="L106">            band.attributes().fromBreak(),</span>
+<span class="fc" id="L107">            band.attributes().toBreak());</span>
+<span class="fc" id="L108">    var entity = repository.findById(pk).orElse(null);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">    if (entity == null) {</span>
+<span class="fc" id="L110">      entity = DriveTimeBandEntity.builder().id(pk).build();</span>
+<span class="fc" id="L111">      response.bandsCreated().add(pk.name());</span>
+    } else {
+<span class="fc" id="L113">      response.bandsUpdated().add(pk.name());</span>
+    }
+
+<span class="fc" id="L116">    var bounds = boundsOf(band);</span>
+<span class="fc" id="L117">    entity.minLongitude(bounds.getMinX());</span>
+<span class="fc" id="L118">    entity.minLatitude(bounds.getMinY());</span>
+<span class="fc" id="L119">    entity.maxLongitude(bounds.getMaxX());</span>
+<span class="fc" id="L120">    entity.maxLatitude(bounds.getMaxY());</span>
+<span class="fc" id="L121">    entity.monthYear(band.attributes().monthYear());</span>
+<span class="fc" id="L122">    entity.band(PathEncoder.create().encodeToBase64(band));</span>
+<span class="fc" id="L123">    repository.save(entity);</span>
+<span class="fc" id="L124">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

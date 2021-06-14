@@ -71,6 +71,7 @@ class BenefitsSamples {
           .classification("VAMC")
           .latitude(new BigDecimal("-73.776232849999985"))
           .longitude(new BigDecimal("42.651408840000045"))
+          .timeZone("Antarctica/Syowa")
           .address(Facility.Addresses.builder().physical(address()).build())
           .phone(Facility.Phone.builder().main("123-789-0456").fax("123-456-7890").build())
           .hours(

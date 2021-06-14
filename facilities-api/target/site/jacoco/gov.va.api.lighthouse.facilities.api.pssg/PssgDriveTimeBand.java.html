@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PssgDriveTimeBand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities-api</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities.api.pssg</a> &gt; <span class="el_source">PssgDriveTimeBand.java</span></div><h1>PssgDriveTimeBand.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities.api.pssg;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+public final class PssgDriveTimeBand {
+  /** The two item list of coordinates, this is the longitude (or x) value. */
+  public static final int INDEX_LONGITUDE = 0;
+
+  /** The two item list of coordinates, this is the latitude (or y) value. */
+  public static final int INDEX_LATITUDE = 1;
+
+  Attributes attributes;
+
+  Geometry geometry;
+
+  /** Create a coordinate list where index 0 is longitude, and index 1 is latitude. */
+  public static List&lt;Double&gt; coord(double longitudeOrX, double latitudeOrY) {
+<span class="fc" id="L32">    return List.of(longitudeOrX, latitudeOrY);</span>
+  }
+
+  /** Create a new, empty list of rings, each ring will have coordinate data. */
+  public static List&lt;List&lt;List&lt;Double&gt;&gt;&gt; newListOfRings() {
+<span class="fc" id="L37">    return new ArrayList&lt;&gt;();</span>
+  }
+
+  /** Create a new, empty list of ring coordinate data. */
+  public static List&lt;List&lt;Double&gt;&gt; newRing(int size) {
+<span class="fc" id="L42">    return new ArrayList&lt;&gt;(size);</span>
+  }
+
+  /**
+   * The PSSG response actually contains more fields, but we don't use them and have not been
+   * mapped.
+   */
+  @Data
+  @Builder
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static final class Attributes {
+    @JsonProperty(&quot;Sta_No&quot;)
+    String stationNumber;
+
+    @JsonProperty(&quot;FromBreak&quot;)
+    int fromBreak;
+
+    @JsonProperty(&quot;ToBreak&quot;)
+    int toBreak;
+
+    @JsonProperty(&quot;MONTHYEAR&quot;)
+    String monthYear;
+  }
+
+  @Data
+  @Builder
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static final class Geometry {
+    /**
+     * Oh lawdy.
+     *
+     * &lt;p&gt;List 1 = List of rings. There should at least one ring.
+     *
+     * &lt;p&gt;List 2 = A ring, which is a list of coordinates. There will be many coordinates to
+     * describe the polygon.
+     *
+     * &lt;p&gt;List 3 = A two item list of longitude, then latitude.
+     *
+     * &lt;p&gt;yo dawg. i herd you like lists so we put a list in yo list so you list lists while you
+     * list lists.
+     */
+    @Builder.Default List&lt;List&lt;List&lt;Double&gt;&gt;&gt; rings = new ArrayList&lt;&gt;();
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

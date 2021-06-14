@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionsV0.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">ExceptionsV0.java</span></div><h1>ExceptionsV0.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+final class ExceptionsV0 {
+  static final class BingException extends RuntimeException {
+    public BingException(String msg) {
+<span class="fc" id="L9">      super(&quot;Bing error: &quot; + msg);</span>
+<span class="fc" id="L10">    }</span>
+
+    public BingException(Throwable cause) {
+<span class="fc" id="L13">      super(&quot;Bing error: &quot; + cause.getMessage(), cause);</span>
+<span class="fc" id="L14">    }</span>
+  }
+
+  static final class InvalidParameter extends RuntimeException {
+    InvalidParameter(String name, Object value) {
+<span class="fc" id="L19">      super(String.format(&quot;'%s' is not a valid value for '%s'&quot;, value, name));</span>
+<span class="fc" id="L20">    }</span>
+  }
+
+  static final class NotFound extends RuntimeException {
+    public NotFound(String id) {
+<span class="fc" id="L25">      super(String.format(&quot;The record identified by %s could not be found&quot;, id));</span>
+<span class="fc" id="L26">    }</span>
+
+    public NotFound(String id, Throwable cause) {
+<span class="fc" id="L29">      super(String.format(&quot;The record identified by %s could not be found&quot;, id), cause);</span>
+<span class="fc" id="L30">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

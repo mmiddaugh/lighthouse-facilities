@@ -100,6 +100,7 @@ public class CemeteriesCollectorTest {
                             .classification("Rural")
                             .latitude(new BigDecimal("42.703844900000036"))
                             .longitude(new BigDecimal("-73.72356499999995"))
+                            .timeZone("America/New_York")
                             .address(
                                 Facility.Addresses.builder()
                                     .physical(

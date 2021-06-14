@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <fixcrlf eol="lf" excludes="**/*.png,**/*.jks,**/*.db" srcDir="C:\Users\JenniferNguy\Documents\GitHub\Lighthouse\lighthouse-facilities\facilities-api" includes="pom.xml,*.md,src/**" eof="remove"/>
+</target>
+</project>

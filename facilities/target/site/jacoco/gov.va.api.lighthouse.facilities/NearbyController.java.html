@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NearbyController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">NearbyController.java</span></div><h1>NearbyController.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static gov.va.api.lighthouse.facilities.Controllers.validateServices;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.logging.log4j.util.Strings.isBlank;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import gov.va.api.lighthouse.facilities.api.pssg.PathEncoder;
+import gov.va.api.lighthouse.facilities.api.pssg.PssgDriveTimeBand;
+import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import gov.va.api.lighthouse.facilities.api.v0.NearbyResponse;
+import gov.va.api.lighthouse.facilities.collector.InsecureRestTemplateProvider;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+@Validated
+@RestController
+@RequestMapping(value = &quot;/v0/nearby&quot;)
+<span class="fc" id="L51">@Slf4j</span>
+public class NearbyController {
+<span class="fc" id="L53">  private static final Set&lt;Integer&gt; DRIVE_TIME_VALUES = Set.of(10, 20, 30, 40, 50, 60, 70, 80, 90);</span>
+
+  private final FacilityRepository facilityRepository;
+
+  private final DriveTimeBandRepository driveTimeBandRepository;
+
+  private final RestTemplate restTemplate;
+
+  private final String bingKey;
+
+  private final String bingUrl;
+
+<span class="fc" id="L65">  private final DeprecatedPssgDriveTimeBandSupport deprecatedPssgDriveTimeBandSupport =</span>
+      new DeprecatedPssgDriveTimeBandSupport();
+
+  @Builder
+  NearbyController(
+      @Autowired FacilityRepository facilityRepository,
+      @Autowired DriveTimeBandRepository driveTimeBandRepository,
+      @Autowired InsecureRestTemplateProvider restTemplateProvider,
+      @Value(&quot;${bing.key}&quot;) String bingKey,
+<span class="fc" id="L74">      @Value(&quot;${bing.url}&quot;) String bingUrl) {</span>
+<span class="fc" id="L75">    this.facilityRepository = facilityRepository;</span>
+<span class="fc" id="L76">    this.driveTimeBandRepository = driveTimeBandRepository;</span>
+<span class="fc" id="L77">    this.restTemplate = restTemplateProvider.restTemplate();</span>
+<span class="fc" id="L78">    this.bingKey = bingKey;</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">    this.bingUrl = bingUrl.endsWith(&quot;/&quot;) ? bingUrl : bingUrl + &quot;/&quot;;</span>
+<span class="fc" id="L80">  }</span>
+
+  private static Integer validateDriveTime(Integer val) {
+<span class="pc bpc" id="L83" title="1 of 4 branches missed.">    if (val != null &amp;&amp; !DRIVE_TIME_VALUES.contains(val)) {</span>
+<span class="nc" id="L84">      throw new ExceptionsV0.InvalidParameter(&quot;drive_time&quot;, val);</span>
+    }
+<span class="fc" id="L86">    return val;</span>
+  }
+
+<span class="nc" id="L89">  @SneakyThrows</span>
+  private Optional&lt;DriveTimeBandEntity&gt; firstIntersection(
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">      @NonNull Point2D point, List&lt;DriveTimeBandEntity&gt; entities) {</span>
+<span class="fc" id="L92">    Stopwatch timer = Stopwatch.createStarted();</span>
+<span class="fc" id="L93">    int count = 0;</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">    for (DriveTimeBandEntity entity : entities) {</span>
+<span class="fc" id="L95">      count++;</span>
+<span class="fc" id="L96">      Path2D path2D = toPath(entity);</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">      if (path2D.contains(point)) {</span>
+<span class="fc" id="L98">        log.info(</span>
+            &quot;Found {} intersection in {} ms, looked at {} of {} options&quot;,
+<span class="fc" id="L100">            entity.id().stationNumber(),</span>
+<span class="fc" id="L101">            timer.elapsed(TimeUnit.MILLISECONDS),</span>
+<span class="fc" id="L102">            count,</span>
+<span class="fc" id="L103">            entities.size());</span>
+<span class="fc" id="L104">        return Optional.of(entity);</span>
+      }
+<span class="nc" id="L106">    }</span>
+<span class="nc" id="L107">    log.info(&quot;No matches found in {} options&quot;, entities.size());</span>
+
+<span class="nc" id="L109">    return Optional.empty();</span>
+  }
+
+<span class="fc" id="L112">  @SneakyThrows</span>
+  private Coordinates geocodeAddress(
+<span class="pc bpc" id="L114" title="4 of 8 branches missed.">      @NonNull String street, @NonNull String city, @NonNull String state, @NonNull String zip) {</span>
+<span class="fc" id="L115">    String address = street + &quot; &quot; + city + &quot; &quot; + state + &quot; &quot; + zip;</span>
+<span class="fc" id="L116">    String bingUriString =</span>
+<span class="fc" id="L117">        UriComponentsBuilder.fromHttpUrl(bingUrl + &quot;REST/v1/Locations&quot;)</span>
+<span class="fc" id="L118">            .queryParam(&quot;q&quot;, address)</span>
+<span class="fc" id="L119">            .queryParam(&quot;key&quot;, bingKey)</span>
+<span class="fc" id="L120">            .build()</span>
+<span class="fc" id="L121">            .toUriString();</span>
+
+    String body;
+    try {
+<span class="fc" id="L125">      body =</span>
+          restTemplate
+<span class="fc" id="L127">              .exchange(</span>
+                  bingUriString, HttpMethod.GET, new HttpEntity&lt;&gt;(new HttpHeaders()), String.class)
+<span class="fc" id="L129">              .getBody();</span>
+<span class="fc" id="L130">    } catch (Exception ex) {</span>
+<span class="fc" id="L131">      throw new ExceptionsV0.BingException(ex);</span>
+<span class="fc" id="L132">    }</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">    if (isBlank(body)) {</span>
+<span class="nc" id="L134">      throw new ExceptionsV0.BingException(&quot;Empty response&quot;);</span>
+    }
+<span class="fc" id="L136">    BingResponse response = JacksonConfig.createMapper().readValue(body, BingResponse.class);</span>
+<span class="fc" id="L137">    Optional&lt;List&lt;BigDecimal&gt;&gt; coordinates =</span>
+<span class="fc" id="L138">        response.resourceSets().stream()</span>
+<span class="fc" id="L139">            .flatMap(rs -&gt; rs.resources().stream())</span>
+<span class="fc" id="L140">            .map(BingResponse.Resource::resourcePoint)</span>
+<span class="fc" id="L141">            .filter(Objects::nonNull)</span>
+<span class="fc" id="L142">            .map(BingResponse.Point::coordinates)</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            .filter(c -&gt; c.size() &gt;= 2)</span>
+<span class="fc" id="L144">            .findFirst();</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">    if (coordinates.isEmpty()) {</span>
+<span class="fc" id="L147">      throw new ExceptionsV0.BingException(</span>
+<span class="fc" id="L148">          String.format(</span>
+              &quot;Failed to geocode street_address '%s', city '%s', state '%s', zip '%s'&quot;,
+              street, city, state, zip));
+    }
+<span class="fc" id="L152">    return Coordinates.builder()</span>
+<span class="fc" id="L153">        .latitude(coordinates.get().get(0))</span>
+<span class="fc" id="L154">        .longitude(coordinates.get().get(1))</span>
+<span class="fc" id="L155">        .build();</span>
+  }
+
+  private String getMonthYearFromBandIds(List&lt;NearbyId&gt; ids) {
+    String monthYear;
+
+<span class="pc bpc" id="L161" title="1 of 4 branches missed.">    if (!ids.isEmpty() &amp;&amp; driveTimeBandRepository.findById(ids.get(0).bandId).isPresent()) {</span>
+<span class="fc" id="L162">      monthYear = driveTimeBandRepository.findById(ids.get(0).bandId).get().monthYear();</span>
+    } else {
+<span class="fc" id="L164">      monthYear = driveTimeBandRepository.getDefaultBandVersion();</span>
+    }
+
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">    if (monthYear == null) {</span>
+<span class="fc" id="L168">      monthYear = &quot;Unknown&quot;;</span>
+    }
+
+<span class="fc" id="L171">    return monthYear;</span>
+  }
+
+  private Map&lt;String, DriveTimeBandEntity&gt; intersections(
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">      @NonNull BigDecimal longitude,</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">      @NonNull BigDecimal latitude,</span>
+      List&lt;DriveTimeBandEntity&gt; entities) {
+<span class="fc" id="L178">    ListMultimap&lt;String, DriveTimeBandEntity&gt; bandsForStation = ArrayListMultimap.create();</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">    for (DriveTimeBandEntity e : entities) {</span>
+<span class="fc" id="L180">      bandsForStation.put(e.id().stationNumber(), e);</span>
+<span class="fc" id="L181">    }</span>
+
+<span class="fc" id="L183">    Point2D point = new Point2D.Double(longitude.doubleValue(), latitude.doubleValue());</span>
+<span class="fc" id="L184">    return bandsForStation.asMap().entrySet().parallelStream()</span>
+<span class="fc" id="L185">        .map(</span>
+            entry -&gt; {
+<span class="fc" id="L187">              List&lt;DriveTimeBandEntity&gt; sortedEntities =</span>
+<span class="fc" id="L188">                  entry.getValue().stream()</span>
+<span class="pc" id="L189">                      .sorted(Comparator.comparingInt(left -&gt; left.id().fromMinutes()))</span>
+<span class="fc" id="L190">                      .collect(toList());</span>
+<span class="fc" id="L191">              return firstIntersection(point, sortedEntities).orElse(null);</span>
+            })
+<span class="fc" id="L193">        .filter(Objects::nonNull)</span>
+<span class="fc" id="L194">        .collect(toMap(b -&gt; b.id().stationNumber(), Function.identity()));</span>
+  }
+
+  /** Nearby facilities by address. */
+  @GetMapping(
+      produces = &quot;application/json&quot;,
+      params = {&quot;street_address&quot;, &quot;city&quot;, &quot;state&quot;, &quot;zip&quot;})
+  NearbyResponse nearbyAddress(
+      @RequestParam(value = &quot;street_address&quot;) String street,
+      @RequestParam(value = &quot;city&quot;) String city,
+      @RequestParam(value = &quot;state&quot;) String state,
+      @RequestParam(value = &quot;zip&quot;) String zip,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;drive_time&quot;, required = false) Integer maxDriveTime) {
+<span class="fc" id="L208">    Coordinates coor = geocodeAddress(street, city, state, zip);</span>
+<span class="fc" id="L209">    List&lt;NearbyId&gt; ids = nearbyIds(coor.longitude(), coor.latitude(), services, maxDriveTime);</span>
+
+<span class="fc" id="L211">    return NearbyResponse.builder()</span>
+<span class="fc" id="L212">        .data(ids.stream().map(this::nearbyFacility).collect(toList()))</span>
+<span class="fc" id="L213">        .meta(NearbyResponse.Meta.builder().bandVersion(getMonthYearFromBandIds(ids)).build())</span>
+<span class="fc" id="L214">        .build();</span>
+  }
+
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">  private NearbyResponse.Nearby nearbyFacility(@NonNull NearbyId entity) {</span>
+<span class="fc" id="L218">    return NearbyResponse.Nearby.builder()</span>
+<span class="fc" id="L219">        .id(entity.facilityId())</span>
+<span class="fc" id="L220">        .type(NearbyResponse.Type.NearbyFacility)</span>
+<span class="fc" id="L221">        .attributes(</span>
+<span class="fc" id="L222">            NearbyResponse.NearbyAttributes.builder()</span>
+<span class="fc" id="L223">                .minTime(entity.bandId().fromMinutes())</span>
+<span class="fc" id="L224">                .maxTime(entity.bandId().toMinutes())</span>
+<span class="fc" id="L225">                .build())</span>
+<span class="fc" id="L226">        .build();</span>
+  }
+
+<span class="nc" id="L229">  @SneakyThrows</span>
+  private List&lt;NearbyId&gt; nearbyIds(
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">      @NonNull BigDecimal longitude,</span>
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">      @NonNull BigDecimal latitude,</span>
+      List&lt;String&gt; rawServices,
+      Integer rawMaxDriveTime) {
+<span class="fc" id="L235">    Set&lt;Facility.ServiceType&gt; services = validateServices(rawServices);</span>
+<span class="fc" id="L236">    Integer maxDriveTime = validateDriveTime(rawMaxDriveTime);</span>
+<span class="fc" id="L237">    log.info(</span>
+        &quot;Searching near {},{} within {} minutes with {} services&quot;,
+<span class="fc" id="L239">        longitude.doubleValue(),</span>
+<span class="fc" id="L240">        latitude.doubleValue(),</span>
+        maxDriveTime,
+<span class="fc" id="L242">        services.size());</span>
+<span class="fc" id="L243">    var timer = Stopwatch.createStarted();</span>
+<span class="fc" id="L244">    List&lt;DriveTimeBandEntity&gt; maybeBands =</span>
+<span class="fc" id="L245">        driveTimeBandRepository.findAll(</span>
+<span class="fc" id="L246">            DriveTimeBandRepository.MinMaxSpecification.builder()</span>
+<span class="fc" id="L247">                .longitude(longitude)</span>
+<span class="fc" id="L248">                .latitude(latitude)</span>
+<span class="fc" id="L249">                .maxDriveTime(maxDriveTime)</span>
+<span class="fc" id="L250">                .build());</span>
+<span class="fc" id="L251">    log.info(&quot;{} bands found in {} ms&quot;, maybeBands.size(), timer.elapsed(TimeUnit.MILLISECONDS));</span>
+<span class="fc" id="L252">    Map&lt;String, DriveTimeBandEntity&gt; bandsByStation =</span>
+<span class="fc" id="L253">        intersections(longitude, latitude, maybeBands);</span>
+<span class="fc" id="L254">    List&lt;FacilityEntity&gt; facilityEntities =</span>
+<span class="fc" id="L255">        facilityRepository.findAll(</span>
+<span class="fc" id="L256">            FacilityRepository.StationNumbersSpecification.builder()</span>
+<span class="fc" id="L257">                .stationNumbers(bandsByStation.keySet())</span>
+<span class="fc" id="L258">                .facilityType(FacilityEntity.Type.vha)</span>
+<span class="fc" id="L259">                .services(services)</span>
+<span class="fc" id="L260">                .build());</span>
+<span class="fc" id="L261">    return facilityEntities.stream()</span>
+<span class="fc" id="L262">        .map(</span>
+            e -&gt;
+<span class="fc" id="L264">                NearbyId.builder()</span>
+<span class="fc" id="L265">                    .bandId(bandsByStation.get(e.id().stationNumber()).id())</span>
+<span class="fc" id="L266">                    .facilityId(e.id().toIdString())</span>
+<span class="fc" id="L267">                    .build())</span>
+<span class="pc" id="L268">        .sorted(Comparator.comparingInt(left -&gt; left.bandId().toMinutes()))</span>
+<span class="fc" id="L269">        .collect(toList());</span>
+  }
+
+  /** Nearby facilities by coordinates. */
+  @GetMapping(
+      produces = &quot;application/json&quot;,
+      params = {&quot;lat&quot;, &quot;lng&quot;})
+  NearbyResponse nearbyLatLong(
+      @RequestParam(value = &quot;lat&quot;) BigDecimal latitude,
+      @RequestParam(value = &quot;lng&quot;) BigDecimal longitude,
+      @RequestParam(value = &quot;services[]&quot;, required = false) List&lt;String&gt; services,
+      @RequestParam(value = &quot;drive_time&quot;, required = false) Integer maxDriveTime) {
+<span class="fc" id="L281">    List&lt;NearbyId&gt; ids = nearbyIds(longitude, latitude, services, maxDriveTime);</span>
+
+<span class="fc" id="L283">    return NearbyResponse.builder()</span>
+<span class="fc" id="L284">        .data(ids.stream().map(this::nearbyFacility).collect(toList()))</span>
+<span class="fc" id="L285">        .meta(NearbyResponse.Meta.builder().bandVersion(getMonthYearFromBandIds(ids)).build())</span>
+<span class="fc" id="L286">        .build();</span>
+  }
+
+<span class="nc" id="L289">  @SneakyThrows</span>
+  private Path2D toPath(DriveTimeBandEntity entity) {
+<span class="fc bfc" id="L291" title="All 2 branches covered.">    if (deprecatedPssgDriveTimeBandSupport.isPssgDriveTimeBand(entity)) {</span>
+<span class="fc" id="L292">      return deprecatedPssgDriveTimeBandSupport.toPath(entity);</span>
+    }
+    try {
+<span class="fc" id="L295">      return PathEncoder.create().decodeFromBase64(entity.band());</span>
+<span class="nc" id="L296">    } catch (Exception e) {</span>
+<span class="nc" id="L297">      log.info(&quot;Failed to decode {}&quot;, entity.id());</span>
+<span class="nc" id="L298">      throw e;</span>
+    }
+  }
+
+  @Builder
+  @lombok.Value
+  private static final class Coordinates {
+    BigDecimal latitude;
+
+    BigDecimal longitude;
+  }
+
+  /**
+   * This encapsulates the older support where PSSG drive time bands were stored directly as JSON.
+   * They were big and slow, and we have our own serialization model now. But to keep supporting any
+   * records that have not be converted yet, this class allows for a graceful transition. It can
+   * deleted once all databases have been upgraded.
+   */
+<span class="fc" id="L316">  private static final class DeprecatedPssgDriveTimeBandSupport {</span>
+<span class="fc" id="L317">    private final ObjectMapper mapper = JacksonConfig.createMapper();</span>
+
+    boolean isPssgDriveTimeBand(DriveTimeBandEntity entity) {
+<span class="fc" id="L320">      return entity.band().startsWith(&quot;{\&quot;attributes&quot;);</span>
+    }
+
+<span class="nc" id="L323">    @SneakyThrows</span>
+    Path2D toPath(DriveTimeBandEntity entity) {
+<span class="fc" id="L325">      PssgDriveTimeBand asBand = mapper.readValue(entity.band(), PssgDriveTimeBand.class);</span>
+<span class="fc" id="L326">      List&lt;List&lt;List&lt;Double&gt;&gt;&gt; rings = asBand.geometry().rings();</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">      checkState(!rings.isEmpty());</span>
+<span class="fc" id="L328">      List&lt;List&lt;Double&gt;&gt; exteriorRing = rings.get(0);</span>
+<span class="fc" id="L329">      Path2D path2D = toPath2D(exteriorRing);</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">      for (int i = 1; i &lt; rings.size(); i++) {</span>
+<span class="nc" id="L331">        List&lt;List&lt;Double&gt;&gt; interiorRing = rings.get(i);</span>
+<span class="nc" id="L332">        path2D.append(toPath2D(interiorRing), false);</span>
+      }
+<span class="fc" id="L334">      return path2D;</span>
+    }
+
+    private Path2D toPath2D(List&lt;List&lt;Double&gt;&gt; coordinates) {
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">      checkArgument(!coordinates.isEmpty());</span>
+<span class="fc" id="L339">      Path2D shape = null;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">      for (List&lt;Double&gt; c : coordinates) {</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        if (shape == null) {</span>
+<span class="fc" id="L342">          shape = new Path2D.Double(Path2D.WIND_NON_ZERO);</span>
+<span class="fc" id="L343">          shape.moveTo(c.get(0), c.get(1));</span>
+        } else {
+<span class="fc" id="L345">          shape.lineTo(c.get(0), c.get(1));</span>
+        }
+<span class="fc" id="L347">      }</span>
+<span class="fc" id="L348">      shape.closePath();</span>
+<span class="fc" id="L349">      return shape;</span>
+    }
+  }
+
+  @Builder
+  @lombok.Value
+  private static final class NearbyId {
+    DriveTimeBandEntity.Pk bandId;
+
+    String facilityId;
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

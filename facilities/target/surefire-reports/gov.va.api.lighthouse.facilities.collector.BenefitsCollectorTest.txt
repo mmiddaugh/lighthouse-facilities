@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: gov.va.api.lighthouse.facilities.collector.BenefitsCollectorTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.99 s - in gov.va.api.lighthouse.facilities.collector.BenefitsCollectorTest

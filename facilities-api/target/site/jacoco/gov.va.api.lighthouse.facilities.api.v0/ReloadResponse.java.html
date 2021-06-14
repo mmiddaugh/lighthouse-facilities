@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReloadResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities-api</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities.api.v0</a> &gt; <span class="el_source">ReloadResponse.java</span></div><h1>ReloadResponse.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities.api.v0;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Value;
+
+/** This is the response returned by the internal management API when reloading facilities data. */
+@Builder
+@Data
+public class ReloadResponse {
+  public List&lt;String&gt; facilitiesUpdated;
+
+  public List&lt;String&gt; facilitiesRevived;
+
+  public List&lt;String&gt; facilitiesCreated;
+
+  public List&lt;String&gt; facilitiesMissing;
+
+  public List&lt;String&gt; facilitiesRemoved;
+
+  public List&lt;Problem&gt; problems;
+
+  public Timing timing;
+
+  int totalFacilities;
+
+  /**
+   * Create an instance that is has thread safe collections that can be added to when processing
+   * records simultaneously and has timing initialized to start now.
+   */
+  public static ReloadResponse start() {
+<span class="fc" id="L37">    return ReloadResponse.builder()</span>
+<span class="fc" id="L38">        .timing(Timing.builder().start(Instant.now()).build())</span>
+<span class="fc" id="L39">        .facilitiesUpdated(new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L40">        .facilitiesRevived(new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L41">        .facilitiesCreated(new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L42">        .facilitiesMissing(new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L43">        .facilitiesRemoved(new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L44">        .problems(new CopyOnWriteArrayList&lt;&gt;())</span>
+<span class="fc" id="L45">        .build();</span>
+  }
+
+  @Builder
+  @Value
+  @AllArgsConstructor(staticName = &quot;of&quot;)
+  public static final class Problem {
+    String facilityId;
+
+    String description;
+  }
+
+  @Builder
+  @Data
+  public static final class Timing {
+    /** The time we started the reload process. */
+    public Instant start;
+
+    /**
+     * The time after we started and completed the collection phase, but not yet started updating
+     * the database.
+     */
+    public Instant completeCollection;
+
+    /** The time completed all work (including the DB updates). */
+    public Instant complete;
+
+    /** The amount of time it took to perform the full reload cycle. */
+    public Duration totalDuration;
+
+    /** Set the 'complete' time to now and compute the 'totalDuration'. */
+    public void markComplete() {
+<span class="fc" id="L77">      complete = Instant.now();</span>
+<span class="fc" id="L78">      totalDuration = Duration.between(start, complete);</span>
+<span class="fc" id="L79">    }</span>
+
+    /** Set the 'completeCollection' time to now. */
+    public void markCompleteCollection() {
+<span class="fc" id="L83">      completeCollection = Instant.now();</span>
+<span class="fc" id="L84">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FacilityEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">facilities</a> &gt; <a href="index.source.html" class="el_package">gov.va.api.lighthouse.facilities</a> &gt; <span class="el_source">FacilityEntity.java</span></div><h1>FacilityEntity.java</h1><pre class="source lang-java linenums">package gov.va.api.lighthouse.facilities;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.stream.Collectors.toSet;
+
+import gov.va.api.lighthouse.facilities.api.v0.Facility;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+import javax.persistence.Version;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import org.springframework.data.domain.Sort;
+
+@Data
+@Entity
+@Builder
+@Table(name = &quot;facility&quot;, schema = &quot;app&quot;)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class FacilityEntity implements HasFacilityPayload {
+  /**
+   * API V0 searches by {type}_{facilityId}. We might want to change that in the future, so we are
+   * keeping those two pieces of information separate. However, the two (type + facility) are
+   * unique, since it is possible for a facility to have multiple types, e.g. benefits and health.
+   */
+  @EqualsAndHashCode.Include @EmbeddedId private Pk id;
+
+  @Column(length = 5)
+  private String zip;
+
+  /** States are two letter abbreviations, except when they are jacked up and say &quot;South&quot;. */
+  @Column(length = 5)
+  private String state;
+
+  @Column private double latitude;
+
+  @Column private double longitude;
+
+  //  @Column(name = &quot;time_zone&quot;)
+  //  private String timeZone;
+
+  @ElementCollection(targetClass = String.class)
+  @CollectionTable(
+      name = &quot;facility_services&quot;,
+      schema = &quot;app&quot;,
+      joinColumns = {@JoinColumn(name = &quot;station_number&quot;), @JoinColumn(name = &quot;type&quot;)})
+  @Column(length = 48)
+  private Set&lt;String&gt; services;
+
+  @Lob
+  @Basic(fetch = FetchType.EAGER)
+  @Column
+  private String facility;
+
+  @Lob
+  @Basic(fetch = FetchType.EAGER)
+  @Column(name = &quot;cms_operating_status&quot;)
+  private String cmsOperatingStatus;
+
+  @Lob
+  @Basic(fetch = FetchType.EAGER)
+  @Column(name = &quot;cms_services&quot;)
+  private String cmsServices;
+
+  @ElementCollection(targetClass = String.class)
+  @CollectionTable(
+      name = &quot;cms_overlay_detailed_services&quot;,
+      schema = &quot;app&quot;,
+      joinColumns = {@JoinColumn(name = &quot;station_number&quot;), @JoinColumn(name = &quot;type&quot;)})
+  @Column(length = 48, name = &quot;overlay_detailed_services&quot;)
+  private Set&lt;String&gt; overlayServices;
+
+  @Version private Integer version;
+
+  @Column(name = &quot;missing_timestamp&quot;)
+  private Long missingTimestamp;
+
+  @Column(name = &quot;last_updated&quot;)
+  private Instant lastUpdated;
+
+  @Column(name = &quot;VISN&quot;)
+  private String visn;
+
+  @Column(name = &quot;mobile&quot;)
+  private Boolean mobile;
+
+  /** Builder alternative that allows enums to be specified instead of strings. */
+  @Builder(
+      builderMethodName = &quot;typeSafeBuilder&quot;,
+      builderClassName = &quot;FacilityEntityTypeSafeBuilder&quot;)
+  public FacilityEntity(
+      Pk id,
+      String zip,
+      String state,
+      double latitude,
+      double longitude,
+      //     String timeZone,
+      String facility,
+      String cmsOperatingStatus,
+      String cmsServices,
+      Set&lt;Facility.ServiceType&gt; overlayServiceTypes,
+      Integer version,
+      Set&lt;Facility.ServiceType&gt; servicesTypes,
+      Long missingTimestamp,
+      Instant lastUpdated,
+      String visn,
+      Boolean mobile) {
+<span class="fc" id="L129">    this(</span>
+        id,
+        zip,
+        state,
+        latitude,
+        longitude,
+        //   timeZone,
+<span class="fc" id="L136">        servicesTypes.stream().map(Object::toString).collect(toSet()),</span>
+        facility,
+        cmsOperatingStatus,
+        cmsServices,
+<span class="fc" id="L140">        overlayServiceTypes.stream().map(Object::toString).collect(toSet()),</span>
+        version,
+        missingTimestamp,
+        lastUpdated,
+        visn,
+        mobile);
+<span class="fc" id="L146">  }</span>
+
+  static Sort naturalOrder() {
+<span class="fc" id="L149">    return Sort.by(&quot;id&quot;).ascending();</span>
+  }
+
+  /** Populate overlay services from a type safe collection. */
+  public void overlayServicesFromServiceTypes(Set&lt;Facility.ServiceType&gt; overlayServiceTypes) {
+<span class="nc" id="L154">    overlayServices(overlayServiceTypes.stream().map(Object::toString).collect(toSet()));</span>
+<span class="nc" id="L155">  }</span>
+
+  /** Populate services from a type safe collection. */
+  public void servicesFromServiceTypes(Set&lt;Facility.ServiceType&gt; serviceTypes) {
+<span class="fc" id="L159">    services(serviceTypes.stream().map(Object::toString).collect(toSet()));</span>
+<span class="fc" id="L160">  }</span>
+
+<span class="fc" id="L162">  public enum Type {</span>
+    /** Health facility. */
+<span class="fc" id="L164">    vha,</span>
+    /** Benefits facility. */
+<span class="fc" id="L166">    vba,</span>
+    /** Cemetery. */
+<span class="fc" id="L168">    nca,</span>
+    /** Vet Center. */
+<span class="fc" id="L170">    vc</span>
+  }
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor(staticName = &quot;of&quot;)
+  @Embeddable
+  static final class Pk implements Serializable {
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    @Column(name = &quot;station_number&quot;, nullable = false)
+    private String stationNumber;
+
+    /** Create a Pk from the {type}_{id} style used in the Facilities API ID. */
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">    static Pk fromIdString(@NonNull String typeAndStationNumber) {</span>
+<span class="fc" id="L187">      int separator = typeAndStationNumber.indexOf('_');</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">      checkArgument(separator &gt; 0, typeAndStationNumber);</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">      checkArgument(separator + 1 &lt; typeAndStationNumber.length() - 1, typeAndStationNumber);</span>
+<span class="fc" id="L190">      String typeValue = typeAndStationNumber.substring(0, separator);</span>
+<span class="fc" id="L191">      String stationNumber = typeAndStationNumber.substring(separator + 1);</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">      checkArgument(!stationNumber.isBlank(), typeAndStationNumber);</span>
+<span class="fc" id="L193">      return of(Type.valueOf(typeValue), stationNumber);</span>
+    }
+
+    /**
+     * Create a Pk from the {type}_{id} style used in the Facilities API ID, suppressing exceptions.
+     */
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">    static Optional&lt;Pk&gt; optionalFromIdString(@NonNull String typeAndStationNumber) {</span>
+      try {
+<span class="fc" id="L201">        return Optional.ofNullable(fromIdString(typeAndStationNumber));</span>
+<span class="fc" id="L202">      } catch (IllegalArgumentException ex) {</span>
+<span class="fc" id="L203">        return Optional.empty();</span>
+      }
+    }
+
+    public String toIdString() {
+<span class="fc" id="L208">      return type + &quot;_&quot; + stationNumber;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
