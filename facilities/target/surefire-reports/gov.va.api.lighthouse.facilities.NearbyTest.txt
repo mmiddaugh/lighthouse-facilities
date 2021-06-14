@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: gov.va.api.lighthouse.facilities.NearbyTest
--------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.332 s - in gov.va.api.lighthouse.facilities.NearbyTest

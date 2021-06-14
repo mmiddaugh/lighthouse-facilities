@@ -9,7 +9,6 @@
       "website" : "https://www.columbus.va.gov/locations/directions.asp",
       "lat" : 39.9813738,
       "long" : -82.9118322899999,
-      "time_zone" : "America/New_York",
       "address" : {
         "mailing" : { },
         "physical" : {

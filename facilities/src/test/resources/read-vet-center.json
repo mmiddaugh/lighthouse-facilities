@@ -9,7 +9,6 @@
       "website" : null,
       "lat" : 42.3445959000001,
       "long" : -71.0361051099999,
-      "time_zone" : "America/New_York",
       "address" : {
         "mailing" : { },
         "physical" : {

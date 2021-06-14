@@ -77,7 +77,6 @@ public class StateCemeteriesCollectorTest {
                             .website("http://www.va.state.al.us/spanishfort.aspx")
                             .latitude(new BigDecimal("30.7346233"))
                             .longitude(new BigDecimal("-87.8985442"))
-                            .timeZone("America/Chicago")
                             .address(
                                 Facility.Addresses.builder()
                                     .physical(

@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: gov.va.api.lighthouse.facilities.api.v0.ModelTest
--------------------------------------------------------------------------------
-Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.486 s - in gov.va.api.lighthouse.facilities.api.v0.ModelTest

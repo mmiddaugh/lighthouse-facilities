@@ -13,7 +13,6 @@
     "facility_type" : "va_cemetery",
     "classification" : "State Cemetery",
     "website" : "http://www.va.state.al.us/spanishfort.aspx",
-    "time_zone" : "America/New_York",
     "address" : {
       "mailing" : { },
       "physical" : {

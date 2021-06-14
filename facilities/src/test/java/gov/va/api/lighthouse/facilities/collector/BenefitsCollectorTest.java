@@ -72,7 +72,6 @@ public class BenefitsCollectorTest {
                             .classification("va_benefits_facility")
                             .latitude(new BigDecimal("42.651408840000045"))
                             .longitude(new BigDecimal("-73.77623284999999"))
-                            .timeZone("America/New_York")
                             .address(
                                 Facility.Addresses.builder()
                                     .physical(

@@ -9,7 +9,6 @@
       "website" : "https://www.cem.va.gov/cems/lots/evergreen.asp",
       "lat" : 39.0696513,
       "long" : -84.4688541,
-      "time_zone" : "America/New_York",
       "address" : {
         "mailing" : {
           "zip" : "40356",

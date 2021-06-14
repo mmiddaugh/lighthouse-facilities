@@ -59,7 +59,6 @@ public class VetCentersCollectorTest {
                             .facilityType(Facility.FacilityType.vet_center)
                             .latitude(new BigDecimal("48.20065600000004"))
                             .longitude(new BigDecimal("-101.29615999999999"))
-                            .timeZone("America/Chicago")
                             .address(
                                 Facility.Addresses.builder()
                                     .physical(

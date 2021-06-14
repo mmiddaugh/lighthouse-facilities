@@ -10,7 +10,6 @@
         "website" : "https://www.orlando.va.gov/locations/Viera.asp",
         "lat" : 28.2552385700001,
         "long" : -80.73907113,
-        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {

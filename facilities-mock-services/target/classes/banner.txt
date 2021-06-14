@@ -1,5 +1,0 @@
-====
-
-    ${Ansi.BLUE}Facilities API ${Ansi.BOLD}${Ansi.YELLOW}Mock Services ${Ansi.NORMAL}${Ansi.BLUE}${application.version}${Ansi.NORMAL}
-
-====

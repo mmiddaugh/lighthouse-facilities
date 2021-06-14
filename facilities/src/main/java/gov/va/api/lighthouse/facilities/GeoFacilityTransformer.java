@@ -19,8 +19,7 @@ final class GeoFacilityTransformer {
     }
     return GeoFacility.Geometry.builder()
         .type(GeoFacility.GeometryType.Point)
-        .coordinates(
-            List.of(attr.longitude().stripTrailingZeros(), attr.latitude().stripTrailingZeros()))
+        .coordinates(List.of(attr.longitude(), attr.latitude()))
         .build();
   }
 

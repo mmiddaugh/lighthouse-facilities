@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: gov.va.api.lighthouse.facilities.PageLinkerTest
--------------------------------------------------------------------------------
-Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.01 s - in gov.va.api.lighthouse.facilities.PageLinkerTest

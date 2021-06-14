@@ -16,7 +16,6 @@
         "facility_type" : "va_cemetery",
         "classification" : "Soldiers Lot",
         "website" : "https://www.cem.va.gov/cems/lots/evergreen.asp",
-        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : {
             "zip" : "40356",
@@ -76,7 +75,6 @@
         "facility_type" : "va_cemetery",
         "classification" : "State Cemetery",
         "website" : "http://www.va.state.al.us/spanishfort.aspx",
-        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -127,7 +125,6 @@
         "facility_type" : "va_benefits_facility",
         "classification" : "Voc Rehab And Employment",
         "website" : "NULL",
-        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -185,7 +182,6 @@
         "facility_type" : "vet_center",
         "classification" : null,
         "website" : null,
-        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {
@@ -237,7 +233,6 @@
         "facility_type" : "va_health_facility",
         "classification" : "Primary Care CBOC",
         "website" : "https://www.maine.va.gov/locations/caribou.asp",
-        "time_zone" : "America/New_York",
         "address" : {
           "mailing" : { },
           "physical" : {

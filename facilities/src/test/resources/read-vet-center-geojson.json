@@ -13,7 +13,6 @@
     "facility_type" : "vet_center",
     "classification" : null,
     "website" : null,
-    "time_zone" : "America/New_York",
     "address" : {
       "mailing" : { },
       "physical" : {

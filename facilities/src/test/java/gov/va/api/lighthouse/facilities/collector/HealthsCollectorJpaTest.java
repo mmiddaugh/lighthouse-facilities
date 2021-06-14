@@ -178,7 +178,6 @@ class HealthsCollectorJpaTest {
                             .classification("Other Outpatient Services (OOS)")
                             .latitude(new BigDecimal("14.544080000000065"))
                             .longitude(new BigDecimal("120.99139000000002"))
-                            .timeZone("Asia/Manila")
                             .address(
                                 Facility.Addresses.builder()
                                     .physical(

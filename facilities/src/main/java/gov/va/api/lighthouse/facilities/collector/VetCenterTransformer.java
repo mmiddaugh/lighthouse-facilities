@@ -82,7 +82,6 @@ final class VetCenterTransformer {
         .website(website())
         .latitude(vast.latitude())
         .longitude(vast.longitude())
-        .timeZone(CalculateTimeZone.calculateTimeZones(vast.latitude(), vast.longitude()))
         .address(address())
         .phone(phone())
         .hours(hours())

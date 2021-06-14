@@ -44,7 +44,6 @@ class CemeteriesSamples {
           .classification("Lot")
           .latitude(new BigDecimal("-73.776232849999985"))
           .longitude(new BigDecimal("42.651408840000045"))
-          .timeZone("Antarctica/Syowa")
           .address(
               Facility.Addresses.builder()
                   .physical(physicalAddress())
