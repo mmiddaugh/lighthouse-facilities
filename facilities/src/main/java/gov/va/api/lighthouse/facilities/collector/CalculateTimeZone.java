@@ -31,6 +31,7 @@ public class CalculateTimeZone {
       }
       if (timeZoneOverlap != null) {
         timeZone = timeZoneOverlap.getZoneId();
+        log.info("Calculated time zone {} for {}, {}.", timeZone, latitude, longitude);
       } else {
         log.warn("Time zone calculation failed, unable to calculate mapping.");
       }
