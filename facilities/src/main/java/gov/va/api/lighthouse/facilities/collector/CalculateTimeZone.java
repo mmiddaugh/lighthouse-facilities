@@ -16,10 +16,10 @@ import us.dustinj.timezonemap.TimeZoneMap;
 @Slf4j
 public class CalculateTimeZone {
   // Continental US points to reduce calculation time.
-  static final double LatitudeSouthwest = 22.998796;
-  static final double LongitudeSouthwest = -127.696638;
-  static final double LatitudeNortheast = 50.682197;
-  static final double LongitudeNortheast = -65.394911;
+//  static final double LatitudeSouthwest = 22.998796;
+//  static final double LongitudeSouthwest = -127.696638;
+//  static final double LatitudeNortheast = 50.682197;
+//  static final double LongitudeNortheast = -65.394911;
 
   /** Creates a TimeZoneMap for calculating time zones based on a given lat/long. */
   private static TimeZoneMap calculateTimeZoneMap(Double latitude, Double longitude) {
@@ -53,12 +53,14 @@ public class CalculateTimeZone {
       }
       if (timeZoneOverlap != null) {
         timeZone = timeZoneOverlap.getZoneId();
-      } else {
-        log.warn("Time zone calculation failed, unable to calculate mapping.");
       }
-    } else {
-      log.warn("Time zone calculation failed, longitude or latitude is null.");
+//      else {
+//        log.warn("Time zone calculation failed, unable to calculate mapping.");
+//      }
     }
+//    else {
+//      log.warn("Time zone calculation failed, longitude or latitude is null.");
+//    }
     return timeZone;
   }
 
@@ -85,9 +87,10 @@ public class CalculateTimeZone {
         }
         if (timeZoneOverlap != null) {
           timeZone = timeZoneOverlap.getZoneId();
-        } else {
-          log.warn("Time zone calculation failed, unable to calculate mapping. [Continental]");
         }
+//        else {
+//          log.warn("Time zone calculation failed, unable to calculate mapping. [Continental]");
+//        }
 //      } else {
 //        // Calculate with generating the Time Zone Map via given lat/long.
 //        timeZone = calculateTimeZones(BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));

@@ -6,6 +6,7 @@ databaseChangeLog:
         - sql:
             dbms: h2, mssql
             sql: create schema app;
+
   - changeSet:
       id: 2
       author: shanktopus
@@ -62,7 +63,6 @@ databaseChangeLog:
                   type: int
                   constraints:
                     nullable: false
-
         - createIndex:
             tableName: drive_time_band
             schemaName: app
@@ -75,7 +75,6 @@ databaseChangeLog:
                   name: from_minutes
               - column:
                   name: to_minutes
-
         - createTable:
             tableName: facility
             schemaName: app
@@ -122,7 +121,6 @@ databaseChangeLog:
                   type: int
                   constraints:
                     nullable: false
-
         - createIndex:
             tableName: facility
             schemaName: app
@@ -133,7 +131,6 @@ databaseChangeLog:
                   name: station_number
               - column:
                   name: type
-
         - createTable:
             tableName: facility_services
             schemaName: app
@@ -156,7 +153,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-
         - createIndex:
             tableName: facility_services
             schemaName: app
@@ -169,6 +165,7 @@ databaseChangeLog:
                   name: type
               - column:
                   name: services
+
   - changeSet:
       id: 3
       author: shanktopus
@@ -183,6 +180,7 @@ databaseChangeLog:
             tableName: facility
             columnName: state
             columnDataType: varchar(5)
+
   - changeSet:
       id: 4
       author: shanktopus
@@ -196,6 +194,7 @@ databaseChangeLog:
                 type: clob
                 constraints:
                   nullable: true
+
   - changeSet:
       id: 5
       author: shanktopus
@@ -216,6 +215,7 @@ databaseChangeLog:
                   name: min_longitude
               - column:
                   name: max_longitude
+
   - changeSet:
       id: 6
       author: shanktopus
@@ -443,6 +443,7 @@ databaseChangeLog:
                   name: type
               - column:
                   name: graveyard_overlay_detailed_services
+
   - changeSet:
       id: 15
       author: axolotl
