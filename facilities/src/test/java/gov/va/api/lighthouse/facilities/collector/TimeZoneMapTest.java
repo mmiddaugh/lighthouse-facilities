@@ -17,8 +17,8 @@ public class TimeZoneMapTest {
         CalculateTimeZone.calculateTimeZonesWithMap(null, BigDecimal.valueOf(149.915261), usMap);
     String invalidLongitudeZone =
         CalculateTimeZone.calculateTimeZonesWithMap(BigDecimal.valueOf(36.737343), null, usMap);
-    assertThat(invalidLatitudeZone).isEqualTo(null);
-    assertThat(invalidLongitudeZone).isEqualTo(null);
+    assertThat(invalidLatitudeZone).isNull();
+    assertThat(invalidLongitudeZone).isNull();
   }
 
   @Test
@@ -26,7 +26,7 @@ public class TimeZoneMapTest {
     String invalidLatitudeZone =
         CalculateTimeZone.calculateTimeZonesWithMap(
             BigDecimal.valueOf(36.737343), BigDecimal.valueOf(149.915261), null);
-    assertThat(invalidLatitudeZone).isEqualTo(null);
+    assertThat(invalidLatitudeZone).isNull();
   }
 
   @Test
