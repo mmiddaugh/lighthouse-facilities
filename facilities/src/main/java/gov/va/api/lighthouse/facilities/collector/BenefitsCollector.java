@@ -26,7 +26,7 @@ final class BenefitsCollector {
 
   @NonNull private final JdbcTemplate jdbcTemplate;
 
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   /** Convert the results into a CdwBenefits Object. */
   @SneakyThrows
@@ -80,7 +80,7 @@ final class BenefitsCollector {
                   BenefitsTransformer.builder()
                       .cdwFacility(facility)
                       .csvWebsite(websites.get("vba_" + facility.facilityNumber()))
-                      .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+                      .timeZoneMap(timeZoneMap)
                       .build()
                       .toFacility())
           .collect(toList());

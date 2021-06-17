@@ -52,7 +52,7 @@ final class HealthTransformer {
 
   @NonNull private final ArrayList<String> cscFacilities;
 
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   private static Map<String, Facility.HealthService> initHealthServicesMap() {
     Map<String, Facility.HealthService> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -168,7 +168,7 @@ final class HealthTransformer {
         .longitude(vast.longitude())
         .timeZone(
             CalculateTimeZone.calculateTimeZonesWithMap(
-                vast.latitude(), vast.longitude(), continentalUsTimeZoneMap))
+                vast.latitude(), vast.longitude(), timeZoneMap))
         .address(address())
         .phone(phone())
         .hours(hours())

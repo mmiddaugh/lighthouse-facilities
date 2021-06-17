@@ -17,7 +17,7 @@ import us.dustinj.timezonemap.TimeZoneMap;
 @Builder
 @SuppressWarnings("ObjectToString")
 final class VetCenterTransformer {
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   @NonNull private final VastEntity vast;
 
@@ -88,7 +88,7 @@ final class VetCenterTransformer {
         .longitude(vast.longitude())
         .timeZone(
             CalculateTimeZone.calculateTimeZonesWithMap(
-                vast.latitude(), vast.longitude(), continentalUsTimeZoneMap))
+                vast.latitude(), vast.longitude(), timeZoneMap))
         .address(address())
         .phone(phone())
         .hours(hours())

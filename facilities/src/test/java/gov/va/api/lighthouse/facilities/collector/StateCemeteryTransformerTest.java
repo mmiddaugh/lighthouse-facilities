@@ -72,7 +72,7 @@ public class StateCemeteryTransformerTest {
             StateCemeteryTransformer.builder()
                 .xml(StateCemeteries.StateCemetery.builder().build())
                 .websites(Collections.emptyMap())
-                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
+                .timeZoneMap(CalculateTimeZone.everywhereMap())
                 .build()
                 .toFacility())
         .isNull();
@@ -80,7 +80,7 @@ public class StateCemeteryTransformerTest {
             StateCemeteryTransformer.builder()
                 .xml(StateCemeteries.StateCemetery.builder().id("aBc123").build())
                 .websites(Collections.emptyMap())
-                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
+                .timeZoneMap(CalculateTimeZone.everywhereMap())
                 .build()
                 .toFacility())
         .isEqualTo(Facility.builder().id("nca_saBc123").type(Facility.Type.va_facilities).build());
@@ -96,7 +96,7 @@ public class StateCemeteryTransformerTest {
                         .url("orig-website")
                         .build())
                 .websites(ImmutableMap.of("nca_saBc123", "csv-website"))
-                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
+                .timeZoneMap(CalculateTimeZone.everywhereMap())
                 .build()
                 .website())
         .isEqualTo("orig-website");
@@ -105,7 +105,7 @@ public class StateCemeteryTransformerTest {
             StateCemeteryTransformer.builder()
                 .xml(StateCemeteries.StateCemetery.builder().id("abc123").build())
                 .websites(ImmutableMap.of("nca_sabc123", "csv-website"))
-                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
+                .timeZoneMap(CalculateTimeZone.everywhereMap())
                 .build()
                 .website())
         .isEqualTo("csv-website");

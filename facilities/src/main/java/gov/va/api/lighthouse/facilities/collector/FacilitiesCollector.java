@@ -169,7 +169,7 @@ public class FacilitiesCollector {
     Collection<VastEntity> vastEntities;
     ArrayList<String> cscFacilities;
 
-    TimeZoneMap continentalUsTimeZoneMap = CalculateTimeZone.continentalUsMap();
+    TimeZoneMap timeZoneMap = CalculateTimeZone.everywhereMap();
 
     try {
       websites = loadWebsites(WEBSITES_CSV_RESOURCE_NAME);
@@ -189,7 +189,7 @@ public class FacilitiesCollector {
             .insecureRestTemplate(insecureRestTemplateProvider.restTemplate())
             .vastEntities(vastEntities)
             .websites(websites)
-            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+            .timeZoneMap(timeZoneMap)
             .build()
             .collect();
 
@@ -198,7 +198,7 @@ public class FacilitiesCollector {
             .baseUrl(cemeteriesBaseUrl)
             .insecureRestTemplate(insecureRestTemplateProvider.restTemplate())
             .websites(websites)
-            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+            .timeZoneMap(timeZoneMap)
             .build()
             .collect();
 
@@ -206,14 +206,14 @@ public class FacilitiesCollector {
         VetCentersCollector.builder()
             .vastEntities(vastEntities)
             .websites(websites)
-            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+            .timeZoneMap(timeZoneMap)
             .build()
             .collect();
 
     Collection<Facility> benefits =
         BenefitsCollector.builder()
             .websites(websites)
-            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+            .timeZoneMap(timeZoneMap)
             .jdbcTemplate(jdbcTemplate)
             .build()
             .collect();
@@ -223,7 +223,7 @@ public class FacilitiesCollector {
             .baseUrl(cemeteriesBaseUrl)
             .insecureRestTemplate(insecureRestTemplateProvider.restTemplate())
             .websites(websites)
-            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+            .timeZoneMap(timeZoneMap)
             .jdbcTemplate(jdbcTemplate)
             .build()
             .collect();

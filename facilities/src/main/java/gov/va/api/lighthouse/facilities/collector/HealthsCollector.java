@@ -59,7 +59,7 @@ final class HealthsCollector {
 
   @NonNull final ArrayList<String> cscFacilities;
 
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   @SneakyThrows
   static void putMentalHealthContact(ResultSet resultSet, Map<String, String> map) {
@@ -141,7 +141,7 @@ final class HealthsCollector {
                       .mentalHealthPhoneNumbers(mentalHealthPhoneNumbers)
                       .stopCodesMap(stopCodesMap)
                       .websites(websites)
-                      .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+                      .timeZoneMap(timeZoneMap)
                       .build()
                       .toFacility())
           .filter(Objects::nonNull)

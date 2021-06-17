@@ -26,7 +26,7 @@ final class StateCemeteryTransformer {
   private static final Pattern ZIP_PATTERN =
       Pattern.compile(".*(\\d{5}-\\d{4}$)|.*(\\d{9}$)|.*(\\d{5}$)");
 
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   @NonNull private final StateCemeteries.StateCemetery xml;
 
@@ -107,9 +107,7 @@ final class StateCemeteryTransformer {
         .website(website())
         .latitude(latitude())
         .longitude(longitude())
-        .timeZone(
-            CalculateTimeZone.calculateTimeZonesWithMap(
-                latitude(), longitude(), continentalUsTimeZoneMap))
+        .timeZone(CalculateTimeZone.calculateTimeZonesWithMap(latitude(), longitude(), timeZoneMap))
         .address(address())
         .phone(phone())
         .hours(defaultHours())

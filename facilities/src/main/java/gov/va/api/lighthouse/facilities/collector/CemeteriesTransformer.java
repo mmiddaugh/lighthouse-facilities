@@ -14,7 +14,7 @@ import us.dustinj.timezonemap.TimeZoneMap;
 @Builder
 @SuppressWarnings("ObjectToString")
 final class CemeteriesTransformer {
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   @NonNull CdwCemetery cdwFacility;
 
@@ -31,7 +31,7 @@ final class CemeteriesTransformer {
         .longitude(cdwFacility.longitude())
         .timeZone(
             CalculateTimeZone.calculateTimeZonesWithMap(
-                cdwFacility.latitude(), cdwFacility.longitude(), continentalUsTimeZoneMap))
+                cdwFacility.latitude(), cdwFacility.longitude(), timeZoneMap))
         .website(website(cdwFacility.websiteUrl()))
         .address(
             Facility.Addresses.builder()

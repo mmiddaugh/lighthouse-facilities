@@ -38,7 +38,7 @@ final class StateCemeteriesCollector {
 
   @NonNull final Map<String, String> websites;
 
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   Collection<Facility> collect() {
     try {
@@ -50,7 +50,7 @@ final class StateCemeteriesCollector {
                       StateCemeteryTransformer.builder()
                           .xml(c)
                           .websites(websites)
-                          .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+                          .timeZoneMap(timeZoneMap)
                           .build()
                           .toFacility())
               .filter(Objects::nonNull)

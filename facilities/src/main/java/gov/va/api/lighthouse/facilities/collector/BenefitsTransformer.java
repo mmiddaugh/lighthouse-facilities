@@ -17,7 +17,7 @@ import us.dustinj.timezonemap.TimeZoneMap;
 @Builder
 @SuppressWarnings("ObjectToString")
 final class BenefitsTransformer {
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   @NonNull CdwBenefits cdwFacility;
 
@@ -32,7 +32,7 @@ final class BenefitsTransformer {
         .longitude(cdwFacility.longitude())
         .timeZone(
             CalculateTimeZone.calculateTimeZonesWithMap(
-                cdwFacility.latitude(), cdwFacility.longitude(), continentalUsTimeZoneMap))
+                cdwFacility.latitude(), cdwFacility.longitude(), timeZoneMap))
         .website(website(cdwFacility.websiteUrl()))
         .address(
             Facility.Addresses.builder()

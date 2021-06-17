@@ -39,7 +39,7 @@ final class CemeteriesCollector {
 
   @NonNull final RestTemplate insecureRestTemplate;
 
-  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+  @NonNull private final TimeZoneMap timeZoneMap;
 
   @NonNull private final Map<String, String> websites;
 
@@ -84,7 +84,7 @@ final class CemeteriesCollector {
                       .cdwFacility(facility)
                       .externalFacilityName(xmlFacilityName(cemeteries, facility.siteId()))
                       .externalWebsite(xmlOrCsvWebsite(cemeteries, facility.siteId()))
-                      .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+                      .timeZoneMap(timeZoneMap)
                       .build()
                       .toFacility())
           .collect(toList());
