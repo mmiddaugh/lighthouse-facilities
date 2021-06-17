@@ -12,6 +12,7 @@ import us.dustinj.timezonemap.TimeZoneMap;
  * The TimeZoneMap library works by: 1. Generating an 'area' from the SW to NE to calculate on, via
  * lat/long points (TimeZoneMap) 2. Figuring out the time zone from a lat/long point within the map
  * (TimeZone) 3. Translating this point to Olsen time (getZoneId)
+ * Alternatively the EVERYWHERE map can be used, though it does take longer to initiate.
  */
 @Slf4j
 public class CalculateTimeZone {

@@ -111,7 +111,6 @@ public class InternalFacilitiesController {
     checkArgument(record.id() != null);
     record.latitude(facility.attributes().latitude().doubleValue());
     record.longitude(facility.attributes().longitude().doubleValue());
-    //    record.timeZone(facility.attributes().timeZone());
     record.state(stateOf(facility));
     record.zip(zipOf(facility));
     record.servicesFromServiceTypes(serviceTypesOf(facility));
