@@ -12,9 +12,13 @@ import java.util.Locale;
 import java.util.Map;
 import lombok.Builder;
 import lombok.NonNull;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Builder
+@SuppressWarnings("ObjectToString")
 final class VetCenterTransformer {
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+
   @NonNull private final VastEntity vast;
 
   @NonNull private final Map<String, String> websites;
@@ -82,7 +86,9 @@ final class VetCenterTransformer {
         .website(website())
         .latitude(vast.latitude())
         .longitude(vast.longitude())
-        .timeZone(CalculateTimeZone.calculateTimeZones(vast.latitude(), vast.longitude()))
+        .timeZone(
+            CalculateTimeZone.calculateTimeZonesWithMap(
+                vast.latitude(), vast.longitude(), continentalUsTimeZoneMap))
         .address(address())
         .phone(phone())
         .hours(hours())

@@ -1,59 +1,53 @@
-package gov.va.api.lighthouse.facilities;
+package gov.va.api.lighthouse.facilities.collector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import com.google.common.base.Stopwatch;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import us.dustinj.timezonemap.TimeZoneMap;
 
 @Slf4j
 public class TimeZoneMapTest {
-  public TimeZoneMap calculateTimeZoneMap(double latitude, double longitude) {
-    double regionBoundary = 0.0001;
-    return TimeZoneMap.forRegion(
-        latitude - regionBoundary,
-        longitude - regionBoundary,
-        latitude + regionBoundary,
-        longitude + regionBoundary);
-  }
-
   @Test
   /**
    * This test calculates the TimeZoneMap every call, since loading the entire Continental US is
    * extremely time-hungry.
    */
   void timezoneContinentalUSA() {
-    City anchorage = new City(61.172881, -149.915261, "America/Anchorage");
-    City fresno = new City(36.737343, -119.771027, "America/Los_Angeles");
-    City saltLakeCity = new City(40.724780, -111.896381, "America/Denver");
-    City newOrleans = new City(29.953269, -90.093790, "America/Chicago");
-    City bangor = new City(44.801035, -68.781614, "America/New_York");
+    CalculateTimeZone.continentalUsMap();
+    City anchorage =
+        new City(
+            BigDecimal.valueOf(61.172881), BigDecimal.valueOf(-149.915261), "America/Anchorage");
+    City fresno =
+        new City(
+            BigDecimal.valueOf(36.737343), BigDecimal.valueOf(-119.771027), "America/Los_Angeles");
+    City saltLakeCity =
+        new City(BigDecimal.valueOf(40.724780), BigDecimal.valueOf(-111.896381), "America/Denver");
+    City newOrleans =
+        new City(BigDecimal.valueOf(29.953269), BigDecimal.valueOf(-90.093790), "America/Chicago");
+    City bangor =
+        new City(BigDecimal.valueOf(44.801035), BigDecimal.valueOf(-68.781614), "America/New_York");
     String anchorageZone =
         Objects.requireNonNull(
-                calculateTimeZoneMap(anchorage.latitude, anchorage.longitude)
-                    .getOverlappingTimeZone(anchorage.latitude, anchorage.longitude))
-            .getZoneId();
+            CalculateTimeZone.calculateTimeZones(anchorage.latitude, anchorage.longitude));
     String fresnoZone =
         Objects.requireNonNull(
-                calculateTimeZoneMap(fresno.latitude, fresno.longitude)
-                    .getOverlappingTimeZone(fresno.latitude, fresno.longitude))
-            .getZoneId();
+            CalculateTimeZone.calculateTimeZones(fresno.latitude, fresno.longitude));
     String saltLakeCityZone =
         Objects.requireNonNull(
-                calculateTimeZoneMap(saltLakeCity.latitude, saltLakeCity.longitude)
-                    .getOverlappingTimeZone(saltLakeCity.latitude, saltLakeCity.longitude))
-            .getZoneId();
+            CalculateTimeZone.calculateTimeZones(saltLakeCity.latitude, saltLakeCity.longitude));
     String newOrleansZone =
         Objects.requireNonNull(
-                calculateTimeZoneMap(newOrleans.latitude, newOrleans.longitude)
-                    .getOverlappingTimeZone(newOrleans.latitude, newOrleans.longitude))
-            .getZoneId();
+            CalculateTimeZone.calculateTimeZones(newOrleans.latitude, newOrleans.longitude));
     String bangorZone =
         Objects.requireNonNull(
-                calculateTimeZoneMap(bangor.latitude, bangor.longitude)
-                    .getOverlappingTimeZone(bangor.latitude, bangor.longitude))
-            .getZoneId();
+            CalculateTimeZone.calculateTimeZones(bangor.latitude, bangor.longitude));
     assertThat(anchorageZone).isEqualTo(anchorage.olsenTime);
     assertThat(fresnoZone).isEqualTo(fresno.olsenTime);
     assertThat(saltLakeCityZone).isEqualTo(saltLakeCity.olsenTime);
@@ -83,13 +77,13 @@ public class TimeZoneMapTest {
   }
 
   private static class City {
-    final double latitude;
+    final BigDecimal latitude;
 
-    double longitude;
+    final BigDecimal longitude;
 
     String olsenTime;
 
-    City(double latitude, double longitude, String olsenTime) {
+    City(BigDecimal latitude, BigDecimal longitude, String olsenTime) {
       this.latitude = latitude;
       this.longitude = longitude;
       this.olsenTime = olsenTime;

@@ -20,14 +20,14 @@ public class ReloadIT {
         .relaxedHTTPSValidation()
         .header("client-key", System.getProperty("client-key", CLIENT_KEY_DEFAULT));
   }
-//  Disabling reload() test to avoid Jenkins timeout.
-//  @Test
-//  void reload() {
-//    assumeEnvironmentNotIn(Environment.LAB, Environment.PROD);
-//    SystemDefinitions.Service svc = systemDefinition().facilitiesInternal();
-//    ExpectedResponse.of(
-//            requestSpecification()
-//                .request(Method.GET, svc.urlWithApiPath() + "internal/management/reload"))
-//        .expect(200);
-//  }
+
+  @Test
+  void reload() {
+    assumeEnvironmentNotIn(Environment.LAB, Environment.PROD);
+    SystemDefinitions.Service svc = systemDefinition().facilitiesInternal();
+    ExpectedResponse.of(
+            requestSpecification()
+                .request(Method.GET, svc.urlWithApiPath() + "internal/management/reload"))
+        .expect(200);
+  }
 }

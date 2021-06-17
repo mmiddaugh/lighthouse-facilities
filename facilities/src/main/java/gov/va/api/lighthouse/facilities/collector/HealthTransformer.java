@@ -30,8 +30,10 @@ import java.util.TreeMap;
 import lombok.Builder;
 import lombok.NonNull;
 import org.apache.commons.lang3.BooleanUtils;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Builder
+@SuppressWarnings("ObjectToString")
 final class HealthTransformer {
   private static final Map<String, Facility.HealthService> HEALTH_SERVICES =
       initHealthServicesMap();
@@ -49,6 +51,8 @@ final class HealthTransformer {
   @NonNull private final Map<String, String> websites;
 
   @NonNull private final ArrayList<String> cscFacilities;
+
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
 
   private static Map<String, Facility.HealthService> initHealthServicesMap() {
     Map<String, Facility.HealthService> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -162,7 +166,9 @@ final class HealthTransformer {
         .website(website())
         .latitude(vast.latitude())
         .longitude(vast.longitude())
-        .timeZone(CalculateTimeZone.calculateTimeZones(vast.latitude(), vast.longitude()))
+        .timeZone(
+            CalculateTimeZone.calculateTimeZonesWithMap(
+                vast.latitude(), vast.longitude(), continentalUsTimeZoneMap))
         .address(address())
         .phone(phone())
         .hours(hours())

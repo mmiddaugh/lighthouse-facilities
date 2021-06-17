@@ -16,13 +16,17 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Builder
 @Slf4j
+@SuppressWarnings("ObjectToString")
 final class BenefitsCollector {
   @NonNull private final Map<String, String> websites;
 
   @NonNull private final JdbcTemplate jdbcTemplate;
+
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
 
   /** Convert the results into a CdwBenefits Object. */
   @SneakyThrows
@@ -76,6 +80,7 @@ final class BenefitsCollector {
                   BenefitsTransformer.builder()
                       .cdwFacility(facility)
                       .csvWebsite(websites.get("vba_" + facility.facilityNumber()))
+                      .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
                       .build()
                       .toFacility())
           .collect(toList());

@@ -12,9 +12,13 @@ import java.util.Locale;
 import lombok.Builder;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Builder
+@SuppressWarnings("ObjectToString")
 final class BenefitsTransformer {
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+
   @NonNull CdwBenefits cdwFacility;
 
   String csvWebsite;
@@ -27,7 +31,8 @@ final class BenefitsTransformer {
         .latitude(cdwFacility.latitude())
         .longitude(cdwFacility.longitude())
         .timeZone(
-            CalculateTimeZone.calculateTimeZones(cdwFacility.latitude(), cdwFacility.longitude()))
+            CalculateTimeZone.calculateTimeZonesWithMap(
+                cdwFacility.latitude(), cdwFacility.longitude(), continentalUsTimeZoneMap))
         .website(website(cdwFacility.websiteUrl()))
         .address(
             Facility.Addresses.builder()
@@ -56,10 +61,8 @@ final class BenefitsTransformer {
   }
 
   private Facility.Phone phone() {
-
     String main = phoneTrim(cdwFacility.phone());
     String fax = phoneTrim(cdwFacility.fax());
-
     if (allBlank(main, fax)) {
       return null;
     } else {

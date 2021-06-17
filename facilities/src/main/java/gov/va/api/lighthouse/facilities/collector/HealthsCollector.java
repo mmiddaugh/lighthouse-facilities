@@ -39,9 +39,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Slf4j
 @Builder
+@SuppressWarnings("ObjectToString")
 final class HealthsCollector {
   @NonNull final String atcBaseUrl;
 
@@ -56,6 +58,8 @@ final class HealthsCollector {
   @NonNull final Map<String, String> websites;
 
   @NonNull final ArrayList<String> cscFacilities;
+
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
 
   @SneakyThrows
   static void putMentalHealthContact(ResultSet resultSet, Map<String, String> map) {
@@ -137,6 +141,7 @@ final class HealthsCollector {
                       .mentalHealthPhoneNumbers(mentalHealthPhoneNumbers)
                       .stopCodesMap(stopCodesMap)
                       .websites(websites)
+                      .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
                       .build()
                       .toFacility())
           .filter(Objects::nonNull)

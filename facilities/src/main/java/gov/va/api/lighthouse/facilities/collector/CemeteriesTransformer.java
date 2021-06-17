@@ -9,9 +9,13 @@ import gov.va.api.lighthouse.facilities.api.v0.Facility;
 import java.util.Locale;
 import lombok.Builder;
 import lombok.NonNull;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Builder
+@SuppressWarnings("ObjectToString")
 final class CemeteriesTransformer {
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
+
   @NonNull CdwCemetery cdwFacility;
 
   String externalFacilityName;
@@ -26,7 +30,8 @@ final class CemeteriesTransformer {
         .latitude(cdwFacility.latitude())
         .longitude(cdwFacility.longitude())
         .timeZone(
-            CalculateTimeZone.calculateTimeZones(cdwFacility.latitude(), cdwFacility.longitude()))
+            CalculateTimeZone.calculateTimeZonesWithMap(
+                cdwFacility.latitude(), cdwFacility.longitude(), continentalUsTimeZoneMap))
         .website(website(cdwFacility.websiteUrl()))
         .address(
             Facility.Addresses.builder()

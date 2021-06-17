@@ -29,6 +29,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
                 .websites(emptyMap())
+                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
                 .build()
                 .classification())
         .isEqualTo(expected);
@@ -45,6 +46,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
                 .websites(emptyMap())
+                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
                 .build()
                 .classification())
         .isNull();
@@ -71,6 +73,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
                 .websites(emptyMap())
+                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
                 .build()
                 .toFacility())
         .isNull();
@@ -89,6 +92,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(sc)
                 .websites(emptyMap())
+                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
                 .build()
                 .toFacility())
         .isEqualTo(Facility.builder().id("vha_x").type(Facility.Type.va_facilities).build());
@@ -111,6 +115,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(sc)
                 .websites(emptyMap())
+                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
                 .build()
                 .toFacility())
         .isEqualTo(

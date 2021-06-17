@@ -44,6 +44,7 @@ class HealthsCollectorTest {
                 .jdbcTemplate(mock(JdbcTemplate.class))
                 .insecureRestTemplate(insecureRestTemplate)
                 .websites(emptyMap())
+                .continentalUsTimeZoneMap(CalculateTimeZone.continentalUsMap())
                 .build()
                 .collect());
   }

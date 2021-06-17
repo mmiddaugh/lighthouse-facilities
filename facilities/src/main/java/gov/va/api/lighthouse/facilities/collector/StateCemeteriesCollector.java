@@ -26,15 +26,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Builder
 @Slf4j
+@SuppressWarnings("ObjectToString")
 final class StateCemeteriesCollector {
   @NonNull final String baseUrl;
 
   @NonNull final RestTemplate insecureRestTemplate;
 
   @NonNull final Map<String, String> websites;
+
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
 
   Collection<Facility> collect() {
     try {
@@ -46,6 +50,7 @@ final class StateCemeteriesCollector {
                       StateCemeteryTransformer.builder()
                           .xml(c)
                           .websites(websites)
+                          .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
                           .build()
                           .toFacility())
               .filter(Objects::nonNull)

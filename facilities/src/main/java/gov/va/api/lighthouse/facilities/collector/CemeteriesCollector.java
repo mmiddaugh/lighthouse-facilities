@@ -29,13 +29,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Builder
 @Slf4j
+@SuppressWarnings("ObjectToString")
 final class CemeteriesCollector {
   @NonNull final String baseUrl;
 
   @NonNull final RestTemplate insecureRestTemplate;
+
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
 
   @NonNull private final Map<String, String> websites;
 
@@ -80,6 +84,7 @@ final class CemeteriesCollector {
                       .cdwFacility(facility)
                       .externalFacilityName(xmlFacilityName(cemeteries, facility.siteId()))
                       .externalWebsite(xmlOrCsvWebsite(cemeteries, facility.siteId()))
+                      .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
                       .build()
                       .toFacility())
           .collect(toList());
@@ -141,14 +146,12 @@ final class CemeteriesCollector {
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .readValue(response, NationalCemeteries.class)
             .cem();
-
     // Single and double digit ids must be prepended with '0's
     for (NationalCemeteries.NationalCemetery cem : cemeteries) {
       while (cem.id.length() < 3) {
         cem.id = "0" + cem.id;
       }
     }
-
     log.info(
         "Loading national cemeteries xml took {} millis for {} entries",
         totalWatch.stop().elapsed(TimeUnit.MILLISECONDS),

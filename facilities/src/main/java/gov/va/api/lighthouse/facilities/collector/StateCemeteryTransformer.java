@@ -18,11 +18,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.NonNull;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Builder
+@SuppressWarnings("ObjectToString")
 final class StateCemeteryTransformer {
   private static final Pattern ZIP_PATTERN =
       Pattern.compile(".*(\\d{5}-\\d{4}$)|.*(\\d{9}$)|.*(\\d{5}$)");
+
+  @NonNull private final TimeZoneMap continentalUsTimeZoneMap;
 
   @NonNull private final StateCemeteries.StateCemetery xml;
 
@@ -42,7 +46,6 @@ final class StateCemeteryTransformer {
           .address2(line2)
           .build();
     }
-
     if (isNotBlank(line2)) {
       if (allBlank(parseZip(line2), parseCity(line2), line1)) {
         return null;
@@ -54,7 +57,6 @@ final class StateCemeteryTransformer {
           .address1(line1)
           .build();
     }
-
     if (isNotBlank(line1)) {
       if (allBlank(parseZip(line1), parseCity(line1))) {
         return Facility.Address.builder().address1(line1).build();
@@ -65,7 +67,6 @@ final class StateCemeteryTransformer {
           .state(state)
           .build();
     }
-
     return null;
   }
 
@@ -106,7 +107,9 @@ final class StateCemeteryTransformer {
         .website(website())
         .latitude(latitude())
         .longitude(longitude())
-        .timeZone(CalculateTimeZone.calculateTimeZones(latitude(), longitude()))
+        .timeZone(
+            CalculateTimeZone.calculateTimeZonesWithMap(
+                latitude(), longitude(), continentalUsTimeZoneMap))
         .address(address())
         .phone(phone())
         .hours(defaultHours())

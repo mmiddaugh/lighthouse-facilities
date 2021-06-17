@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import us.dustinj.timezonemap.TimeZoneMap;
 
 @Slf4j
 @Component
@@ -168,6 +169,8 @@ public class FacilitiesCollector {
     Collection<VastEntity> vastEntities;
     ArrayList<String> cscFacilities;
 
+    TimeZoneMap continentalUsTimeZoneMap = CalculateTimeZone.continentalUsMap();
+
     try {
       websites = loadWebsites(WEBSITES_CSV_RESOURCE_NAME);
       vastEntities = loadVast();
@@ -186,6 +189,7 @@ public class FacilitiesCollector {
             .insecureRestTemplate(insecureRestTemplateProvider.restTemplate())
             .vastEntities(vastEntities)
             .websites(websites)
+            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
             .build()
             .collect();
 
@@ -194,6 +198,7 @@ public class FacilitiesCollector {
             .baseUrl(cemeteriesBaseUrl)
             .insecureRestTemplate(insecureRestTemplateProvider.restTemplate())
             .websites(websites)
+            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
             .build()
             .collect();
 
@@ -201,17 +206,24 @@ public class FacilitiesCollector {
         VetCentersCollector.builder()
             .vastEntities(vastEntities)
             .websites(websites)
+            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
             .build()
             .collect();
 
     Collection<Facility> benefits =
-        BenefitsCollector.builder().websites(websites).jdbcTemplate(jdbcTemplate).build().collect();
+        BenefitsCollector.builder()
+            .websites(websites)
+            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
+            .jdbcTemplate(jdbcTemplate)
+            .build()
+            .collect();
 
     Collection<Facility> cemeteries =
         CemeteriesCollector.builder()
             .baseUrl(cemeteriesBaseUrl)
             .insecureRestTemplate(insecureRestTemplateProvider.restTemplate())
             .websites(websites)
+            .continentalUsTimeZoneMap(continentalUsTimeZoneMap)
             .jdbcTemplate(jdbcTemplate)
             .build()
             .collect();
