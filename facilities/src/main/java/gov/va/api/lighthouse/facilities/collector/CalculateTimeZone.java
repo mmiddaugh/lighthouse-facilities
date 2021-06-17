@@ -76,10 +76,10 @@ public class CalculateTimeZone {
       double longitude = longitudeDecimal.doubleValue();
 
       // Calculate using the passed continental Time Zone Map
-      if (latitude <= LatitudeNortheast
-          && latitude >= LatitudeSouthwest
-          && longitude <= LongitudeNortheast
-          && longitude >= LongitudeSouthwest) {
+//      if (latitude <= LatitudeNortheast
+//          && latitude >= LatitudeSouthwest
+//          && longitude <= LongitudeNortheast
+//          && longitude >= LongitudeSouthwest) {
         if (timeZoneMap != null) {
           timeZoneOverlap = timeZoneMap.getOverlappingTimeZone(latitude, longitude);
         }
@@ -88,10 +88,10 @@ public class CalculateTimeZone {
         } else {
           log.warn("Time zone calculation failed, unable to calculate mapping. [Continental]");
         }
-      } else {
-        // Calculate with generating the Time Zone Map via given lat/long.
-        timeZone = calculateTimeZones(BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));
-      }
+//      } else {
+//        // Calculate with generating the Time Zone Map via given lat/long.
+//        timeZone = calculateTimeZones(BigDecimal.valueOf(latitude), BigDecimal.valueOf(longitude));
+//      }
     }
     return timeZone;
   }
@@ -100,9 +100,10 @@ public class CalculateTimeZone {
   @SneakyThrows
   public static TimeZoneMap continentalUsMap() {
     Stopwatch timer = Stopwatch.createStarted();
-    TimeZoneMap usMap =
-        TimeZoneMap.forRegion(
-            LatitudeSouthwest, LongitudeSouthwest, LatitudeNortheast, LongitudeNortheast);
+//    TimeZoneMap usMap =
+//        TimeZoneMap.forRegion(
+//            LatitudeSouthwest, LongitudeSouthwest, LatitudeNortheast, LongitudeNortheast);
+    TimeZoneMap usMap = TimeZoneMap.forEverywhere();
     log.info(
         "Loading continental US time zone map took {} seconds.", timer.elapsed(TimeUnit.SECONDS));
     return usMap;
