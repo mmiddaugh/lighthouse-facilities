@@ -9,7 +9,7 @@
   </parent>
   <groupId>gov.va.api.lighthouse</groupId>
   <artifactId>facilities</artifactId>
-  <version>3.0.5-SNAPSHOT</version>
+  <version>3.0.6-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
     <commons-csv.version>1.8</commons-csv.version>
@@ -17,6 +17,7 @@
     <guava.version>29.0-jre</guava.version>
     <mssql-jdbc.version>7.4.1.jre8</mssql-jdbc.version>
     <swagger-maven-plugin.version>2.1.1</swagger-maven-plugin.version>
+    <timezonemap.version>LATEST</timezonemap.version>
   </properties>
   <dependencies>
     <dependency>
@@ -54,6 +55,12 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
       <version>${commons-csv.version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/us.dustinj.timezonemap/timezonemap -->
+    <dependency>
+      <groupId>us.dustinj.timezonemap</groupId>
+      <artifactId>timezonemap</artifactId>
+      <version>${timezonemap.version}</version>
     </dependency>
   </dependencies>
   <build>
