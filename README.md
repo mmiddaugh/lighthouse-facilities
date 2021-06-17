@@ -44,7 +44,7 @@ OpenAPI documentation on the
 * `Corporate Data Warehouse (CDW)` undergoes a nightly ETL process to transfer various data resources to the _SQL52_ server, where it is consumed during facilities collection. Namely:
     - Mental Health, Clinical Services, and Stop Codes from the _A01_ server, sourced from the VHA Support Center (VSSC) and Office of Mental Health.
     - National Cemeteries and Benefit Centers from the _NCA VBA SQL40 GIS_ server, sourced from the  Geospatial Data Library (GeoBISL).
-    - Health facilities and Veteran centers from the _A06_ server, sourced from [Veteran Affairs Site Tracking (VAST)](https://reports.vssc.med.va.gov/ReportServer/Pages/ReportViewer.aspx?%2fApps%2fVAST%2fProduction%2fVAST_Snapshot_2&rs:Command=Render).
+    - Health facilities and Veteran centers from the _A06_ server, sourced from [Veteran Affairs Site Tracking (VAST)](https://reports.vssc.med.va.gov/ReportServer/Pages/ReportViewer.aspx?%2fApps%2fVAST%2fProduction%2fVAST_Snapshot_2&rs:Command=Render) (VA Network Internal).
 * `Geographer Support Services Center (GSSC) Drive Band` documents are periodically uploaded to the `facilities`
   application through management APIs.  These are updated on a monthly basis.
 
