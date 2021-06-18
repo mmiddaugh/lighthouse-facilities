@@ -11,8 +11,8 @@ import us.dustinj.timezonemap.TimeZoneMap;
 /**
  * The TimeZoneMap library works by: 1. Generating an 'area' from the SW to NE to calculate on, via
  * lat/long points (TimeZoneMap) 2. Figuring out the time zone from a lat/long point within the map
- * (TimeZone) 3. Translating this point to Olsen time (getZoneId)
- * Alternatively the EVERYWHERE map can be used, though it does take longer to initiate.
+ * (TimeZone) 3. Translating this point to Olsen time (getZoneId) Alternatively the EVERYWHERE map
+ * can be used, though it does take longer to initiate.
  */
 @Slf4j
 public class CalculateTimeZone {
@@ -47,7 +47,9 @@ public class CalculateTimeZone {
   public static TimeZoneMap getEverywhereTimeZoneMap() {
     Stopwatch timer = Stopwatch.createStarted();
     TimeZoneMap timeZoneMap = TimeZoneMap.forEverywhere();
-    log.info("Loading everywhere time zone map took {} seconds.", timer.elapsed(TimeUnit.SECONDS));
+    log.info(
+        "Loading everywhere time zone map took {} milliseconds.",
+        timer.elapsed(TimeUnit.MILLISECONDS));
     return timeZoneMap;
   }
 }

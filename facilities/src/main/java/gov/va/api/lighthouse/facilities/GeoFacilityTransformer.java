@@ -39,6 +39,7 @@ final class GeoFacilityTransformer {
         .facilityType(attr.facilityType())
         .classification(attr.classification())
         .website(attr.website())
+        .timeZone(attr.timeZone())
         .address(attr.address())
         .phone(attr.phone())
         .hours(attr.hours())
