@@ -13,7 +13,7 @@ public class VetCenterTransformerTest {
             VetCenterTransformer.builder()
                 .vast(VastEntity.builder().build())
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .toFacility())
         .isNull();
@@ -22,7 +22,7 @@ public class VetCenterTransformerTest {
             VetCenterTransformer.builder()
                 .vast(VastEntity.builder().stationNumber("x").build())
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .toFacility())
         .isEqualTo(Facility.builder().id("vc_x").type(Facility.Type.va_facilities).build());

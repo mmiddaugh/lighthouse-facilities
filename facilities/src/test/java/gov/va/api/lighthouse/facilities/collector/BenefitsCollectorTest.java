@@ -58,7 +58,7 @@ public class BenefitsCollectorTest {
             BenefitsCollector.builder()
                 .websites(new HashMap<>())
                 .jdbcTemplate(jdbcTemplate)
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .collect())
         .isEqualTo(
@@ -124,7 +124,7 @@ public class BenefitsCollectorTest {
             BenefitsCollector.builder()
                 .jdbcTemplate(mock(JdbcTemplate.class))
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .collect());
   }

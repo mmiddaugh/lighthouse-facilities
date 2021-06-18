@@ -164,7 +164,7 @@ class HealthsCollectorJpaTest {
                 .insecureRestTemplate(insecureRestTemplate)
                 .vastEntities(List.of(entity))
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .collect())
         .isEqualTo(

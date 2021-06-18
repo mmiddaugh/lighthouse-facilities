@@ -46,7 +46,7 @@ public class VetCentersCollectorTest {
             VetCentersCollector.builder()
                 .vastEntities(List.of(vastEntity))
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .collect())
         .isEqualTo(

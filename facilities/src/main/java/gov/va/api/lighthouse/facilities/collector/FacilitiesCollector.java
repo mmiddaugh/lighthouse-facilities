@@ -169,7 +169,7 @@ public class FacilitiesCollector {
     Collection<VastEntity> vastEntities;
     ArrayList<String> cscFacilities;
 
-    TimeZoneMap timeZoneMap = CalculateTimeZone.everywhereMap();
+    TimeZoneMap timeZoneMap = CalculateTimeZone.getEverywhereTimeZoneMap();
 
     try {
       websites = loadWebsites(WEBSITES_CSV_RESOURCE_NAME);

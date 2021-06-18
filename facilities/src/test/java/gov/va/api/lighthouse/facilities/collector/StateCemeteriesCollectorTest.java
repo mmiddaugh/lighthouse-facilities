@@ -62,7 +62,7 @@ public class StateCemeteriesCollectorTest {
                 .baseUrl("http://statecems")
                 .insecureRestTemplate(insecureRestTemplate)
                 .websites(ImmutableMap.of("nca_s1001", "DONTUSE"))
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .collect())
         .isEqualTo(
@@ -118,7 +118,7 @@ public class StateCemeteriesCollectorTest {
                 .baseUrl("http://wrong")
                 .insecureRestTemplate(insecureRestTemplate)
                 .websites(ImmutableMap.of("nca_s1001", "DONTUSE"))
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .collect());
   }

@@ -36,7 +36,7 @@ public class CemeteriesTransformerTest {
         .cdwFacility(CemeteriesSamples.Cdw.create().cdwCemeteries())
         .externalFacilityName(xmlFacilityName)
         .externalWebsite(xmlWebsite)
-        .timeZoneMap(CalculateTimeZone.everywhereMap())
+        .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
         .build();
   }
 

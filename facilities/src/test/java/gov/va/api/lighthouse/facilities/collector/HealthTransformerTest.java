@@ -29,7 +29,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .classification())
         .isEqualTo(expected);
@@ -46,7 +46,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .classification())
         .isNull();
@@ -73,7 +73,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(ArrayListMultimap.create())
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .toFacility())
         .isNull();
@@ -92,7 +92,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(sc)
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .toFacility())
         .isEqualTo(Facility.builder().id("vha_x").type(Facility.Type.va_facilities).build());
@@ -115,7 +115,7 @@ public class HealthTransformerTest {
                 .mentalHealthPhoneNumbers(emptyMap())
                 .stopCodesMap(sc)
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .toFacility())
         .isEqualTo(

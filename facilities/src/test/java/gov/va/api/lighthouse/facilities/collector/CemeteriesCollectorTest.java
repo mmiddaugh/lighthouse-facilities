@@ -85,7 +85,7 @@ public class CemeteriesCollectorTest {
                 .baseUrl("http://nationalcems")
                 .insecureRestTemplate(insecureRestTemplate)
                 .websites(new HashMap<>())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .jdbcTemplate(jdbcTemplate)
                 .build()
                 .collect())
@@ -169,7 +169,7 @@ public class CemeteriesCollectorTest {
                 .baseUrl("http://wrong")
                 .insecureRestTemplate(insecureRestTemplate)
                 .websites(emptyMap())
-                .timeZoneMap(CalculateTimeZone.everywhereMap())
+                .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
                 .build()
                 .collect());
   }

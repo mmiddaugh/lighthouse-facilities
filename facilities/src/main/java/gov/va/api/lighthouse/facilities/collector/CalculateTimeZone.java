@@ -44,7 +44,7 @@ public class CalculateTimeZone {
 
   /** Loads the EVERYWHERE map. */
   @SneakyThrows
-  public static TimeZoneMap everywhereMap() {
+  public static TimeZoneMap getEverywhereTimeZoneMap() {
     Stopwatch timer = Stopwatch.createStarted();
     TimeZoneMap timeZoneMap = TimeZoneMap.forEverywhere();
     log.info("Loading everywhere time zone map took {} seconds.", timer.elapsed(TimeUnit.SECONDS));

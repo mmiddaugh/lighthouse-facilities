@@ -60,7 +60,7 @@ public class BenefitsTransformerTest {
     return BenefitsTransformer.builder()
         .cdwFacility(BenefitsSamples.Cdw.create().cdwBenefits())
         .csvWebsite(csvWebsite)
-        .timeZoneMap(CalculateTimeZone.everywhereMap())
+        .timeZoneMap(CalculateTimeZone.getEverywhereTimeZoneMap())
         .build();
   }
 
